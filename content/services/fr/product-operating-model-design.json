@@ -1,0 +1,26 @@
+{
+  "id": "product-operating-model-design",
+  "value": "product-operating-model-design",
+  "label": "Conception du modèle opérationnel produit",
+  "name": "Conception du modèle opérationnel produit",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Management produit",
+    "order": 4
+  },
+  "position": 15,
+  "duration": null,
+  "description": "Les rôles, rituels, droits de décision et outils qui permettent aux équipes produit de livrer de façon constante.",
+  "problem": "Les équipes produit travaillent de façons différentes, et les décisions sont lentes parce que personne ne sait qui décide de quoi.",
+  "solution": "Nous concevons le modèle opérationnel : rôles, droits de décision, rituels et outils minimaux nécessaires à son fonctionnement.",
+  "outcomes": [
+    "Rôles et droits de décision définis",
+    "Rituels de planification et de revue",
+    "Outils minimaux identifiés"
+  ]
+}

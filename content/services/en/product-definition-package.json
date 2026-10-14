@@ -1,0 +1,26 @@
+{
+  "id": "product-definition-package",
+  "value": "product-definition-package",
+  "label": "Product Definition Package",
+  "name": "Product Definition Package",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Product Definition",
+    "order": 2
+  },
+  "position": 8,
+  "duration": null,
+  "description": "The complete set of product documents needed to start building: vision, scope, requirements and technical direction.",
+  "problem": "Product knowledge is spread across meetings and chats, which slows down every new team member.",
+  "solution": "We consolidate the product decisions into one documented package that the team and stakeholders can reference.",
+  "outcomes": [
+    "One documented product package",
+    "Decisions traceable to their source",
+    "Ready to start build planning"
+  ]
+}

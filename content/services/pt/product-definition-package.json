@@ -1,0 +1,26 @@
+{
+  "id": "product-definition-package",
+  "value": "product-definition-package",
+  "label": "Pacote de definição de produto",
+  "name": "Pacote de definição de produto",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Definição de produto",
+    "order": 2
+  },
+  "position": 8,
+  "duration": null,
+  "description": "O conjunto completo de documentos de produto necessários para começar a construir: visão, escopo, requisitos e direção técnica.",
+  "problem": "O conhecimento do produto está espalhado entre reuniões e conversas, o que desacelera cada novo integrante.",
+  "solution": "Consolidamos as decisões de produto em um único pacote documentado ao qual equipe e partes interessadas podem recorrer.",
+  "outcomes": [
+    "Um único pacote de produto documentado",
+    "Decisões rastreáveis até sua origem",
+    "Pronto para planejar a construção"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "mvp-build-readiness-review",
+  "value": "mvp-build-readiness-review",
+  "label": "MVP Build Readiness Review",
+  "name": "MVP Build Readiness Review",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "MVP Strategy",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "A review that checks whether the MVP is ready to be built: scope, team, architecture and risks.",
+  "problem": "Build starts before scope, team or architecture are ready, and the delays come later.",
+  "solution": "We check readiness against a short set of criteria and report the gaps that must close before the build starts.",
+  "outcomes": [
+    "Readiness verdict against clear criteria",
+    "Gaps listed with owners",
+    "Go or no-go recommendation"
+  ]
+}

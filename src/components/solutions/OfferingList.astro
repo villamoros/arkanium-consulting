@@ -1,0 +1,68 @@
+---
+import { paragraphs } from '../../lib/utils';
+import { formatInvestment, offeringPath, type Offering } from '../../lib/catalog';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  familySlug: string;
+  serviceSlug: string;
+  offerings: Offering[];
+  page: TranslationSchema['solutionsPage'];
+  labels: TranslationSchema['solutions']['labels'];
+}
+const { locale, familySlug, serviceSlug, offerings, page, labels } = Astro.props;
+
+const typeLabel: Record<string, string> = {
+  FIXED_SCOPE: page.engagementTypes.fixedScope,
+  PROJECT: page.engagementTypes.project,
+  RETAINER: page.engagementTypes.retainer,
+};
+
+const investment = (o: Offering) => formatInvestment(o, page);
+---
+
+<div class="offering-grid">
+  {
+    offerings.map((o) => {
+      const meta = [
+        o.duration && { label: page.duration, value: o.duration },
+        o.engagementType && { label: page.engagement, value: typeLabel[o.engagementType] },
+        investment(o) && { label: page.investment, value: investment(o) },
+      ].filter(Boolean) as Array<{ label: string; value: string }>;
+      return (
+        <article class="offering-card reveal" id={o.slug}>
+          <h3>{o.name}</h3>
+          {meta.length > 0 && (
+            <dl class="offering-meta">
+              {meta.map((m) => (
+                <div>
+                  <dt>{m.label}</dt>
+                  <dd>{m.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {o.shortDescription && <p>{o.shortDescription}</p>}
+          {paragraphs(o.description).map((p) => <p>{p}</p>)}
+          {o.problem && (<><p class="service-label">{labels.problem}</p><p>{o.problem}</p></>)}
+          {o.solution && (<><p class="service-label">{labels.solution}</p><p>{o.solution}</p></>)}
+          {o.outcomes.length > 0 && (
+            <>
+              <p class="service-label">{labels.outcome}</p>
+              <ul class="plain-list">{o.outcomes.map((x) => <li>{x}</li>)}</ul>
+            </>
+          )}
+          {o.deliverables.length > 0 && (
+            <>
+              <p class="service-label">{page.deliverables}</p>
+              <ul class="plain-list">{o.deliverables.map((x) => <li>{x}</li>)}</ul>
+            </>
+          )}
+          <a class="offering-cta" href={offeringPath(locale, familySlug, serviceSlug, o.slug)}>{page.explore} →</a>
+        </article>
+      );
+    })
+  }
+</div>

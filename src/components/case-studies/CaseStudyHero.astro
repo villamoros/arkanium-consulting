@@ -1,0 +1,27 @@
+---
+import CaseStudyBadge from './CaseStudyBadge.astro';
+import Breadcrumb from '../solutions/Breadcrumb.astro';
+import type { CaseStudy } from '../../lib/case-studies';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  item: CaseStudy;
+  content: TranslationSchema['caseStudies'];
+  breadcrumbLabel: string;
+  crumbs: Array<{ label: string; href?: string }>;
+}
+const { item, content, breadcrumbLabel, crumbs } = Astro.props;
+// Naturaleza del caso: texto fijo en el código (no editable desde el CMS) para que nunca pueda omitirse.
+const notice = item.type === 'REPRESENTATIVE' ? content.representativeNote : item.type === 'ANONYMIZED' ? content.anonymizedNote : undefined;
+---
+
+<section class="page-hero section-band" aria-labelledby="case-heading">
+  <Breadcrumb label={breadcrumbLabel} items={crumbs} />
+  <div class="case-card-tags">
+    <CaseStudyBadge type={item.type} labels={content.badges} />
+    {item.industry && <span class="case-tag">{item.industry.name}</span>}
+  </div>
+  <h1 id="case-heading">{item.title}</h1>
+  <p class="hero-lede">{item.summary}</p>
+  {notice && <p class="case-notice" role="note">{notice}</p>}
+</section>

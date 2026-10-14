@@ -1,0 +1,26 @@
+{
+  "id": "product-operating-model-design",
+  "value": "product-operating-model-design",
+  "label": "Product Operating Model Design",
+  "name": "Product Operating Model Design",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Product Management",
+    "order": 4
+  },
+  "position": 15,
+  "duration": null,
+  "description": "The roles, rituals, decision rights and tools that let product teams deliver consistently.",
+  "problem": "Product teams work in different ways, and decisions are slow because nobody knows who decides what.",
+  "solution": "We design the operating model: roles, decision rights, rituals and the minimum tooling needed to run it.",
+  "outcomes": [
+    "Roles and decision rights defined",
+    "Rituals for planning and review",
+    "Minimum tooling identified"
+  ]
+}

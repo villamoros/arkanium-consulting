@@ -1,0 +1,26 @@
+{
+  "id": "embedded-technical-leadership",
+  "value": "embedded-technical-leadership",
+  "label": "Liderazgo técnico integrado",
+  "name": "Liderazgo técnico integrado",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitectura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Liderazgo tecnológico",
+    "order": 3
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Liderazgo técnico integrado en la organización durante un periodo acordado, trabajando junto a sus equipos.",
+  "problem": "La organización necesita liderazgo técnico dentro de sus equipos mientras construye su propia capacidad.",
+  "solution": "Trabajamos dentro de los equipos para liderar decisiones técnicas y transferir prácticas, con un plan de traspaso definido.",
+  "outcomes": [
+    "Decisiones técnicas lideradas dentro de los equipos",
+    "Prácticas transferidas a la organización",
+    "Plan de traspaso definido"
+  ]
+}

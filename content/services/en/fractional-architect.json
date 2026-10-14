@@ -1,0 +1,26 @@
+{
+  "id": "fractional-architect",
+  "value": "fractional-architect",
+  "label": "Fractional Architect",
+  "name": "Fractional Architect",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Architecture Consulting",
+    "order": 1
+  },
+  "position": 4,
+  "duration": null,
+  "description": "An experienced architect who guides architecture decisions part-time for an agreed scope.",
+  "problem": "The organisation needs architectural judgement on a recurring basis, not a full-time role.",
+  "solution": "We provide regular architecture guidance, review key designs and support the teams on decisions that carry risk.",
+  "outcomes": [
+    "Regular architecture guidance",
+    "Key designs reviewed",
+    "Support on risky decisions"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "digital-maturity-assessment",
+  "value": "digital-maturity-assessment",
+  "label": "Digital Maturity Assessment",
+  "name": "Digital Maturity Assessment",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Digital Strategy",
+    "order": 2
+  },
+  "position": 5,
+  "duration": null,
+  "description": "A structured assessment of how ready the organisation is to operate and grow digitally.",
+  "problem": "It is unclear where the organisation stands in capabilities, processes and skills.",
+  "solution": "We assess capabilities across the business and technology dimensions and compare them with a clear maturity model.",
+  "outcomes": [
+    "Maturity profile by dimension",
+    "Gaps between current and target state",
+    "Priority areas for improvement"
+  ]
+}

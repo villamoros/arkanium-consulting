@@ -1,0 +1,26 @@
+{
+  "id": "product-operating-model-design",
+  "value": "product-operating-model-design",
+  "label": "Diseño del modelo operativo de producto",
+  "name": "Diseño del modelo operativo de producto",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Gestión de producto",
+    "order": 4
+  },
+  "position": 15,
+  "duration": null,
+  "description": "Los roles, rituales, derechos de decisión y herramientas que permiten a los equipos de producto entregar de forma consistente.",
+  "problem": "Los equipos de producto trabajan de formas distintas, y las decisiones son lentas porque nadie sabe quién decide qué.",
+  "solution": "Diseñamos el modelo operativo: roles, derechos de decisión, rituales y las herramientas mínimas necesarias para ejecutarlo.",
+  "outcomes": [
+    "Roles y derechos de decisión definidos",
+    "Rituales de planificación y revisión",
+    "Herramientas mínimas identificadas"
+  ]
+}

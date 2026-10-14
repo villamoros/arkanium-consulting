@@ -1,0 +1,26 @@
+{
+  "id": "cto-advisory-light",
+  "value": "cto-advisory-light",
+  "label": "CTO Advisory (Light)",
+  "name": "CTO Advisory (Light)",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Technology Leadership",
+    "order": 3
+  },
+  "position": 10,
+  "duration": null,
+  "description": "Light, periodic advice for leaders who carry technology responsibility without a full-time CTO.",
+  "problem": "Leaders carry technology decisions alone and would benefit from a regular outside view.",
+  "solution": "We meet periodically to review key decisions, challenge options and share practices suited to the organisation.",
+  "outcomes": [
+    "Outside view on key decisions",
+    "Options challenged before commitment",
+    "Practices suited to the organisation"
+  ]
+}

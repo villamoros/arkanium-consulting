@@ -1,0 +1,26 @@
+{
+  "id": "architecture-assessment",
+  "value": "architecture-assessment",
+  "label": "Architecture Assessment",
+  "name": "Architecture Assessment",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Architecture Consulting",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "An independent review of the current architecture, its risks and how well it supports the business.",
+  "problem": "Leaders are not sure whether the architecture can support the next stage of growth.",
+  "solution": "We review the architecture, its dependencies and its operational risks, and report the findings with priorities.",
+  "outcomes": [
+    "Architecture findings with priorities",
+    "Risks and dependencies mapped",
+    "Executive summary"
+  ]
+}

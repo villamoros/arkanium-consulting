@@ -1,0 +1,26 @@
+{
+  "id": "architecture-modernization-roadmap",
+  "value": "architecture-modernization-roadmap",
+  "label": "Roadmap de modernização de arquitetura",
+  "name": "Roadmap de modernização de arquitetura",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Consultoria de arquitetura",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "Um plano sequenciado para passar da arquitetura atual a um estado-alvo, passo a passo.",
+  "problem": "A modernização é desejada, mas não planejada, então compete com o trabalho de funcionalidades e fica parada.",
+  "solution": "Definimos a arquitetura-alvo, sequenciamos os passos de migração e estabelecemos os critérios de cada etapa.",
+  "outcomes": [
+    "Arquitetura-alvo definida",
+    "Passos de migração sequenciados",
+    "Critérios para cada etapa"
+  ]
+}

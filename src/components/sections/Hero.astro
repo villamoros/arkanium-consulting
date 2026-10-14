@@ -1,0 +1,78 @@
+---
+import Button from '../ui/Button.astro';
+import type { Locale } from '../../i18n/config';
+import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  content: TranslationSchema['hero'];
+  ui: TranslationSchema['ui'];
+}
+const { locale, content, ui } = Astro.props;
+---
+
+<section class="hero section-band" id="top" aria-labelledby="hero-heading">
+  <!-- Topología SVG: fondo ambiente, nunca encima del copy -->
+  <div class="hero-bg-topology" aria-hidden="true">
+    <svg class="topology" viewBox="0 0 640 520" focusable="false">
+              <defs>
+                <linearGradient id="goldLine" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#8F6A32"></stop>
+                  <stop offset="52%" stop-color="#D4A95A"></stop>
+                  <stop offset="100%" stop-color="#F1D18B"></stop>
+                </linearGradient>
+                <filter id="lineGlow">
+                  <feGaussianBlur stdDeviation="3" result="blur"></feGaussianBlur>
+                  <feMerge>
+                    <feMergeNode in="blur"></feMergeNode>
+                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                  </feMerge>
+                </filter>
+              </defs>
+              <path class="grid-line" d="M96 74H544M96 166H544M96 258H544M96 350H544M96 442H544"></path>
+              <path class="grid-line" d="M126 52V468M244 52V468M362 52V468M480 52V468"></path>
+              <path class="signal path-a" d="M104 386L204 298L310 322L430 188L536 220"></path>
+              <path class="signal path-b" d="M120 166L224 204L328 132L442 302L540 246"></path>
+              <path class="signal path-c" d="M156 436L270 378L354 414L476 342"></path>
+              <g class="nodes">
+                <circle cx="104" cy="386" r="8"></circle>
+                <circle cx="204" cy="298" r="8"></circle>
+                <circle cx="310" cy="322" r="8"></circle>
+                <circle cx="430" cy="188" r="8"></circle>
+                <circle cx="536" cy="220" r="8"></circle>
+                <circle cx="120" cy="166" r="7"></circle>
+                <circle cx="224" cy="204" r="7"></circle>
+                <circle cx="328" cy="132" r="7"></circle>
+                <circle cx="442" cy="302" r="7"></circle>
+                <circle cx="540" cy="246" r="7"></circle>
+              </g>
+              <g class="core-mark" transform="translate(256 178)">
+                <path d="M64 0 130 170 104 154 64 48 24 154 0 170Z"></path>
+                <path d="M64 84 102 128 76 118 64 106 52 118 26 128Z"></path>
+              </g>
+            </svg>
+  </div>
+
+  <div class="hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">{content.eyebrow}</p>
+      <h1 id="hero-heading">{content.title}</h1>
+      <p class="hero-lede">{content.lede}</p>
+      <div class="hero-actions" role="group" aria-label={ui.primaryActions}>
+        <Button href={getLocalizedPath(locale, '/#cta')}>{content.ctaPrimary}</Button>
+        <Button href={getLocalizedPath(locale, '/#services')} variant="secondary">{content.ctaSecondary}</Button>
+      </div>
+    </div>
+
+    <div class="hero-metrics-panel reveal" role="group" aria-label={ui.serviceMetrics}>
+      {
+        content.metrics.map((metric, i) => (
+          <div class:list={['hero-metric', i === 0 && 'hero-metric-accent']}>
+            <strong>{metric.value}</strong>
+            <span>{metric.label}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

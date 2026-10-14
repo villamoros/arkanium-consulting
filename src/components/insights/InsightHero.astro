@@ -1,0 +1,31 @@
+---
+import Breadcrumb from '../solutions/Breadcrumb.astro';
+import { formatDate, formatMonthYear, minutesLabel } from '../../lib/insights/format';
+import type { Article } from '../../lib/insights';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  article: Article;
+  locale: Locale;
+  content: TranslationSchema['insights'];
+  breadcrumbLabel: string;
+  crumbs: Array<{ label: string; href?: string }>;
+}
+const { article, locale, content, breadcrumbLabel, crumbs } = Astro.props;
+// "Updated …" solo si hay una actualización posterior a la publicación (no se muestra por un typo).
+const showUpdated = article.updatedAt && Date.parse(article.updatedAt) > Date.parse(article.publishedAt) + 24 * 3600 * 1000;
+---
+
+<section class="page-hero section-band" aria-labelledby="article-heading">
+  <Breadcrumb label={breadcrumbLabel} items={crumbs} />
+  {article.categories.length > 0 && <p class="eyebrow">{article.categories.map((c) => c.name).join(' · ')}</p>}
+  <h1 id="article-heading">{article.title}</h1>
+  <p class="hero-lede">{article.excerpt}</p>
+  <p class="insight-byline">
+    {article.author && <span>{content.by} <strong>{article.author.name}</strong> · </span>}
+    <time datetime={article.publishedAt}>{formatDate(article.publishedAt, locale)}</time>
+    {showUpdated && <span> · {content.updated} <time datetime={article.updatedAt}>{formatMonthYear(article.updatedAt as string, locale)}</time></span>}
+    <span> · {minutesLabel(content.minRead, article.readingMinutes)}</span>
+  </p>
+</section>

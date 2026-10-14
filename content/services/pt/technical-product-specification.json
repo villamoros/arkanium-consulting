@@ -1,0 +1,26 @@
+{
+  "id": "technical-product-specification",
+  "value": "technical-product-specification",
+  "label": "Especificação técnica de produto",
+  "name": "Especificação técnica de produto",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Definição de produto",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "Uma especificação técnica que traduz a definição de produto em decisões de arquitetura e interfaces.",
+  "problem": "A intenção do produto ainda não foi traduzida em decisões técnicas a partir das quais os engenheiros possam construir.",
+  "solution": "Definimos a direção de arquitetura, as interfaces principais e os requisitos não funcionais que a construção deve cumprir.",
+  "outcomes": [
+    "Direção de arquitetura do produto",
+    "Interfaces principais definidas",
+    "Requisitos não funcionais estabelecidos"
+  ]
+}

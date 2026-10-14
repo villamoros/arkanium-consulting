@@ -1,0 +1,26 @@
+{
+  "id": "product-validation-experiments",
+  "value": "product-validation-experiments",
+  "label": "Product Validation Experiments",
+  "name": "Product Validation Experiments",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Product Discovery",
+    "order": 1
+  },
+  "position": 4,
+  "duration": null,
+  "description": "Small, measurable experiments that test the riskiest assumptions before a product is built.",
+  "problem": "The riskiest assumptions are only discussed, not tested.",
+  "solution": "We design experiments with clear success criteria, run them with users and report what was learned.",
+  "outcomes": [
+    "Experiments with success criteria",
+    "Evidence from users",
+    "Report of what was learned"
+  ]
+}

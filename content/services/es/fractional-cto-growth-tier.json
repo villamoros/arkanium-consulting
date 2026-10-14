@@ -1,0 +1,26 @@
+{
+  "id": "fractional-cto-growth-tier",
+  "value": "fractional-cto-growth-tier",
+  "label": "CTO fraccional — nivel crecimiento",
+  "name": "CTO fraccional — nivel crecimiento",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitectura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Liderazgo tecnológico",
+    "order": 3
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Un CTO a tiempo parcial para empresas en crecimiento que necesitan escalar tecnología, equipos y gobierno.",
+  "problem": "El crecimiento supera a la organización tecnológica, y las decisiones de escalado se toman bajo presión.",
+  "solution": "Lideramos el plan de escalado de tecnología, equipos y gobierno, y acompañamos a los líderes que lo ejecutarán.",
+  "outcomes": [
+    "Plan de escalado para tecnología y equipos",
+    "Gobierno para el crecimiento",
+    "Líderes acompañados para ejecutarlo"
+  ]
+}

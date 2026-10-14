@@ -1,0 +1,26 @@
+{
+  "id": "solution-architecture-design",
+  "value": "solution-architecture-design",
+  "label": "Solution Architecture Design",
+  "name": "Solution Architecture Design",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Architecture Consulting",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "The design of a specific solution: components, integrations, data flows and the decisions behind them.",
+  "problem": "A new solution is planned without a design that the teams can build and operate.",
+  "solution": "We design the solution architecture, document the key decisions and validate it with the teams who will build it.",
+  "outcomes": [
+    "Solution architecture documented",
+    "Key decisions recorded with rationale",
+    "Design reviewed with the build teams"
+  ]
+}

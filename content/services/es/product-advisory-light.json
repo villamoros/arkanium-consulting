@@ -1,0 +1,26 @@
+{
+  "id": "product-advisory-light",
+  "value": "product-advisory-light",
+  "label": "Asesoría de producto (ligera)",
+  "name": "Asesoría de producto (ligera)",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Gestión de producto",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Asesoría ligera y periódica para líderes de producto sobre prioridades, decisiones y prácticas de producto.",
+  "problem": "Los líderes de producto necesitan una mirada externa sobre sus decisiones, pero no un rol a tiempo completo.",
+  "solution": "Nos reunimos periódicamente para revisar prioridades y decisiones, y compartir prácticas adecuadas a la etapa del producto.",
+  "outcomes": [
+    "Revisión periódica de prioridades",
+    "Mirada externa sobre decisiones clave",
+    "Prácticas adecuadas a la etapa del producto"
+  ]
+}

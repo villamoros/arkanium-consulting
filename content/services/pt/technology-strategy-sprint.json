@@ -1,0 +1,26 @@
+{
+  "id": "technology-strategy-sprint",
+  "value": "technology-strategy-sprint",
+  "label": "Sprint de estratégia tecnológica",
+  "name": "Sprint de estratégia tecnológica",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Estratégia tecnológica",
+    "order": 3
+  },
+  "position": 8,
+  "duration": null,
+  "description": "Um sprint curto e focado que produz uma estratégia tecnológica sobre a qual a liderança pode decidir.",
+  "problem": "A direção tecnológica é implícita, então as decisões de investimento são tomadas caso a caso.",
+  "solution": "Trabalhamos com a liderança para definir princípios, opções e uma direção recomendada.",
+  "outcomes": [
+    "Princípios tecnológicos acordados",
+    "Opções comparadas por custo e risco",
+    "Direção recomendada para decisão"
+  ]
+}

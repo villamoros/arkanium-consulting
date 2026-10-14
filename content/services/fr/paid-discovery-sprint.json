@@ -1,0 +1,26 @@
+{
+  "id": "paid-discovery-sprint",
+  "value": "paid-discovery-sprint",
+  "label": "Sprint de découverte payant",
+  "name": "Sprint de découverte payant",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Diagnostic technologique",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "Une mission courte et rémunérée qui répond à une question stratégique avant un engagement plus large.",
+  "problem": "De gros investissements sont envisagés sans preuves suffisantes sur les options.",
+  "solution": "Nous cadrons la question, testons les hypothèses critiques et concluons par une recommandation et une position go ou no-go.",
+  "outcomes": [
+    "Cadrage clair de la décision",
+    "Hypothèses critiques testées",
+    "Recommandation avec position go ou no-go"
+  ]
+}

@@ -1,0 +1,198 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import { siteConfig } from '../../content/static/site';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  content: TranslationSchema['cta'];
+  ui: TranslationSchema['ui'];
+}
+const { content: cta, ui } = Astro.props;
+const { form } = cta;
+---
+
+<section class="assessment section-band" id="cta" aria-labelledby="assessment-heading">
+  <SectionHeading id="assessment-heading" eyebrow={cta.eyebrow} title={cta.title} />
+
+  <div class="assessment-layout">
+    <div class="assessment-left reveal">
+      <figure class="assessment-visual" data-light-follow>
+        <span class="assessment-visual-glow" aria-hidden="true"></span>
+        <img src={siteConfig.assets.logoLockup} alt={ui.logoAlt} loading="lazy" width="560" height="280" />
+      </figure>
+      <div class="assessment-copy">
+        <p>{cta.intro}</p>
+        <ol class="assessment-steps" aria-label={ui.assessmentSteps}>
+          {cta.steps.map((step) => <li><span>{step}</span></li>)}
+        </ol>
+      </div>
+    </div>
+
+    <div class="assessment-form-card reveal">
+      <div class="assessment-form-header">
+        <p class="panel-kicker">{form.kicker}</p>
+        <h3>{form.title}</h3>
+      </div>
+
+      <div class="form-success" data-form-success aria-live="polite" tabindex="-1" hidden>
+        <p><strong>{form.successTitle}</strong> <span>{form.successBody}</span></p>
+      </div>
+
+      <form
+        class="lead-form"
+        aria-label={form.title}
+        data-lead-form
+        data-msg-name={form.errors.name}
+        data-msg-email={form.errors.email}
+        novalidate
+      >
+        <!-- Contexto comercial desde ?service=…&offering=… (ver ctaPath). El envío real llega en otra tarea. -->
+        <input type="hidden" name="service" />
+        <input type="hidden" name="offering" />
+
+        <div class="form-row">
+          <label class="field">
+            <span class="field-control">
+              <input type="text" name="name" autocomplete="name" placeholder=" " required aria-required="true" />
+              <span class="field-label">
+                <span>{form.nameLabel}</span>
+                <span class="req" aria-hidden="true">*</span>
+              </span>
+              <span class="field-bar" aria-hidden="true"></span>
+            </span>
+            <span class="field-error" id="error-name" data-error="name" role="alert" hidden></span>
+          </label>
+
+          <label class="field">
+            <span class="field-control">
+              <input type="email" name="email" autocomplete="email" placeholder=" " required aria-required="true" />
+              <span class="field-label">
+                <span>{form.emailLabel}</span>
+                <span class="req" aria-hidden="true">*</span>
+              </span>
+              <span class="field-bar" aria-hidden="true"></span>
+            </span>
+            <span class="field-error" id="error-email" data-error="email" role="alert" hidden></span>
+          </label>
+        </div>
+
+        <label class="field field--select">
+          <span class="field-control">
+            <select name="priority" aria-labelledby="priority-label">
+              {Object.entries(form.priorities).map(([value, label]) => <option value={value}>{label}</option>)}
+            </select>
+            <span class="field-label" id="priority-label">
+              <span>{form.priorityLabel}</span>
+            </span>
+            <span class="field-bar" aria-hidden="true"></span>
+          </span>
+        </label>
+
+        <label class="field field--area">
+          <span class="field-control">
+            <textarea name="context" rows="4" placeholder=" "></textarea>
+            <span class="field-label">
+              <span>{form.contextLabel}</span>
+            </span>
+            <span class="field-bar" aria-hidden="true"></span>
+          </span>
+        </label>
+
+        <button class="button button-primary form-submit" type="submit">{form.submit}</button>
+        <p class="form-note">{form.note}</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ── Formulario: validación inline + estado de éxito.
+  // TODO(backend): el envío es visual/placeholder. No hay backend en el alcance de 002.
+  const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
+  const success = document.querySelector<HTMLElement>('[data-form-success]');
+
+  if (form) {
+    for (const key of ['service', 'offering']) {
+      const value = new URLSearchParams(location.search).get(key);
+      const input = form.querySelector<HTMLInputElement>(`[name="${key}"]`);
+      if (input && value && /^[a-z0-9-]{1,80}$/.test(value)) input.value = value;
+    }
+
+    const messages: Record<string, string> = {
+      name: form.dataset.msgName ?? '',
+      email: form.dataset.msgEmail ?? '',
+    };
+
+    const errorFor = (field: string) => form.querySelector<HTMLElement>(`[data-error="${field}"]`);
+    const inputFor = (field: string) => form.querySelector<HTMLInputElement>(`[name="${field}"]`);
+
+    const showError = (field: string) => {
+      const error = errorFor(field);
+      const input = inputFor(field);
+      if (error) {
+        error.textContent = messages[field] ?? '';
+        error.hidden = false;
+      }
+      input?.setAttribute('aria-invalid', 'true');
+      input?.setAttribute('aria-describedby', `error-${field}`);
+    };
+
+    const clearError = (field: string) => {
+      const error = errorFor(field);
+      if (error) {
+        error.textContent = '';
+        error.hidden = true;
+      }
+      const input = inputFor(field);
+      input?.removeAttribute('aria-invalid');
+      input?.removeAttribute('aria-describedby');
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const name = String(data.get('name') ?? '').trim();
+      const email = String(data.get('email') ?? '').trim();
+
+      const invalid: string[] = [];
+      if (!name) invalid.push('name');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) invalid.push('email');
+
+      for (const field of ['name', 'email']) {
+        if (invalid.includes(field)) showError(field);
+        else clearError(field);
+      }
+      if (invalid.length) {
+        inputFor(invalid[0] as string)?.focus();
+        return;
+      }
+
+      form.hidden = true;
+      if (success) {
+        success.hidden = false;
+        success.focus();
+      }
+    });
+
+    form.addEventListener('input', (e) => {
+      const { name } = e.target as HTMLInputElement;
+      if (name) clearError(name);
+    });
+  }
+
+  // ── Halo del panel de imagen: sigue el cursor (sin movimiento con reduced-motion).
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll<HTMLElement>('[data-light-follow]').forEach((panel) => {
+      const reset = () => {
+        panel.style.setProperty('--spot-x', '18%');
+        panel.style.setProperty('--spot-y', '20%');
+      };
+      panel.addEventListener('pointermove', (e) => {
+        const rect = panel.getBoundingClientRect();
+        panel.style.setProperty('--spot-x', `${((e.clientX - rect.left) / rect.width) * 100}%`);
+        panel.style.setProperty('--spot-y', `${((e.clientY - rect.top) / rect.height) * 100}%`);
+      });
+      panel.addEventListener('pointerleave', reset);
+    });
+  }
+</script>

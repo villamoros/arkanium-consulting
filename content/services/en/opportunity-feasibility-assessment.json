@@ -1,0 +1,26 @@
+{
+  "id": "opportunity-feasibility-assessment",
+  "value": "opportunity-feasibility-assessment",
+  "label": "Opportunity & Feasibility Assessment",
+  "name": "Opportunity & Feasibility Assessment",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Product Discovery",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "An assessment of the commercial opportunity and the technical feasibility of a product direction.",
+  "problem": "It is unclear whether the opportunity justifies the technical effort and the risk.",
+  "solution": "We size the opportunity, assess what it would take to build it and identify the main technical and commercial risks.",
+  "outcomes": [
+    "Sized opportunity",
+    "Feasibility of the proposed direction",
+    "Main risks identified"
+  ]
+}

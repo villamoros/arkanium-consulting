@@ -1,0 +1,26 @@
+{
+  "id": "technical-debt-investment-case",
+  "value": "technical-debt-investment-case",
+  "label": "Caso de investimento em dívida técnica",
+  "name": "Caso de investimento em dívida técnica",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Estratégia tecnológica",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "Um caso de negócio que transforma a dívida técnica em custos, riscos e uma decisão de investimento.",
+  "problem": "A dívida técnica é discutida em termos gerais, o que dificulta financiá-la e priorizá-la.",
+  "solution": "Identificamos os principais itens de dívida, estimamos seu custo e risco, e construímos um caso que compara opções de correção.",
+  "outcomes": [
+    "Principais itens de dívida com custo e risco",
+    "Opções de correção comparadas",
+    "Caso de investimento pronto para decisão"
+  ]
+}

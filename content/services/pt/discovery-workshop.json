@@ -1,0 +1,26 @@
+{
+  "id": "discovery-workshop",
+  "value": "discovery-workshop",
+  "label": "Workshop de descoberta",
+  "name": "Workshop de descoberta",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Descoberta de produto",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Uma sessão facilitada para alinhar o problema do usuário, o mercado-alvo e as premissas a testar.",
+  "problem": "Existe uma ideia de produto, mas a equipe não compartilha a mesma visão do problema que ela resolve.",
+  "solution": "Conduzimos um workshop estruturado que transforma a ideia em declarações de problema explícitas e premissas testáveis.",
+  "outcomes": [
+    "Declaração de problema compartilhada",
+    "Lista de premissas a testar, ordenada",
+    "Escopo de descoberta acordado"
+  ]
+}

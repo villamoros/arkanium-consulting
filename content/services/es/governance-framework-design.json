@@ -1,0 +1,26 @@
+{
+  "id": "governance-framework-design",
+  "value": "governance-framework-design",
+  "label": "Diseño del marco de gobierno",
+  "name": "Diseño del marco de gobierno",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitectura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Gobierno tecnológico",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Un marco de gobierno que define cómo se toman, revisan y financian las decisiones tecnológicas.",
+  "problem": "Las decisiones tecnológicas se toman ad hoc, con responsabilidades poco claras y criterios inconsistentes.",
+  "solution": "Diseñamos los derechos de decisión, los foros de revisión, los criterios y los informes que usará el equipo directivo.",
+  "outcomes": [
+    "Derechos de decisión definidos",
+    "Foros de revisión y criterios",
+    "Informes para la dirección"
+  ]
+}

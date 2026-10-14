@@ -1,0 +1,26 @@
+{
+  "id": "roadmap-refresh-quarterly",
+  "value": "roadmap-refresh-quarterly",
+  "label": "Mise à jour trimestrielle de la feuille de route",
+  "name": "Mise à jour trimestrielle de la feuille de route",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Feuille de route IT",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "Une revue trimestrielle qui maintient la feuille de route IT alignée sur les priorités de l'activité et sur les changements.",
+  "problem": "Les feuilles de route deviennent vite obsolètes, et personne n'est chargé de les mettre à jour.",
+  "solution": "Chaque trimestre, nous revoyons l’avancement et les priorités avec la direction, mettons à jour la feuille de route et consignons les décisions.",
+  "outcomes": [
+    "Feuille de route tenue à jour chaque trimestre",
+    "Registre des décisions et des changements",
+    "Priorités claires pour le trimestre suivant"
+  ]
+}

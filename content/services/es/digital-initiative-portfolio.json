@@ -1,0 +1,26 @@
+{
+  "id": "digital-initiative-portfolio",
+  "value": "digital-initiative-portfolio",
+  "label": "Portafolio de iniciativas digitales",
+  "name": "Portafolio de iniciativas digitales",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Estrategia digital",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "Un portafolio priorizado de iniciativas digitales con responsables, secuencia y dependencias.",
+  "problem": "Demasiadas iniciativas compiten por los mismos equipos y presupuesto, y su orden no está acordado.",
+  "solution": "Agrupamos las iniciativas, las secuenciamos según capacidad y dependencias, y acordamos responsables y puntos de revisión.",
+  "outcomes": [
+    "Portafolio secuenciado con responsables",
+    "Dependencias y límites de capacidad visibles",
+    "Cadencia de revisión acordada"
+  ]
+}

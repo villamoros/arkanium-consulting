@@ -1,0 +1,26 @@
+{
+  "id": "technical-due-diligence",
+  "value": "technical-due-diligence",
+  "label": "Technical Due Diligence",
+  "name": "Technical Due Diligence",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Architecture Consulting",
+    "order": 1
+  },
+  "position": 5,
+  "duration": null,
+  "description": "An independent assessment of a technology estate before an investment, acquisition or partnership.",
+  "problem": "A major transaction is considered without a clear view of the technology risks behind it.",
+  "solution": "We review the architecture, code and operations, identify material risks and state their impact on the transaction.",
+  "outcomes": [
+    "Material technology risks identified",
+    "Impact on the transaction stated",
+    "Findings ranked by severity"
+  ]
+}

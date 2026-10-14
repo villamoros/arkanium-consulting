@@ -1,0 +1,26 @@
+---
+import CaseStudyCard from './CaseStudyCard.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import type { CaseStudy } from '../../lib/case-studies';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  items: CaseStudy[];
+  locale: Locale;
+  content: TranslationSchema['caseStudies'];
+  id?: string;
+}
+const { items, locale, content, id = 'related-cases-heading' } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section class="section-band" aria-labelledby={id}>
+      <SectionHeading id={id} title={content.labels.related} />
+      <div class="case-grid">
+        {items.map((item) => <CaseStudyCard item={item} locale={locale} content={content} />)}
+      </div>
+    </section>
+  )
+}

@@ -1,0 +1,26 @@
+{
+  "id": "discovery-workshop",
+  "value": "discovery-workshop",
+  "label": "Discovery Workshop",
+  "name": "Discovery Workshop",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Product Discovery",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "A facilitated session to align on the user problem, the target market and the assumptions to test.",
+  "problem": "A product idea exists, but the team does not share the same view of the problem it solves.",
+  "solution": "We run a structured workshop that turns the idea into explicit problem statements and testable assumptions.",
+  "outcomes": [
+    "Shared problem statement",
+    "Ranked list of assumptions to test",
+    "Agreed scope for discovery"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "mvp-strategy-roadmap",
+  "value": "mvp-strategy-roadmap",
+  "label": "Estratégia e roadmap do MVP",
+  "name": "Estratégia e roadmap do MVP",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "Estratégia de MVP",
+    "order": 3
+  },
+  "position": 10,
+  "duration": null,
+  "description": "A estratégia do MVP e o roadmap desde a primeira versão até os próximos passos validados.",
+  "problem": "O MVP não tem um caminho claro além da primeira versão, então as decisões de investimento são adiadas.",
+  "solution": "Definimos a estratégia do MVP, sequenciamos os passos de validação e documentamos o roadmap com os critérios de cada decisão.",
+  "outcomes": [
+    "Estratégia do MVP documentada",
+    "Passos de validação sequenciados",
+    "Critérios para cada decisão de avanço"
+  ]
+}

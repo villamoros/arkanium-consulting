@@ -1,0 +1,26 @@
+{
+  "id": "fractional-product-manager",
+  "value": "fractional-product-manager",
+  "label": "Fractional Product Manager",
+  "name": "Fractional Product Manager",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Product Management",
+    "order": 4
+  },
+  "position": 13,
+  "duration": null,
+  "description": "An experienced product manager who leads product work part-time, with a defined scope of responsibility.",
+  "problem": "The product needs ownership and a clear backlog, but a full-time hire is not yet justified.",
+  "solution": "We provide a product manager who owns the backlog, the priorities and the stakeholder alignment for an agreed scope.",
+  "outcomes": [
+    "Ownership of the backlog and priorities",
+    "Stakeholder alignment",
+    "Scope agreed at the start"
+  ]
+}

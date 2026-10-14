@@ -1,0 +1,26 @@
+{
+  "id": "technology-strategy-blueprint",
+  "value": "technology-strategy-blueprint",
+  "label": "Technology Strategy Blueprint",
+  "name": "Technology Strategy Blueprint",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Technology Strategy",
+    "order": 3
+  },
+  "position": 9,
+  "duration": null,
+  "description": "A complete written technology strategy with target architecture direction, roadmap and governance.",
+  "problem": "Strategic technology decisions lack a documented basis that teams and investors can follow.",
+  "solution": "We document the strategy, its target architecture direction, the roadmap and the governance needed to keep it current.",
+  "outcomes": [
+    "Complete written strategy",
+    "Target architecture direction",
+    "Governance to keep it current"
+  ]
+}

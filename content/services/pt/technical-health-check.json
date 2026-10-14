@@ -1,0 +1,26 @@
+{
+  "id": "technical-health-check",
+  "value": "technical-health-check",
+  "label": "Check-up técnico",
+  "name": "Check-up técnico",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Diagnóstico tecnológico",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Uma revisão focada nos sistemas, riscos e práticas de entrega que mais afetam o negócio hoje.",
+  "problem": "A liderança não tem uma visão clara e objetiva de onde a tecnologia está em risco nem do que corrigir primeiro.",
+  "solution": "Avaliamos os sistemas críticos e as práticas de entrega e entregamos uma lista priorizada de riscos e ações.",
+  "outcomes": [
+    "Registro de riscos priorizado",
+    "Visão clara dos problemas técnicos mais urgentes",
+    "Lista curta de primeiras ações"
+  ]
+}

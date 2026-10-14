@@ -1,0 +1,26 @@
+{
+  "id": "digital-strategy-blueprint",
+  "value": "digital-strategy-blueprint",
+  "label": "Digital Strategy Blueprint",
+  "name": "Digital Strategy Blueprint",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Digital Strategy",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "A written digital strategy that links business goals to the initiatives that deliver them.",
+  "problem": "Digital efforts run in parallel without a common direction or a clear link to business goals.",
+  "solution": "We define the strategic principles, target capabilities and initiatives, and document them in a blueprint leaders can use.",
+  "outcomes": [
+    "Written digital strategy",
+    "Target capabilities and initiatives",
+    "Link from each initiative to a business goal"
+  ]
+}

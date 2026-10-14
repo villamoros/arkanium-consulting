@@ -1,0 +1,26 @@
+{
+  "id": "technical-risk-monitoring",
+  "value": "technical-risk-monitoring",
+  "label": "Surveillance des risques techniques",
+  "name": "Surveillance des risques techniques",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Gouvernance technologique",
+    "order": 2
+  },
+  "position": 9,
+  "duration": null,
+  "description": "Suivi continu des risques techniques, avec des responsables clairs et un reporting régulier à la direction.",
+  "problem": "Les risques techniques ne sont connus que de quelques personnes et ne sont signalés qu'une fois devenus des incidents.",
+  "solution": "Nous tenons un registre des risques techniques, attribuons des responsables, suivons les mesures d’atténuation et rapportons régulièrement le statut.",
+  "outcomes": [
+    "Registre des risques techniques",
+    "Responsables et mesures suivis",
+    "Rapport régulier de statut"
+  ]
+}

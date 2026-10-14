@@ -1,0 +1,25 @@
+---
+import InsightCard from './InsightCard.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import type { ArticleSummary } from '../../lib/insights';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  items: ArticleSummary[];
+  locale: Locale;
+  content: TranslationSchema['insights'];
+}
+const { items, locale, content } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section class="section-band" aria-labelledby="related-insights-heading">
+      <SectionHeading id="related-insights-heading" title={content.relatedArticles} />
+      <div class="insight-grid">
+        {items.map((item) => <InsightCard item={item} locale={locale} content={content} />)}
+      </div>
+    </section>
+  )
+}

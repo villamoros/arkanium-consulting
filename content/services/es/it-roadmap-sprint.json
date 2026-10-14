@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-sprint",
+  "value": "it-roadmap-sprint",
+  "label": "Sprint de hoja de ruta de TI",
+  "name": "Sprint de hoja de ruta de TI",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Hoja de ruta de TI",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Un sprint corto que produce una primera hoja de ruta de TI que la organización puede empezar a ejecutar.",
+  "problem": "El trabajo tecnológico responde a peticiones sueltas, sin una secuencia que el negocio pueda seguir.",
+  "solution": "Recogemos las prioridades, las contrastamos con la capacidad y las dependencias, y acordamos una primera hoja de ruta con responsables.",
+  "outcomes": [
+    "Primera hoja de ruta de TI con responsables",
+    "Dependencias y capacidad verificadas",
+    "Próximos pasos acordados"
+  ]
+}

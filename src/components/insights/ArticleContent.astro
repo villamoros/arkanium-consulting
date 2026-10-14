@@ -1,0 +1,24 @@
+---
+import RichText from './RichText.astro';
+import type { Article } from '../../lib/insights';
+
+interface Props {
+  article: Article;
+}
+const { article } = Astro.props;
+const image = article.featuredImage;
+---
+
+<section class="section-band article-band">
+  {
+    image && (
+      <figure class="article-figure">
+        <img src={image.url} alt={image.alt} width={image.width} height={image.height} decoding="async" />
+        {image.caption && <figcaption>{image.caption}</figcaption>}
+      </figure>
+    )
+  }
+  <div class="article-content">
+    <RichText nodes={article.content} />
+  </div>
+</section>

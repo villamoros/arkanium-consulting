@@ -1,0 +1,26 @@
+{
+  "id": "fractional-head-of-product",
+  "value": "fractional-head-of-product",
+  "label": "Director de producto fraccional",
+  "name": "Director de producto fraccional",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Gestión de producto",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "Liderazgo de producto senior a tiempo parcial para definir la estrategia de producto y construir la función de producto.",
+  "problem": "La organización necesita liderazgo de producto y una función de producto, pero aún no un directivo a tiempo completo.",
+  "solution": "Definimos la estrategia de producto con la dirección, diseñamos la función de producto y acompañamos al equipo que la llevará.",
+  "outcomes": [
+    "Estrategia de producto acordada con la dirección",
+    "Función de producto diseñada",
+    "Equipo acompañado para llevarla"
+  ]
+}

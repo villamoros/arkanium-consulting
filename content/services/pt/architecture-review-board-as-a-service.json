@@ -1,0 +1,26 @@
+{
+  "id": "architecture-review-board-as-a-service",
+  "value": "architecture-review-board-as-a-service",
+  "label": "Comitê de revisão de arquitetura (como serviço)",
+  "name": "Comitê de revisão de arquitetura (como serviço)",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Governança tecnológica",
+    "order": 2
+  },
+  "position": 8,
+  "duration": null,
+  "description": "Um comitê externo de revisão de arquitetura que avalia propostas e ajuda as equipes a fazer escolhas coerentes.",
+  "problem": "As equipes tomam decisões de arquitetura sem uma revisão coerente, o que gera retrabalho e nova dívida.",
+  "solution": "Revisamos as propostas em um ciclo regular, damos recomendações com justificativas e registramos as decisões.",
+  "outcomes": [
+    "Revisão periódica de propostas",
+    "Recomendações com justificativas",
+    "Registro de decisões de arquitetura"
+  ]
+}

@@ -1,0 +1,30 @@
+---
+import type { Article } from '../../lib/insights';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  article: Article;
+  content: TranslationSchema['insights'];
+}
+const { article, content } = Astro.props;
+const a = article.authorDetail;
+---
+
+{
+  a && (
+    <section class="section-band author-band" aria-labelledby="author-heading">
+      <div class="author-box">
+        {a.avatar && <img class="author-avatar" src={a.avatar} alt="" width="72" height="72" loading="lazy" decoding="async" />}
+        <div>
+          <h2 id="author-heading" class="author-label">{content.aboutAuthor}</h2>
+          <p class="author-name">{a.name}{a.role && <span> — {a.role}</span>}</p>
+          {a.bio && <p class="author-bio">{a.bio}</p>}
+          <p class="author-links">
+            {a.linkedin && <a href={a.linkedin} rel="noopener noreferrer" target="_blank">LinkedIn</a>}
+            {a.website && <a href={a.website} rel="noopener noreferrer" target="_blank">Web</a>}
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}

@@ -1,0 +1,26 @@
+{
+  "id": "governance-retainer",
+  "value": "governance-retainer",
+  "label": "Governance Retainer",
+  "name": "Governance Retainer",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Technology Governance",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "An ongoing governance service that keeps technology decisions reviewed and aligned with the business.",
+  "problem": "Governance set up once fades over time, and decisions drift away from agreed criteria.",
+  "solution": "We run the governance cycle on an ongoing basis: review forums, decision records and periodic reporting.",
+  "outcomes": [
+    "Ongoing review forums",
+    "Decision records kept",
+    "Periodic reporting to leadership"
+  ]
+}

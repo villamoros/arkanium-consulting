@@ -1,0 +1,26 @@
+{
+  "id": "technical-product-specification",
+  "value": "technical-product-specification",
+  "label": "Technical Product Specification",
+  "name": "Technical Product Specification",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Product Definition",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "A technical specification that translates the product definition into architecture and interface decisions.",
+  "problem": "Product intent is not yet translated into technical choices that engineers can build from.",
+  "solution": "We define the architecture direction, the main interfaces and the non-functional requirements the build must meet.",
+  "outcomes": [
+    "Architecture direction for the product",
+    "Main interfaces defined",
+    "Non-functional requirements stated"
+  ]
+}

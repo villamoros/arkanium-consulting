@@ -1,0 +1,32 @@
+---
+import { siteConfig } from '../../content/static/site';
+import type { Locale } from '../../i18n/config';
+import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
+import type { MenuFamily } from '../../lib/catalog';
+import Navigation from './Navigation.astro';
+
+interface Props {
+  locale: Locale;
+  navigation: TranslationSchema['navigation'];
+  ui: TranslationSchema['ui'];
+  menu: MenuFamily[];
+  localePaths?: Partial<Record<Locale, string>>;
+}
+const { locale, navigation, ui, menu, localePaths } = Astro.props;
+---
+
+<header class="site-header" data-header>
+  <nav class="nav-shell" aria-label={ui.primaryNav}>
+    <a class="brand" href={getLocalizedPath(locale, '/#top')} aria-label={ui.homeLabel}>
+      <img src={siteConfig.assets.logoMark} alt="" width="120" height="80" loading="eager" />
+    </a>
+    <Navigation locale={locale} content={navigation} ui={ui} menu={menu} localePaths={localePaths} />
+  </nav>
+</header>
+
+<script>
+  const header = document.querySelector('[data-header]');
+  const update = () => header?.classList.toggle('is-scrolled', window.scrollY > 16);
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+</script>

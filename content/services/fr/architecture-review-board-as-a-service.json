@@ -1,0 +1,26 @@
+{
+  "id": "architecture-review-board-as-a-service",
+  "value": "architecture-review-board-as-a-service",
+  "label": "Comité de revue d’architecture (en service)",
+  "name": "Comité de revue d’architecture (en service)",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Gouvernance technologique",
+    "order": 2
+  },
+  "position": 8,
+  "duration": null,
+  "description": "Un comité d’architecture externe qui examine les propositions et aide les équipes à faire des choix cohérents.",
+  "problem": "Les équipes prennent des décisions d'architecture sans revue cohérente, ce qui génère des reprises et de la nouvelle dette.",
+  "solution": "Nous examinons les propositions selon un cycle régulier, formulons des recommandations motivées et consignons les décisions.",
+  "outcomes": [
+    "Revue régulière des propositions",
+    "Recommandations motivées",
+    "Registre des décisions d’architecture"
+  ]
+}

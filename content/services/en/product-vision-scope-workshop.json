@@ -1,0 +1,26 @@
+{
+  "id": "product-vision-scope-workshop",
+  "value": "product-vision-scope-workshop",
+  "label": "Product Vision & Scope Workshop",
+  "name": "Product Vision & Scope Workshop",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Product Definition",
+    "order": 2
+  },
+  "position": 5,
+  "duration": null,
+  "description": "A workshop that agrees the product vision and the scope the first release will cover.",
+  "problem": "Stakeholders hold different ideas of what the product is and what it must include.",
+  "solution": "We facilitate the discussion, agree the vision and draw the scope boundary with the stakeholders who decide.",
+  "outcomes": [
+    "Agreed product vision",
+    "Scope boundary for the first release",
+    "List of open decisions"
+  ]
+}

@@ -1,0 +1,129 @@
+---
+/**
+ * Detalle de Case Study. Cada sección aparece solo si el CMS tiene contenido para ella.
+ * La naturaleza del caso (REAL / REPRESENTATIVE / ANONYMIZED) la fija el código: ver CaseStudyHero.
+ */
+import PageLayout from '../../../../layouts/PageLayout.astro';
+import SectionHeading from '../../../../components/ui/SectionHeading.astro';
+import CaseStudyHero from '../../../../components/case-studies/CaseStudyHero.astro';
+import CaseStudyMeta from '../../../../components/case-studies/CaseStudyMeta.astro';
+import CaseStudyMetrics from '../../../../components/case-studies/CaseStudyMetrics.astro';
+import CaseStudyRelated from '../../../../components/case-studies/CaseStudyRelated.astro';
+import CaseStudyCTA from '../../../../components/case-studies/CaseStudyCTA.astro';
+import { siteConfig } from '../../../../content/static/site';
+import { locales, type Locale } from '../../../../i18n/config';
+import { getLocalizedPath, getTranslations } from '../../../../i18n/utils';
+import { ctaPath, findService, getCatalog, hasServicePage, servicePath } from '../../../../lib/catalog';
+import { caseStudiesPath, getCaseStudies, getRelatedCaseStudies } from '../../../../lib/case-studies';
+import { paragraphs } from '../../../../lib/utils';
+import { absoluteSeoUrl } from '../../../../lib/seo';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of locales) {
+    for (const item of await getCaseStudies(locale)) paths.push({ params: { locale, slug: item.slug } });
+  }
+  return paths;
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const c = t.caseStudies;
+const all = await getCaseStudies(locale);
+const item = all.find((x) => x.slug === Astro.params.slug);
+if (!item) throw new Error(`[case-studies] Caso no encontrado: ${Astro.params.slug}`);
+const catalog = await getCatalog(locale);
+
+// Relaciones con el catálogo (no se duplica contenido: se resuelve por slug).
+const services = item.services.flatMap((ref) => {
+  const s = findService(catalog, ref.family, ref.slug);
+  return s ? [{ name: s.name, href: hasServicePage(s) ? servicePath(locale, s.familySlug, s.slug) : undefined }] : [];
+});
+const offerings = item.offerings.flatMap((ref) => {
+  const s = findService(catalog, ref.family, ref.service);
+  const o = s?.offerings.find((x) => x.slug === ref.slug);
+  return s && o ? [{ name: o.name, href: hasServicePage(s) ? servicePath(locale, s.familySlug, s.slug) : undefined }] : [];
+});
+const related = getRelatedCaseStudies(all, item);
+
+const { seo } = item;
+const title = seo.title ?? `${item.title} | ${c.title} | ${siteConfig.name}`;
+const description = seo.description ?? item.summary;
+const firstService = item.services[0];
+const cta = firstService ? ctaPath(locale, firstService.slug) : `${getLocalizedPath(locale, '/')}#cta`;
+const challenge = item.challengeDetails ?? item.challengeSummary;
+const outcomeHeading = item.type === 'REPRESENTATIVE' ? c.labels.outcomeExpected : c.labels.outcome;
+const breadcrumbs = [
+  { name: siteConfig.name, url: absoluteSeoUrl(getLocalizedPath(locale), Astro.site) },
+  { name: c.title, url: absoluteSeoUrl(caseStudiesPath(locale), Astro.site) },
+  { name: item.title, url: absoluteSeoUrl(Astro.url.pathname, Astro.site) },
+];
+---
+
+<PageLayout locale={locale} title={title} description={description} canonical={seo.canonical} ogImage={seo.ogImage} noindex={seo.noIndex} breadcrumbs={breadcrumbs}>
+  <CaseStudyHero
+    item={item}
+    content={c}
+    breadcrumbLabel={t.solutionsPage.breadcrumb}
+    crumbs={[{ label: c.title, href: caseStudiesPath(locale) }, { label: item.title }]}
+  />
+  <CaseStudyMeta item={item} labels={c.meta} services={services} offerings={offerings} />
+
+  {
+    challenge && (
+      <section class="section-band" aria-labelledby="challenge-heading">
+        <SectionHeading id="challenge-heading" title={c.labels.challenge} />
+        <div class="prose">{paragraphs(challenge).map((x) => <p>{x}</p>)}</div>
+      </section>
+    )
+  }
+
+  {
+    (item.approach || item.approachSteps.length > 0) && (
+      <section class="section-band" aria-labelledby="approach-heading">
+        <SectionHeading id="approach-heading" title={c.labels.approach} />
+        {item.approach && <div class="prose">{paragraphs(item.approach).map((x) => <p>{x}</p>)}</div>}
+        {
+          item.approachSteps.length > 0 && (
+            <ol class="case-steps">
+              {item.approachSteps.map((s) => <li><strong>{c.phases[s.phase]}</strong>{s.body}</li>)}
+            </ol>
+          )
+        }
+      </section>
+    )
+  }
+
+  {
+    item.solution && (
+      <section class="section-band" aria-labelledby="solution-heading">
+        <SectionHeading id="solution-heading" title={c.labels.solution} />
+        <div class="prose">{paragraphs(item.solution).map((x) => <p>{x}</p>)}</div>
+      </section>
+    )
+  }
+
+  {
+    item.deliverables.length > 0 && (
+      <section class="section-band" aria-labelledby="deliverables-heading">
+        <SectionHeading id="deliverables-heading" title={c.labels.deliverables} />
+        <ul class="plain-list">{item.deliverables.map((x) => <li>{x}</li>)}</ul>
+      </section>
+    )
+  }
+
+  {
+    item.outcomes.length > 0 && (
+      <section class="section-band" aria-labelledby="outcome-heading">
+        <SectionHeading id="outcome-heading" title={outcomeHeading} />
+        <ul class="plain-list">{item.outcomes.map((x) => <li>{x}</li>)}</ul>
+      </section>
+    )
+  }
+
+  {item.metrics.length > 0 && <CaseStudyMetrics metrics={item.metrics} heading={c.labels.metrics} sourceLabel={c.labels.source} />}
+
+  <CaseStudyRelated items={related} locale={locale} content={c} />
+
+  <CaseStudyCTA heading={t.solutionsPage.ctaHeading} label={t.solutionsPage.ctaDefault} href={cta} />
+</PageLayout>

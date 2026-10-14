@@ -1,0 +1,26 @@
+{
+  "id": "architecture-modernization-roadmap",
+  "value": "architecture-modernization-roadmap",
+  "label": "Feuille de route de modernisation de l’architecture",
+  "name": "Feuille de route de modernisation de l’architecture",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Conseil en architecture",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "Un plan séquencé pour passer de l'architecture actuelle à un état cible, étape par étape.",
+  "problem": "La modernisation est souhaitée mais non planifiée, si bien qu'elle entre en concurrence avec le développement de fonctionnalités et stagne.",
+  "solution": "Nous définissons l’architecture cible, séquençons les étapes de migration et fixons les critères de chaque étape.",
+  "outcomes": [
+    "Architecture cible définie",
+    "Étapes de migration séquencées",
+    "Critères pour chaque étape"
+  ]
+}

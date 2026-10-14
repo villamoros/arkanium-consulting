@@ -1,0 +1,26 @@
+{
+  "id": "digital-opportunity-workshop",
+  "value": "digital-opportunity-workshop",
+  "label": "Workshop de oportunidades digitais",
+  "name": "Workshop de oportunidades digitais",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Estratégia digital",
+    "order": 2
+  },
+  "position": 4,
+  "duration": null,
+  "description": "Uma sessão de trabalho facilitada para identificar e ordenar oportunidades digitais para o negócio.",
+  "problem": "Existem ideias digitais espalhadas entre as equipes, mas não há uma visão compartilhada de quais importam mais.",
+  "solution": "Conduzimos um workshop estruturado com líderes, reunimos as oportunidades e as avaliamos por valor, viabilidade e risco.",
+  "outcomes": [
+    "Lista compartilhada de oportunidades digitais",
+    "Avaliação por valor, viabilidade e risco",
+    "Lista curta acordada para o próximo passo"
+  ]
+}

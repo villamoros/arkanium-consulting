@@ -1,0 +1,26 @@
+{
+  "id": "product-requirements-backlog",
+  "value": "product-requirements-backlog",
+  "label": "Requisitos de produto e backlog",
+  "name": "Requisitos de produto e backlog",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Definição de produto",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Requisitos de produto claros e um backlog priorizado sobre o qual as equipes de engenharia podem agir.",
+  "problem": "Os requisitos são vagos, então o backlog muda a cada sprint e a entrega desacelera.",
+  "solution": "Escrevemos os requisitos como histórias centradas no usuário, com critérios de aceitação, e ordenamos o backlog por valor e dependências.",
+  "outcomes": [
+    "Requisitos com critérios de aceitação",
+    "Backlog ordenado por valor",
+    "Dependências visíveis para a equipe"
+  ]
+}

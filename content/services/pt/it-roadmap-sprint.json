@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-sprint",
+  "value": "it-roadmap-sprint",
+  "label": "Sprint de roadmap de TI",
+  "name": "Sprint de roadmap de TI",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Roadmap de TI",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Um sprint curto que produz um primeiro roadmap de TI que a organização pode começar a executar.",
+  "problem": "O trabalho de tecnologia responde a pedidos isolados, sem uma sequência que o negócio possa acompanhar.",
+  "solution": "Reunimos as prioridades, as confrontamos com capacidade e dependências, e acordamos um primeiro roadmap com responsáveis.",
+  "outcomes": [
+    "Primeiro roadmap de TI com responsáveis",
+    "Dependências e capacidade verificadas",
+    "Próximos passos acordados"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "mvp-scoping-workshop",
+  "value": "mvp-scoping-workshop",
+  "label": "MVP Scoping Workshop",
+  "name": "MVP Scoping Workshop",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "MVP Strategy",
+    "order": 3
+  },
+  "position": 9,
+  "duration": null,
+  "description": "A focused workshop that defines the smallest set of features that tests the core value of the product.",
+  "problem": "The first version tends to grow until it is too large to validate anything.",
+  "solution": "We separate must-have from nice-to-have, define the learning goals of the MVP and agree the cut line.",
+  "outcomes": [
+    "Must-have feature set",
+    "Learning goals for the MVP",
+    "Agreed cut line"
+  ]
+}

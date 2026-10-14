@@ -1,0 +1,438 @@
+/**
+ * Traducciones — Français.
+ * Debe cumplir la estructura de en.ts (TypeScript lo verifica).
+ */
+
+import type { TranslationSchema } from './en';
+
+export const fr: TranslationSchema = {
+  meta: {
+    title: "Arkanium Consulting | Architecture logicielle et infrastructure numérique",
+    description: "Arkanium Consulting aide les entreprises en croissance à moderniser leurs systèmes legacy, réduire le risque technique et construire une infrastructure numérique évolutive.",
+  },
+  ui: {
+    skipToContent: "Aller au contenu",
+    homeLabel: "Arkanium Consulting — accueil",
+    backToTop: "Arkanium Consulting — retour en haut",
+    primaryNav: "Navigation principale",
+    footerNav: "Navigation du pied de page",
+    menuOpen: "Ouvrir le menu de navigation",
+    menuClose: "Fermer le menu de navigation",
+    changeLanguage: "Changer de langue",
+    newTab: "s'ouvre dans un nouvel onglet",
+    primaryActions: "Actions principales",
+    serviceMetrics: "Indicateurs du service",
+    logoAlt: "Arkanium Consulting",
+    assessmentSteps: "Ce qui se passe après votre message",
+    processPhases: "Phases de la méthode",
+    serviceLines: "Lignes de service",
+    aboutCarousel: {
+      label: "À propos d'Arkanium",
+      controls: "Commandes du carrousel",
+      prev: "Carte précédente",
+      next: "Carte suivante",
+      dots: "Sélectionner une carte",
+      dotLabel: "Aller à la carte",
+    },
+    servicesCarousel: {
+      label: "Services",
+      controls: "Commandes du carrousel",
+      prev: "Service précédent",
+      next: "Service suivant",
+      dots: "Sélectionner un service",
+      dotLabel: "Aller au service",
+    },
+  },
+  navigation: {
+    about: "Qui nous sommes",
+    problem: "Défis",
+    solutions: "Solutions",
+    allSolutions: "Voir toutes les solutions",
+    process: "Notre méthode",
+    why: "Pourquoi Arkanium",
+    cases: "Cas clients",
+    faq: "Insights",
+    login: "Se connecter",
+  },
+  solutionsPage: {
+    eyebrow: "Solutions",
+    title: "Solutions",
+    intro: "Des missions ciblées regroupées dans un portefeuille cohérent pour les entreprises qui ont besoin de clarté technique, de profondeur et de discipline d'exécution.",
+    breadcrumb: "Fil d'Ariane",
+    comingSoon: "Bientôt disponible",
+    explore: "Explorer",
+    problem: "Le problème",
+    whatWeDo: "Ce que nous faisons",
+    approach: "Notre approche",
+    outcomes: "Résultats",
+    deliverables: "Livrables",
+    engagementOptions: "Modalités d'intervention",
+    faq: "Questions fréquentes",
+    related: "Services associés",
+    ctaHeading: "Engageons la conversation",
+    ctaDefault: "Parler de ce service",
+    duration: "Durée",
+    engagement: "Modalité",
+    investment: "Investissement",
+    from: "À partir de",
+    contactForPricing: "Contactez-nous pour connaître le budget",
+    engagementTypes: {
+      fixedScope: "Périmètre fixe",
+      project: "Projet",
+      retainer: "Retainer",
+    },
+  },
+  hero: {
+    eyebrow: "Conseil en infrastructure digitale",
+    title: "Engineering the Infrastructure of Modern Business",
+    lede: "Nous aidons les entreprises en croissance à moderniser leurs systèmes legacy, réduire le risque technique et construire une infrastructure digitale scalable.",
+    ctaPrimary: "Demander un audit d'architecture",
+    ctaSecondary: "Explorer nos services",
+    metrics: [
+      {
+        value: "97,8 %",
+        label: "Intégrité système post-modernisation",
+      },
+      {
+        value: "4",
+        label: "Phases de modernisation structurées",
+      },
+      {
+        value: "0",
+        label: "Playbooks génériques — chaque cas est unique",
+      },
+    ],
+  },
+  about: {
+    eyebrow: "Qui nous sommes",
+    title: "Un leadership technologique pour les organisations qui ont besoin de scaler avec confiance.",
+    intro: "Arkanium Consulting est un cabinet boutique spécialisé en stratégie technologique, architecture logicielle et gouvernance d'ingénierie.",
+    cardLabel: "Priorité",
+    cards: [
+      {
+        kicker: "Qui nous sommes",
+        title: "Un cabinet boutique de stratégie technologique",
+        body: "Nous aidons les fondateurs, dirigeants et équipes techniques à transformer des systèmes complexes en capacités stratégiques qui soutiennent la croissance de l'entreprise.",
+      },
+      {
+        kicker: "Ce que nous faisons",
+        title: "Nous transformons la complexité technologique en direction exécutable",
+        body: "Nous évaluons les architectures, identifions les risques, concevons des stratégies de modernisation et fournissons un leadership technologique aux organisations qui doivent prendre des décisions critiques avec plus de clarté.",
+      },
+      {
+        kicker: "Comment nous travaillons",
+        title: "Des méthodologies structurées. Des résultats actionnables.",
+        body: "Toutes nos missions suivent des cadres propriétaires conçus pour générer de la visibilité, de l'alignement et de la capacité d'exécution. Chaque initiative produit des diagnostics clairs, des recommandations priorisées, des roadmaps exécutables, des métriques de gouvernance et des prochaines étapes définies.",
+      },
+      {
+        kicker: "Notre approche",
+        title: "Nous ne vendons pas des heures. Nous appliquons une méthodologie.",
+        body: "Arkanium opère via ASTM, l'Arkanium Strategic Transformation Methodology, un système propriétaire conçu pour évaluer, moderniser, gouverner et diriger des écosystèmes technologiques.",
+      },
+    ],
+  },
+  challenges: {
+    eyebrow: "Réalité opérationnelle",
+    title: "La croissance révèle les systèmes fragiles",
+    intro: "Quand la croissance métier dépasse l'architecture logicielle, l'entreprise a besoin d'un leadership technique, pas de développeurs supplémentaires.",
+    items: [
+      {
+        title: "Déploiements fragiles",
+        body: "Les cycles de release deviennent plus lents, plus risqués et plus difficiles à coordonner avec le métier.",
+      },
+      {
+        title: "Dette technique accumulée",
+        body: "Les décisions passées se transforment en friction de maintenance qui ralentit chaque nouvelle livraison.",
+      },
+      {
+        title: "Goulots d'étranglement",
+        body: "Les limites de performance, de flux de données et d'infrastructure commencent à dicter les décisions métier.",
+      },
+      {
+        title: "Silos de connaissance",
+        body: "Les systèmes critiques dépendent d'un contexte non documenté et de quelques personnes surchargées.",
+      },
+    ],
+  },
+  solutions: {
+    eyebrow: "Lignes de métier",
+    groupTitle: "Conseil",
+    title: "STRATÉGIE, ARCHITECTURE, GOUVERNANCE ET LEADERSHIP",
+    intro: "Des missions ciblées regroupées dans un portefeuille cohérent pour les entreprises qui ont besoin de clarté technique, de profondeur et de discipline d'exécution.",
+    lines: {
+      strategy: {
+        title: "Stratégie",
+        body: "Nous transformons l'incertitude technique en une direction priorisée pour décider quoi changer, pourquoi et dans quel ordre.",
+      },
+      architecture: {
+        title: "Architecture",
+        body: "Nous concevons des architectures cibles et des parcours de modernisation pragmatiques qui améliorent la résilience, la maintenabilité et la capacité à évoluer.",
+      },
+      governance: {
+        title: "Gouvernance",
+        body: "Nous définissons les standards, les responsabilités et les mécanismes de suivi pour assurer la cohérence des décisions technologiques et rendre les risques visibles.",
+      },
+      leadership: {
+        title: "Leadership",
+        body: "Nous accompagnons les équipes et les dirigeants avec une direction technique claire, des priorités définies et un soutien à l'exécution de la stratégie technologique.",
+      },
+    },
+    labels: {
+      engagement: "Engagement",
+      investment: "Investissement",
+      problem: "Problème",
+      solution: "Solution",
+      outcome: "Résultat",
+    },
+  },
+  process: {
+    eyebrow: "Méthode Arkanium",
+    title: "Diagnostiquer. Concevoir. Moderniser. Scaler.",
+    intro: "Un chemin concret du chaos systémique à une infrastructure digitale pérenne.",
+    phases: {
+      assess: {
+        label: "Évaluer",
+        kicker: "Phase 01",
+        title: "Évaluer",
+        body: "Comprendre le métier, les systèmes, les risques et les contraintes.",
+        items: [
+          "Revue d'architecture",
+          "Évaluation des risques techniques",
+          "Rapport exécutif de conclusions",
+        ],
+      },
+      architect: {
+        label: "Concevoir",
+        kicker: "Phase 02",
+        title: "Concevoir",
+        body: "Définir l'état cible du système.",
+        items: [
+          "Architecture cible",
+          "Plan de modernisation",
+          "Cadre de priorisation",
+        ],
+      },
+      modernize: {
+        label: "Moderniser",
+        kicker: "Phase 03",
+        title: "Moderniser",
+        body: "Guider la mise en œuvre et la transformation du système.",
+        items: [
+          "Supervision stratégique",
+          "Gouvernance architecturale",
+          "Réduction des risques",
+        ],
+      },
+      scale: {
+        label: "Scaler",
+        kicker: "Phase 04",
+        title: "Scaler",
+        body: "Soutenir la croissance durable de l'entreprise.",
+        items: [
+          "Support au leadership",
+          "Revues d'architecture",
+          "Accompagnement continu",
+        ],
+      },
+    },
+  },
+  why: {
+    eyebrow: "Pourquoi Arkanium",
+    title: "Leadership d'ingénierie au-delà du développement logiciel",
+    items: [
+      {
+        title: "Vision orientée métier",
+        body: "Chaque décision technique est liée au risque, à la scalabilité et à la continuité métier — pas aux préférences de stack.",
+      },
+      {
+        title: "Vision infrastructure",
+        body: "Les systèmes sont traités comme des fondations opérationnelles, pas des fonctionnalités isolées. Chaque décision tient compte de l'impact en production à long terme.",
+      },
+      {
+        title: "Accompagnement au niveau exécutif",
+        body: "Nous communiquons l'état technique en termes que la direction peut évaluer et sur lesquels elle peut agir avec confiance.",
+      },
+      {
+        title: "Architecture scalable",
+        body: "Nous concevons des structures qui supportent la croissance future sans accumuler de nouvelle dette technique.",
+      },
+      {
+        title: "Maintenabilité à long terme",
+        body: "Les choix de modernisation sont conçus pour rester maintenables après la fin de la mission.",
+      },
+      {
+        title: "Support aux décisions technologiques",
+        body: "Nous aidons à évaluer les options, les fournisseurs et les architectures avec des critères techniques et métier alignés.",
+      },
+    ],
+    gain: {
+      eyebrow: "Ce que gagnent les dirigeants",
+      items: [
+        "Une meilleure visibilité sur le risque technique",
+        "Des priorités de modernisation claires",
+        "Des résultats de livraison plus prévisibles",
+        "Un meilleur alignement entre technologie et objectifs métier",
+        "Davantage de confiance dans les décisions stratégiques",
+      ],
+    },
+  },
+  caseStudies: {
+    eyebrow: "Cas clients",
+    title: "Cas clients",
+    titleRepresentative: "Projets représentatifs",
+    representativeNote: "Les projets représentatifs sont des scénarios qui illustrent notre façon d'aborder ce type de problème. Ils ne décrivent pas une mission pour un client précis et les résultats indiqués sont attendus, non obtenus.",
+    anonymizedNote: "Mission anonymisée : une mission réelle pour un client qui ne peut pas être identifié publiquement.",
+    empty: "Aucune étude de cas n'a encore été publiée.",
+    viewAll: "Voir toutes les études de cas",
+    readMore: "Lire l'étude de cas",
+    badges: {
+      real: "Étude de cas",
+      representative: "Projet représentatif",
+      anonymized: "Mission anonymisée",
+    },
+    groups: {
+      featured: "À la une",
+      real: "Missions réelles",
+      representative: "Projets représentatifs",
+      anonymized: "Missions anonymisées",
+    },
+    meta: {
+      industry: "Secteur",
+      client: "Client",
+      timeline: "Durée",
+      services: "Services",
+      offerings: "Offres",
+      technologies: "Technologies",
+    },
+    labels: {
+      challenge: "Défi",
+      approach: "Approche",
+      solution: "Solution",
+      deliverables: "Livrables",
+      outcome: "Résultat",
+      outcomeExpected: "Résultats attendus",
+      metrics: "Indicateurs",
+      source: "Source",
+      related: "Études de cas associées",
+    },
+    phases: {
+      ASSESSMENT: "Évaluation",
+      STRATEGY: "Stratégie",
+      ARCHITECTURE: "Architecture",
+      IMPLEMENTATION: "Mise en œuvre",
+      GOVERNANCE: "Gouvernance",
+    },
+  },
+  insights: {
+    eyebrow: "Insights",
+    title: "Derniers insights",
+    comingSoon: "Bientôt disponible",
+    viewAll: "Voir tous les articles",
+    readMore: "Lire l'article",
+    minRead: "{minutes} min de lecture",
+    updated: "Mis à jour",
+    featured: "À la une",
+    latest: "Derniers articles",
+    empty: "Aucun article n'a encore été publié.",
+    relatedArticles: "Vous pourriez aussi être intéressé par…",
+    relatedServices: "Services associés",
+    aboutAuthor: "À propos de l'auteur",
+    tags: "Mots-clés",
+    by: "Par",
+  },
+  faq: {
+    eyebrow: "Questions fréquentes",
+    title: "Réponses directes",
+    items: [
+      {
+        question: "Avec quels types d'entreprises travaillez-vous ?",
+        answer: "Nous travaillons avec des entreprises B2B en croissance, des SaaS avec de la dette technique accumulée, des entreprises avec des systèmes legacy critiques et des organisations qui ont besoin d'un leadership architectural avant de scaler.",
+      },
+      {
+        question: "Proposez-vous du développement logiciel ?",
+        answer: "Non. Arkanium ne vend pas de développeurs et ne livre pas de code. Nous fournissons du leadership d'ingénierie, de la stratégie technique et de la supervision architecturale. Nous travaillons avec les équipes existantes du client.",
+      },
+      {
+        question: "Combien de temps dure un Audit d'Architecture ?",
+        answer: "Généralement 2 à 4 semaines selon la complexité du système. À la fin, le client reçoit un rapport exécutif avec des risques priorisés et un plan de modernisation opérationnel.",
+      },
+      {
+        question: "Remplacez-vous le CTO interne ?",
+        answer: "Non. Le service de CTO Fractionnel complète et renforce le leadership technique existant. Dans les entreprises sans CTO, il remplit cette fonction jusqu'à ce qu'un recrutement à temps plein ait du sens.",
+      },
+      {
+        question: "Pouvez-vous travailler avec des équipes d'ingénierie existantes ?",
+        answer: "Oui, c'est la norme. Nous travaillons directement avec les équipes internes — nous ne les remplaçons pas. L'objectif est de renforcer leurs capacités et de transférer les connaissances.",
+      },
+      {
+        question: "Accompagnez-vous la mise en œuvre après l'audit ?",
+        answer: "Oui. Nous pouvons accompagner l'exécution via le service de CTO Fractionnel ou des missions spécifiques de supervision architecturale pendant la modernisation.",
+      },
+      {
+        question: "Dans quels secteurs êtes-vous spécialisés ?",
+        answer: "Nous travaillons avec des entreprises B2B quel que soit le secteur. Le dénominateur commun est le problème : des systèmes legacy qui freinent la croissance, une dette technique qui accumule le risque opérationnel et une architecture qui ne scale pas.",
+      },
+    ],
+  },
+  cta: {
+    eyebrow: "Commencer avec clarté",
+    title: "Votre logiciel devrait accélérer la croissance. Pas la freiner.",
+    intro: "Commencez par un Audit d'Architecture et transformez l'incertitude technique en un plan de modernisation opérationnel.",
+    steps: [
+      "Vous recevrez une réponse sous 24 heures ouvrées.",
+      "Nous planifions un appel de 30 minutes pour comprendre votre contexte.",
+      "Nous définissons ensemble le périmètre et les prochaines étapes concrètes.",
+    ],
+    form: {
+      kicker: "Prochaine étape",
+      title: "Demander un audit",
+      successTitle: "Demande reçue.",
+      successBody: "Nous examinerons votre message et vous répondrons sous 24 heures ouvrées.",
+      nameLabel: "Nom",
+      emailLabel: "E-mail professionnel",
+      priorityLabel: "Quelle est votre priorité immédiate ?",
+      priorities: {
+        assessment: "Audit d'architecture",
+        modernization: "Modernisation legacy",
+        cto: "CTO Fractionnel",
+        governance: "Gouvernance d'ingénierie et revue d'architecture",
+        unsure: "Je ne suis pas sûr — je veux explorer les options",
+      },
+      contextLabel: "Décrivez brièvement votre problème (optionnel)",
+      submit: "Demander un audit gratuit",
+      note: "Sans engagement. Le premier entretien sert à comprendre si nous pouvons vous aider.",
+      errors: {
+        name: "Veuillez saisir votre nom.",
+        email: "Veuillez saisir une adresse e-mail valide.",
+      },
+    },
+  },
+  footer: {
+    tagline: "L'ingénierie de l'infrastructure digitale au service de la croissance des entreprises modernes.",
+    copyright: "Arkanium Consulting. Tous droits réservés.",
+    lines: {
+      label: "Lignes de métier",
+    },
+    company: {
+      label: "Entreprise",
+      framework: "Méthode",
+      why: "Pourquoi Arkanium",
+      contact: "Contact",
+    },
+    connect: {
+      label: "Se connecter",
+      linkedin: "LinkedIn",
+      X: "X",
+      instagram: "Instagram",
+      facebook: "Facebook",
+      tiktok: "TikTok",
+    },
+    legal: {
+      label: "Juridique",
+      privacy: "Politique de confidentialité",
+      terms: "Conditions d'utilisation",
+      cookies: "Politique des cookies",
+      disclaimer: "Mentions légales",
+    },
+  },
+};

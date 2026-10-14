@@ -1,0 +1,26 @@
+{
+  "id": "governance-framework-design",
+  "value": "governance-framework-design",
+  "label": "Governance Framework Design",
+  "name": "Governance Framework Design",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Technology Governance",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "A governance framework that defines how technology decisions are made, reviewed and funded.",
+  "problem": "Technology decisions are made ad hoc, with unclear ownership and inconsistent criteria.",
+  "solution": "We design the decision rights, review forums, criteria and reporting that the leadership team will use.",
+  "outcomes": [
+    "Decision rights defined",
+    "Review forums and criteria",
+    "Reporting for leadership"
+  ]
+}

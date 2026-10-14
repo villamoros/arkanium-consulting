@@ -1,0 +1,26 @@
+{
+  "id": "product-advisory-light",
+  "value": "product-advisory-light",
+  "label": "Consultoria de produto (leve)",
+  "name": "Consultoria de produto (leve)",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Gestão de produto",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Assessoria leve e periódica para líderes de produto sobre prioridades, decisões e práticas de produto.",
+  "problem": "Os líderes de produto precisam de uma visão externa sobre suas decisões, mas não de um papel em tempo integral.",
+  "solution": "Nos reunimos periodicamente para revisar prioridades e decisões e compartilhar práticas adequadas à etapa do produto.",
+  "outcomes": [
+    "Revisão periódica de prioridades",
+    "Visão externa sobre decisões-chave",
+    "Práticas adequadas à etapa do produto"
+  ]
+}

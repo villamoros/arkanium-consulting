@@ -1,0 +1,21 @@
+---
+import { cx } from '../../lib/utils';
+
+interface Props {
+  /** Con href renderiza <a>; sin href, <button>. */
+  href?: string;
+  variant?: 'primary' | 'secondary';
+  type?: 'button' | 'submit';
+  class?: string;
+}
+const { href, variant = 'primary', type = 'button', class: className } = Astro.props;
+const classes = cx('button', `button-${variant}`, className);
+---
+
+{
+  href ? (
+    <a class={classes} href={href}><slot /></a>
+  ) : (
+    <button class={classes} type={type}><slot /></button>
+  )
+}

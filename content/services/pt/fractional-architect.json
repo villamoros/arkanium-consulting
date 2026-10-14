@@ -1,0 +1,26 @@
+{
+  "id": "fractional-architect",
+  "value": "fractional-architect",
+  "label": "Arquiteto fracionado",
+  "name": "Arquiteto fracionado",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Consultoria de arquitetura",
+    "order": 1
+  },
+  "position": 4,
+  "duration": null,
+  "description": "Um arquiteto experiente que orienta as decisões de arquitetura em tempo parcial para um escopo acordado.",
+  "problem": "A organização precisa de julgamento arquitetônico de forma recorrente, não de um papel em tempo integral.",
+  "solution": "Oferecemos orientação arquitetônica periódica, revisamos desenhos-chave e apoiamos as equipes em decisões com risco.",
+  "outcomes": [
+    "Orientação arquitetônica periódica",
+    "Desenhos-chave revisados",
+    "Apoio em decisões com risco"
+  ]
+}

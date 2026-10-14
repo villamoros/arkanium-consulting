@@ -1,0 +1,26 @@
+{
+  "id": "architecture-review-board-as-a-service",
+  "value": "architecture-review-board-as-a-service",
+  "label": "Architecture Review Board (as a Service)",
+  "name": "Architecture Review Board (as a Service)",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Technology Governance",
+    "order": 2
+  },
+  "position": 8,
+  "duration": null,
+  "description": "An external architecture review board that reviews proposals and helps teams make consistent choices.",
+  "problem": "Teams make architecture choices without a consistent review, which creates rework and new debt.",
+  "solution": "We review proposals on a regular cycle, give recommendations with reasons and keep a record of the decisions.",
+  "outcomes": [
+    "Regular review of proposals",
+    "Recommendations with reasons",
+    "Record of architecture decisions"
+  ]
+}

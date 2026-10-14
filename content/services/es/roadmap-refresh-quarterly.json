@@ -1,0 +1,26 @@
+{
+  "id": "roadmap-refresh-quarterly",
+  "value": "roadmap-refresh-quarterly",
+  "label": "Actualización trimestral de la hoja de ruta",
+  "name": "Actualización trimestral de la hoja de ruta",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Hoja de ruta de TI",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "Una revisión trimestral que mantiene la hoja de ruta de TI alineada con las prioridades del negocio y con los cambios.",
+  "problem": "Las hojas de ruta quedan obsoletas rápido, y nadie es responsable de actualizarlas.",
+  "solution": "Cada trimestre revisamos avances y prioridades con la dirección, actualizamos la hoja de ruta y registramos las decisiones tomadas.",
+  "outcomes": [
+    "Hoja de ruta vigente cada trimestre",
+    "Registro de decisiones y cambios",
+    "Prioridades claras para el siguiente trimestre"
+  ]
+}

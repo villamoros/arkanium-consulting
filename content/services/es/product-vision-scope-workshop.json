@@ -1,0 +1,26 @@
+{
+  "id": "product-vision-scope-workshop",
+  "value": "product-vision-scope-workshop",
+  "label": "Taller de visión y alcance de producto",
+  "name": "Taller de visión y alcance de producto",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Definición de producto",
+    "order": 2
+  },
+  "position": 5,
+  "duration": null,
+  "description": "Un taller que acuerda la visión del producto y el alcance que cubrirá la primera versión.",
+  "problem": "Los interesados tienen ideas distintas sobre qué es el producto y qué debe incluir.",
+  "solution": "Facilitamos la discusión, acordamos la visión y trazamos el límite del alcance con los interesados que deciden.",
+  "outcomes": [
+    "Visión de producto acordada",
+    "Límite de alcance para la primera versión",
+    "Lista de decisiones pendientes"
+  ]
+}

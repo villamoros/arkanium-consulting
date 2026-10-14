@@ -1,0 +1,26 @@
+{
+  "id": "fractional-cto-growth-tier",
+  "value": "fractional-cto-growth-tier",
+  "label": "Fractional CTO — Growth Tier",
+  "name": "Fractional CTO — Growth Tier",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Technology Leadership",
+    "order": 3
+  },
+  "position": 12,
+  "duration": null,
+  "description": "A part-time CTO for growing companies that need to scale technology, teams and governance.",
+  "problem": "Growth outpaces the technology organisation, and scaling decisions are made under pressure.",
+  "solution": "We lead the scaling plan for technology, teams and governance, and coach the leaders who will run it.",
+  "outcomes": [
+    "Scaling plan for technology and teams",
+    "Governance for growth",
+    "Leaders coached to run it"
+  ]
+}

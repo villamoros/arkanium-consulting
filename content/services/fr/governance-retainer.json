@@ -1,0 +1,26 @@
+{
+  "id": "governance-retainer",
+  "value": "governance-retainer",
+  "label": "Abonnement gouvernance",
+  "name": "Abonnement gouvernance",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Gouvernance technologique",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "Un service de gouvernance continu qui maintient les décisions technologiques revues et alignées sur l’activité.",
+  "problem": "La gouvernance mise en place une fois s'étiole avec le temps, et les décisions s'éloignent des critères convenus.",
+  "solution": "Nous faisons vivre le cycle de gouvernance en continu : instances de revue, registres de décisions et reporting périodique.",
+  "outcomes": [
+    "Instances de revue continues",
+    "Registres de décisions tenus à jour",
+    "Reporting périodique à la direction"
+  ]
+}

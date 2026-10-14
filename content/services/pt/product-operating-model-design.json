@@ -1,0 +1,26 @@
+{
+  "id": "product-operating-model-design",
+  "value": "product-operating-model-design",
+  "label": "Desenho do modelo operacional de produto",
+  "name": "Desenho do modelo operacional de produto",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Gestão de produto",
+    "order": 4
+  },
+  "position": 15,
+  "duration": null,
+  "description": "Os papéis, rituais, direitos de decisão e ferramentas que permitem às equipes de produto entregar de forma consistente.",
+  "problem": "As equipes de produto trabalham de formas diferentes, e as decisões são lentas porque ninguém sabe quem decide o quê.",
+  "solution": "Desenhamos o modelo operacional: papéis, direitos de decisão, rituais e as ferramentas mínimas necessárias para executá-lo.",
+  "outcomes": [
+    "Papéis e direitos de decisão definidos",
+    "Rituais de planejamento e revisão",
+    "Ferramentas mínimas identificadas"
+  ]
+}

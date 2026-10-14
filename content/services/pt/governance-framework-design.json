@@ -1,0 +1,26 @@
+{
+  "id": "governance-framework-design",
+  "value": "governance-framework-design",
+  "label": "Desenho do framework de governança",
+  "name": "Desenho do framework de governança",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Governança tecnológica",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Um framework de governança que define como as decisões tecnológicas são tomadas, revisadas e financiadas.",
+  "problem": "As decisões tecnológicas são tomadas ad hoc, com responsabilidades pouco claras e critérios inconsistentes.",
+  "solution": "Desenhamos os direitos de decisão, os fóruns de revisão, os critérios e os relatórios que a liderança usará.",
+  "outcomes": [
+    "Direitos de decisão definidos",
+    "Fóruns de revisão e critérios",
+    "Relatórios para a liderança"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "technical-debt-investment-case",
+  "value": "technical-debt-investment-case",
+  "label": "Caso de inversión en deuda técnica",
+  "name": "Caso de inversión en deuda técnica",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Estrategia tecnológica",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "Un caso de negocio que convierte la deuda técnica en costes, riesgos y una decisión de inversión.",
+  "problem": "La deuda técnica se discute en términos generales, lo que dificulta financiarla y priorizarla.",
+  "solution": "Identificamos los principales elementos de deuda, estimamos su coste y riesgo, y construimos un caso que compara opciones de remediación.",
+  "outcomes": [
+    "Principales elementos de deuda con coste y riesgo",
+    "Opciones de remediación comparadas",
+    "Caso de inversión listo para decidir"
+  ]
+}

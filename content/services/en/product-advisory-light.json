@@ -1,0 +1,26 @@
+{
+  "id": "product-advisory-light",
+  "value": "product-advisory-light",
+  "label": "Product Advisory (Light)",
+  "name": "Product Advisory (Light)",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Product Management",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Light, periodic advice for product leaders on priorities, decisions and product practices.",
+  "problem": "Product leaders need an outside view on decisions but do not need a full-time role.",
+  "solution": "We meet periodically to review priorities and decisions and to share practices that fit the stage of the product.",
+  "outcomes": [
+    "Periodic review of priorities",
+    "Outside view on key decisions",
+    "Practices matched to the product stage"
+  ]
+}

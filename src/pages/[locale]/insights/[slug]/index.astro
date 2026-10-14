@@ -1,0 +1,97 @@
+---
+/**
+ * Artículo. Se genera solo si está publicado en ESTE idioma (sin fallback al inglés).
+ * Los slugs son por idioma; las rutas alternativas (hreflang / selector de idioma) salen de los
+ * idiomas en los que el artículo existe realmente.
+ */
+import PageLayout from '../../../../layouts/PageLayout.astro';
+import InsightHero from '../../../../components/insights/InsightHero.astro';
+import ArticleContent from '../../../../components/insights/ArticleContent.astro';
+import ArticleAuthor from '../../../../components/insights/ArticleAuthor.astro';
+import RelatedInsights from '../../../../components/insights/RelatedInsights.astro';
+import RelatedServices from '../../../../components/solutions/RelatedServices.astro';
+import CaseStudyRelated from '../../../../components/case-studies/CaseStudyRelated.astro';
+import CaseStudyCTA from '../../../../components/case-studies/CaseStudyCTA.astro';
+import { siteConfig } from '../../../../content/static/site';
+import { locales, type Locale } from '../../../../i18n/config';
+import { getLocalizedPath, getTranslations } from '../../../../i18n/utils';
+import { ctaPath, findService, getCatalog, hasServicePage, type Service } from '../../../../lib/catalog';
+import { getCaseStudies, listed } from '../../../../lib/case-studies';
+import { articlePath, getArticle, getArticleLocaleSlugs, getArticleSummaries, insightsPath, resolveRelatedArticles } from '../../../../lib/insights';
+import { absoluteSeoUrl, articleSchema } from '../../../../lib/seo';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of locales) {
+    for (const a of await getArticleSummaries(locale)) paths.push({ params: { locale, slug: a.slug } });
+  }
+  return paths;
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const c = t.insights;
+const article = await getArticle(locale, Astro.params.slug as string);
+if (!article) throw new Error(`[insights] Artículo no publicado en "${locale}": ${Astro.params.slug}`);
+
+// Rutas reales por idioma (slugs localizados; solo idiomas donde existe).
+const slugs = await getArticleLocaleSlugs(article.id);
+const localePaths = Object.fromEntries(Object.entries(slugs).map(([l, s]) => [l, articlePath(l as Locale, s as string)]));
+
+// Embudo: artículo → servicio / offering / caso → CTA. Solo relaciones explícitas del CMS.
+const catalog = await getCatalog(locale);
+const services: Service[] = [];
+const addService = (family: string, slug: string) => {
+  const s = findService(catalog, family, slug);
+  if (s && hasServicePage(s) && !services.includes(s)) services.push(s);
+};
+article.services.forEach((r) => addService(r.family, r.slug));
+article.offerings.forEach((r) => addService(r.family, r.service));
+const cases = listed(await getCaseStudies(locale)).filter((cs) => article.caseStudies.includes(cs.slug));
+const related = resolveRelatedArticles(await getArticleSummaries(locale), article.relatedArticleIds, article.id);
+
+const firstOffering = article.offerings[0];
+const first = services[0];
+const cta = first
+  ? ctaPath(locale, first.slug, firstOffering && firstOffering.service === first.slug ? firstOffering.slug : undefined)
+  : `${getLocalizedPath(locale, '/')}#cta`;
+
+const { seo } = article;
+const title = seo.title ?? `${article.title} | ${c.eyebrow} | ${siteConfig.name}`;
+const description = seo.description ?? article.excerpt;
+const canonicalUrl = absoluteSeoUrl(seo.canonical ?? articlePath(locale, article.slug), Astro.site);
+const rssFeed = `${getLocalizedPath(locale, '/')}rss.xml`;
+const breadcrumbs = [
+  { name: siteConfig.name, url: absoluteSeoUrl(getLocalizedPath(locale), Astro.site) },
+  { name: c.eyebrow, url: absoluteSeoUrl(insightsPath(locale), Astro.site) },
+  { name: article.title, url: canonicalUrl },
+];
+---
+
+<PageLayout
+  locale={locale}
+  title={title}
+  description={description}
+  canonical={seo.canonical}
+  ogImage={seo.ogImage ?? article.featuredImage?.url}
+  noindex={seo.noIndex}
+  localePaths={localePaths}
+  ogType="article"
+  rssFeed={rssFeed}
+  breadcrumbs={breadcrumbs}
+  structuredData={[articleSchema({ url: canonicalUrl, headline: article.title, description, image: article.featuredImage?.url, datePublished: article.publishedAt, dateModified: article.updatedAt, author: article.author?.name })]}
+>
+  <InsightHero
+    article={article}
+    locale={locale}
+    content={c}
+    breadcrumbLabel={t.solutionsPage.breadcrumb}
+    crumbs={[{ label: c.eyebrow, href: insightsPath(locale) }, { label: article.title }]}
+  />
+  <ArticleContent article={article} />
+  <ArticleAuthor article={article} content={c} />
+  {services.length > 0 && <RelatedServices locale={locale} heading={c.relatedServices} services={services} />}
+  <CaseStudyRelated items={cases} locale={locale} content={t.caseStudies} id="article-cases-heading" />
+  <RelatedInsights items={related} locale={locale} content={c} />
+  <CaseStudyCTA heading={t.solutionsPage.ctaHeading} label={t.solutionsPage.ctaDefault} href={cta} />
+</PageLayout>

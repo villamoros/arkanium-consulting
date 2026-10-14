@@ -1,0 +1,26 @@
+{
+  "id": "cto-advisory-light",
+  "value": "cto-advisory-light",
+  "label": "Asesoría de CTO (ligera)",
+  "name": "Asesoría de CTO (ligera)",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitectura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Liderazgo tecnológico",
+    "order": 3
+  },
+  "position": 10,
+  "duration": null,
+  "description": "Asesoría ligera y periódica para líderes que llevan la responsabilidad tecnológica sin un CTO a tiempo completo.",
+  "problem": "Los líderes toman decisiones tecnológicas solos y se beneficiarían de una mirada externa periódica.",
+  "solution": "Nos reunimos periódicamente para revisar decisiones clave, cuestionar opciones y compartir prácticas adecuadas a la organización.",
+  "outcomes": [
+    "Mirada externa sobre decisiones clave",
+    "Opciones cuestionadas antes de comprometerse",
+    "Prácticas adecuadas a la organización"
+  ]
+}

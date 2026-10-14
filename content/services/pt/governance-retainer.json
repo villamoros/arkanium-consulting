@@ -1,0 +1,26 @@
+{
+  "id": "governance-retainer",
+  "value": "governance-retainer",
+  "label": "Retainer de governança",
+  "name": "Retainer de governança",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Governança tecnológica",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "Um serviço de governança contínuo que mantém as decisões tecnológicas revisadas e alinhadas ao negócio.",
+  "problem": "A governança estabelecida uma vez se desgasta com o tempo, e as decisões se afastam dos critérios acordados.",
+  "solution": "Executamos o ciclo de governança de forma contínua: fóruns de revisão, registros de decisões e relatórios periódicos.",
+  "outcomes": [
+    "Fóruns de revisão contínuos",
+    "Registros de decisões atualizados",
+    "Relatórios periódicos à liderança"
+  ]
+}

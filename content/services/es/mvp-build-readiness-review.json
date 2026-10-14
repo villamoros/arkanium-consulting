@@ -1,0 +1,26 @@
+{
+  "id": "mvp-build-readiness-review",
+  "value": "mvp-build-readiness-review",
+  "label": "Revisión de preparación para construir el MVP",
+  "name": "Revisión de preparación para construir el MVP",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "Estrategia de MVP",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "Una revisión que comprueba si el MVP está listo para construirse: alcance, equipo, arquitectura y riesgos.",
+  "problem": "La construcción empieza antes de que el alcance, el equipo o la arquitectura estén listos, y los retrasos llegan después.",
+  "solution": "Comprobamos la preparación con un conjunto corto de criterios e informamos las brechas que deben cerrarse antes de construir.",
+  "outcomes": [
+    "Veredicto de preparación con criterios claros",
+    "Brechas listadas con responsables",
+    "Recomendación de avanzar o no"
+  ]
+}

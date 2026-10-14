@@ -1,0 +1,82 @@
+---
+import SectionHeading from '../ui/SectionHeading.astro';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  content: TranslationSchema['process'];
+  ui: TranslationSchema['ui'];
+}
+const { content, ui } = Astro.props;
+const phases = Object.entries(content.phases);
+---
+
+<section class="framework section-band" id="process" aria-labelledby="process-heading">
+  <SectionHeading
+    id="process-heading"
+    eyebrow={content.eyebrow}
+    title={content.title}
+    intro={content.intro}
+  />
+  <div class="framework-layout">
+    <!-- Los botones son enfocables: el contenedor NO lleva aria-hidden (solo el SVG decorativo) -->
+    <div class="framework-map reveal" role="group" aria-label={ui.processPhases}>
+      {
+        phases.map(([id, phase], i) => (
+          <button
+            class:list={['phase-node', i === 0 && 'active']}
+            type="button"
+            data-phase={id}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+            aria-controls="phase-panel"
+          >
+            {phase.label}
+          </button>
+        ))
+      }
+      <svg viewBox="0 0 760 260" aria-hidden="true">
+        <path d="M92 130H668"></path>
+        <path d="M250 130C292 76 344 76 386 130S480 184 522 130"></path>
+      </svg>
+    </div>
+
+    <div class="phase-panel reveal" id="phase-panel" aria-live="polite" data-phase-panel>
+      {
+        phases.map(([id, phase], i) => (
+          <div data-phase-content={id} hidden={i !== 0}>
+            <p class="panel-kicker">{phase.kicker}</p>
+            <h3>{phase.title}</h3>
+            <p>{phase.body}</p>
+            <ul>
+              {phase.items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const nodes = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-phase]'));
+  const panel = document.querySelector<HTMLElement>('[data-phase-panel]');
+  const contents = Array.from(document.querySelectorAll<HTMLElement>('[data-phase-content]'));
+  let timer: number | undefined;
+
+  for (const node of nodes) {
+    node.addEventListener('click', () => {
+      const name = node.dataset.phase;
+      if (!panel || !name) return;
+      for (const n of nodes) {
+        const on = n === node;
+        n.classList.toggle('active', on);
+        n.setAttribute('aria-pressed', String(on));
+      }
+      window.clearTimeout(timer);
+      panel.classList.add('is-switching');
+      timer = window.setTimeout(() => {
+        for (const c of contents) c.hidden = c.dataset.phaseContent !== name;
+        panel.classList.remove('is-switching');
+      }, 300);
+    });
+  }
+</script>

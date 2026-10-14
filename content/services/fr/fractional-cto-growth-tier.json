@@ -1,0 +1,26 @@
+{
+  "id": "fractional-cto-growth-tier",
+  "value": "fractional-cto-growth-tier",
+  "label": "CTO à temps partagé — offre croissance",
+  "name": "CTO à temps partagé — offre croissance",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Leadership technologique",
+    "order": 3
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Un CTO à temps partagé pour les entreprises en croissance qui doivent faire évoluer la technologie, les équipes et la gouvernance.",
+  "problem": "La croissance dépasse l'organisation technologique, et les décisions de passage à l'échelle se prennent sous pression.",
+  "solution": "Nous pilotons le plan de montée en charge de la technologie, des équipes et de la gouvernance, et accompagnons les dirigeants qui le porteront.",
+  "outcomes": [
+    "Plan de montée en charge technologie et équipes",
+    "Gouvernance pour la croissance",
+    "Dirigeants accompagnés pour le porter"
+  ]
+}

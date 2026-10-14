@@ -1,0 +1,26 @@
+{
+  "id": "mvp-scoping-workshop",
+  "value": "mvp-scoping-workshop",
+  "label": "Workshop de escopo do MVP",
+  "name": "Workshop de escopo do MVP",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "Estratégia de MVP",
+    "order": 3
+  },
+  "position": 9,
+  "duration": null,
+  "description": "Um workshop focado que define o menor conjunto de funcionalidades que testa o valor central do produto.",
+  "problem": "A primeira versão tende a crescer até ser grande demais para validar qualquer coisa.",
+  "solution": "Separamos o imprescindível do desejável, definimos os objetivos de aprendizado do MVP e acordamos a linha de corte.",
+  "outcomes": [
+    "Conjunto de funcionalidades imprescindíveis",
+    "Objetivos de aprendizado do MVP",
+    "Linha de corte acordada"
+  ]
+}

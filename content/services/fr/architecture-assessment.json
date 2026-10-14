@@ -1,0 +1,26 @@
+{
+  "id": "architecture-assessment",
+  "value": "architecture-assessment",
+  "label": "Évaluation d’architecture",
+  "name": "Évaluation d’architecture",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Conseil en architecture",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Un examen indépendant de l'architecture actuelle, de ses risques et de sa capacité à soutenir l'activité.",
+  "problem": "La direction ne sait pas si l'architecture peut soutenir la prochaine étape de croissance.",
+  "solution": "Nous examinons l’architecture, ses dépendances et ses risques opérationnels, et rapportons les constats avec leurs priorités.",
+  "outcomes": [
+    "Constats d’architecture avec priorités",
+    "Risques et dépendances cartographiés",
+    "Synthèse dirigeants"
+  ]
+}

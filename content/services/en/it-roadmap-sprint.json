@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-sprint",
+  "value": "it-roadmap-sprint",
+  "label": "IT Roadmap Sprint",
+  "name": "IT Roadmap Sprint",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "IT Roadmapping",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "A short sprint that produces a first IT roadmap the organisation can start executing.",
+  "problem": "Technology work happens in response to requests, with no sequence that the business can follow.",
+  "solution": "We collect the priorities, check them against capacity and dependencies, and agree a first roadmap with owners.",
+  "outcomes": [
+    "First IT roadmap with owners",
+    "Dependencies and capacity checked",
+    "Agreed next steps"
+  ]
+}

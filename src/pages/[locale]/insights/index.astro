@@ -1,0 +1,57 @@
+---
+/**
+ * Listado de Insights. Datos ligeros (query de resúmenes); sin paginación todavía:
+ * muestra los últimos LIMIT artículos (la paginación llegará sin cambiar el modelo).
+ */
+import PageLayout from '../../../layouts/PageLayout.astro';
+import SectionHeading from '../../../components/ui/SectionHeading.astro';
+import InsightCard from '../../../components/insights/InsightCard.astro';
+import { siteConfig } from '../../../content/static/site';
+import { locales, type Locale } from '../../../i18n/config';
+import { getTranslations } from '../../../i18n/utils';
+import { getArticleSummaries } from '../../../lib/insights';
+import { insightsPath } from '../../../lib/insights';
+
+const LIMIT = 24;
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const c = t.insights;
+const all = await getArticleSummaries(locale);
+const featured = all.find((a) => a.featured);
+const latest = all.filter((a) => a !== featured).slice(0, LIMIT);
+const empty = all.length === 0;
+---
+
+<PageLayout locale={locale} title={`${c.eyebrow} | ${siteConfig.name}`} description={t.meta.description} noindex={empty} rssFeed={insightsPath(locale).replace(/insights\/$/, 'rss.xml')}>
+  <section class="page-hero section-band" aria-labelledby="insights-page-heading">
+    <h1 id="insights-page-heading">{c.eyebrow}</h1>
+  </section>
+
+  {
+    empty ? (
+      <section class="section-band"><p class="case-empty">{c.empty}</p></section>
+    ) : (
+      <section class="section-band">
+        {featured && (
+          <div class="insight-section">
+            <SectionHeading id="insights-featured-heading" title={c.featured} />
+            <InsightCard item={featured} locale={locale} content={c} large />
+          </div>
+        )}
+        {latest.length > 0 && (
+          <div class="insight-section">
+            <SectionHeading id="insights-latest-heading" title={c.latest} />
+            <div class="insight-grid">
+              {latest.map((item) => <InsightCard item={item} locale={locale} content={c} />)}
+            </div>
+          </div>
+        )}
+      </section>
+    )
+  }
+</PageLayout>

@@ -1,0 +1,32 @@
+/* ═══════════════════════════════════════════════
+   TOKENS — Design system Arkanium
+   Valores idénticos al sitio HTML original; solo cambian los nombres
+   (--gold → --color-gold, etc.) según el contrato de ARK-WEB-001.
+   --color-muted: #b8c0cc — ratio 5.2:1 WCAG AA ✓
+═══════════════════════════════════════════════ */
+:root {
+  /* Color */
+  --color-ink: #0b1220;
+  --color-ink-2: #101a2a;
+  --color-graphite: #1b2638;
+  --color-graphite-2: #26344a;
+  --color-gold: #d4a95a;
+  --color-gold-2: #f1d18b;
+  --color-paper: #e6e8eb;
+  --color-muted: #b8c0cc;
+  --color-line: rgba(230, 232, 235, 0.14);
+  --color-line-strong: rgba(212, 169, 90, 0.42);
+
+  /* Tipografía */
+  --font-display: 'Orbitron', system-ui, sans-serif;
+  --font-body: 'Exo 2', system-ui, sans-serif;
+
+  /* Forma y elevación */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.38);
+  --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.28);
+
+  /* Layout */
+  --container-max: 1180px;
+}

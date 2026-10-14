@@ -1,0 +1,26 @@
+{
+  "id": "cto-advisory-light",
+  "value": "cto-advisory-light",
+  "label": "Conseil CTO (allégé)",
+  "name": "Conseil CTO (allégé)",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Leadership technologique",
+    "order": 3
+  },
+  "position": 10,
+  "duration": null,
+  "description": "Conseil léger et périodique pour les dirigeants qui portent la responsabilité technologique sans CTO à temps plein.",
+  "problem": "Les dirigeants prennent seuls les décisions technologiques et bénéficieraient d’un regard extérieur régulier.",
+  "solution": "Nous nous réunissons périodiquement pour revoir les décisions clés, questionner les options et partager des pratiques adaptées à l’organisation.",
+  "outcomes": [
+    "Regard extérieur sur les décisions clés",
+    "Options challengées avant engagement",
+    "Pratiques adaptées à l’organisation"
+  ]
+}

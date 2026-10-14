@@ -1,0 +1,23 @@
+---
+interface Props {
+  groupLabel: string;
+  prevLabel: string;
+  nextLabel: string;
+  dotsLabel: string;
+}
+const { groupLabel, prevLabel, nextLabel, dotsLabel } = Astro.props;
+---
+
+<div class="carousel-controls" aria-label={groupLabel}>
+  <button class="carousel-btn carousel-prev" type="button" aria-label={prevLabel} data-carousel-prev>
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+  <div class="carousel-dots" aria-label={dotsLabel} data-carousel-dots></div>
+  <button class="carousel-btn carousel-next" type="button" aria-label={nextLabel} data-carousel-next>
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+</div>

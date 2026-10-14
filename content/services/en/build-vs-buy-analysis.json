@@ -1,0 +1,26 @@
+{
+  "id": "build-vs-buy-analysis",
+  "value": "build-vs-buy-analysis",
+  "label": "Build vs Buy Analysis",
+  "name": "Build vs Buy Analysis",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Technology Strategy",
+    "order": 3
+  },
+  "position": 10,
+  "duration": null,
+  "description": "An objective comparison of building a capability in-house, buying it or combining both.",
+  "problem": "A major technology choice is being made on preference rather than on total cost and risk.",
+  "solution": "We compare the options on total cost of ownership, time to value, control and risk, and make the trade-offs explicit.",
+  "outcomes": [
+    "Options compared on total cost and risk",
+    "Trade-offs made explicit",
+    "Recommendation with conditions"
+  ]
+}

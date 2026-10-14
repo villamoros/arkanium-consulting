@@ -1,0 +1,26 @@
+{
+  "id": "full-technology-diagnosis",
+  "value": "full-technology-diagnosis",
+  "label": "Full Technology Diagnosis",
+  "name": "Full Technology Diagnosis",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Technology Diagnosis",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "An end-to-end diagnosis of architecture, delivery, operations and governance.",
+  "problem": "Decisions about budget and priorities are made without a complete picture of the technology estate.",
+  "solution": "We map the technology estate, assess it against business goals and deliver a diagnosis with an executive summary and a roadmap of options.",
+  "outcomes": [
+    "Complete map of the technology estate",
+    "Executive summary for decision-makers",
+    "Prioritised options with trade-offs"
+  ]
+}

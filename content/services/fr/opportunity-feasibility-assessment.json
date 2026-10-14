@@ -1,0 +1,26 @@
+{
+  "id": "opportunity-feasibility-assessment",
+  "value": "opportunity-feasibility-assessment",
+  "label": "Évaluation d’opportunité et de faisabilité",
+  "name": "Évaluation d’opportunité et de faisabilité",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Découverte produit",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "Une évaluation de l’opportunité commerciale et de la faisabilité technique d’une direction produit.",
+  "problem": "On ne sait pas si l'opportunité justifie l'effort technique et le risque.",
+  "solution": "Nous dimensionnons l'opportunité, évaluons ce qu'il faudrait pour la construire et identifions les principaux risques techniques et commerciaux.",
+  "outcomes": [
+    "Opportunité dimensionnée",
+    "Faisabilité de la direction proposée",
+    "Principaux risques identifiés"
+  ]
+}

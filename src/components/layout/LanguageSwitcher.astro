@@ -1,0 +1,77 @@
+---
+/**
+ * Selector de idioma = navegación entre URLs reales (/en/…, /es/…).
+ * Sin localStorage, sin traducción en cliente. El JS solo abre/cierra el menú.
+ */
+import { localeMeta, locales, type Locale } from '../../i18n/config';
+import { getAlternateLocalePath } from '../../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  label: string;
+  /** Rutas reales por idioma (artículos): solo se ofrecen los idiomas en los que la página existe. */
+  localePaths?: Partial<Record<Locale, string>>;
+}
+const { locale, label, localePaths } = Astro.props;
+const pathname = Astro.url.pathname;
+const available = localePaths ? locales.filter((l) => localePaths[l]) : locales;
+---
+
+<div class="lang-switcher" data-lang-switcher>
+  <button
+    class="lang-trigger"
+    type="button"
+    aria-expanded="false"
+    aria-controls="lang-menu"
+    aria-label={label}
+    data-lang-trigger
+  >
+    <svg class="lang-globe" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+      <path d="M3.8 12h16.4M12 3a14 14 0 0 0 0 18M12 3a14 14 0 0 1 0 18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+    </svg>
+    <span class="lang-code">{localeMeta[locale].code}</span>
+    <i class="lang-chevron" aria-hidden="true">▾</i>
+  </button>
+  <ul class="lang-dropdown" id="lang-menu">
+    {
+      available.map((l) => (
+        <li>
+          <a
+            class="lang-btn"
+            href={localePaths?.[l] ?? getAlternateLocalePath(pathname, l)}
+            lang={l}
+            hreflang={l}
+            aria-current={l === locale ? 'page' : undefined}
+          >
+            <span class="lang-name">{localeMeta[l].name}</span>
+            <span class="lang-code" aria-hidden="true">{localeMeta[l].code}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  const switcher = document.querySelector<HTMLElement>('[data-lang-switcher]');
+  const trigger = switcher?.querySelector<HTMLButtonElement>('[data-lang-trigger]');
+
+  function setOpen(open: boolean, returnFocus = false) {
+    if (!switcher || !trigger) return;
+    switcher.classList.toggle('is-open', open);
+    trigger.setAttribute('aria-expanded', String(open));
+    if (open) switcher.querySelector<HTMLElement>('a[aria-current="page"]')?.focus();
+    else if (returnFocus) trigger.focus();
+  }
+
+  trigger?.addEventListener('click', () => setOpen(!switcher?.classList.contains('is-open')));
+
+  switcher?.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false, true);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (switcher && !switcher.contains(e.target as Node)) setOpen(false);
+  });
+</script>
