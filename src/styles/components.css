@@ -2104,10 +2104,9 @@
     margin-left: 10px;
   }
 
+  /* Sigue en el flujo: si sale del flujo (fixed), el inicio de sesión se desplaza al borde derecho. */
   .nav-toggle[aria-expanded="true"] {
-    position: fixed;
-    top: 18px;
-    right: 14px;
+    position: relative;
     z-index: 1001;
   }
 
