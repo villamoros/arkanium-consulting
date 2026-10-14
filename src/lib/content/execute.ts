@@ -24,6 +24,7 @@ export async function runContentQuery<T>(
       return items.find((item) => item.slug === slug) ?? null;
     },
     serviceFamilies: async ({ locale }: { locale: string }) => groupServices(await readCollection(contentRoot, 'services', locale)),
+    legalPages: ({ locale }: { locale: string }) => readCollection(contentRoot, 'legal', locale),
   };
 
   const result = await graphql({ schema, source, rootValue, variableValues: variables });

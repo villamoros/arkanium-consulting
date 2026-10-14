@@ -2,188 +2,22 @@
 import PageLayout from '../../../layouts/PageLayout.astro';
 import { locales, type Locale } from '../../../i18n/config';
 import { getTranslations } from '../../../i18n/utils';
+import { getLegalPages } from '../../../lib/legal';
 
-type LegalPage = 'privacy' | 'terms' | 'cookies' | 'disclaimer';
-
-// Dentro de la función: el compilador de Astro no conserva una constante de frontmatter usada solo desde getStaticPaths.
-export function getStaticPaths() {
-  const legalPages: LegalPage[] = ['privacy', 'terms', 'cookies', 'disclaimer'];
-  return locales.flatMap((locale) =>
-    legalPages.map((page) => ({
-      params: { locale, page },
-    })),
-  );
+// Rutas = documentos existentes en content/legal/<idioma>/. Un idioma sin documento no genera página.
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of locales) {
+    for (const doc of await getLegalPages(locale)) paths.push({ params: { locale, page: doc.value } });
+  }
+  return paths;
 }
 
 const { locale, page } = Astro.params;
 const legalLocale = locale as Locale;
 const translations = getTranslations(legalLocale);
-const legalKey = page as LegalPage;
-
-const legalContentByLocale: Record<Locale, Record<LegalPage, { title: string; description: string; sections: string[] }>> = {
-  en: {
-    privacy: {
-      title: 'Privacy policy',
-      description: 'Privacy policy for Arkanium.',
-      sections: [
-        'We respect your privacy and process personal information only to provide our consulting and business communication services.',
-        'We do not sell personal data. Information may be used to manage inquiries, proposals, and contractual or administrative obligations.',
-        'The data is kept only for the time necessary to fulfil the purpose for which it was collected, or as required by law.',
-      ],
-    },
-    terms: {
-      title: 'Terms of use',
-      description: 'Terms of use for Arkanium.',
-      sections: [
-        'By using this site, you agree to use its content responsibly and to avoid unlawful or abusive use of our materials and services.',
-        'Arkanium may update the content of this website without prior notice, including information about services, publications and contact channels.',
-        'The content is provided for informational purposes only and does not constitute legal, tax, advisory or contractual advice.',
-      ],
-    },
-    cookies: {
-      title: 'Cookies policy',
-      description: 'Cookie policy for Arkanium.',
-      sections: [
-        'This website may use cookies or similar technologies to improve navigation, analytics, and service performance.',
-        'Cookies help us understand which sections are relevant, measure traffic, and improve the user experience without identifying you personally unless you voluntarily provide data.',
-        'You may configure your browser to reject or delete cookies, although some site features may be affected.',
-      ],
-    },
-    disclaimer: {
-      title: 'Disclaimer',
-      description: 'Legal disclaimer for Arkanium.',
-      sections: [
-        'The information on this website is provided for general informational purposes and is subject to change without notice.',
-        'Nothing on this site should be interpreted as a guarantee of results, availability, or legal or financial outcome for any specific project.',
-        'The website may include links to external resources; Arkanium assumes no responsibility for their content, availability, or policies.',
-      ],
-    },
-  },
-  es: {
-    privacy: {
-      title: 'Política de privacidad',
-      description: 'Política de privacidad de Arkanium.',
-      sections: [
-        'Respetamos tu privacidad y tratamos la información personal únicamente para prestar nuestros servicios de consultoría y comunicación empresarial.',
-        'No vendemos datos personales. La información puede utilizarse para gestionar consultas, propuestas y obligaciones contractuales o administrativas.',
-        'Los datos se conservan solo durante el tiempo necesario para cumplir la finalidad para la que fueron recabados o por exigencia legal.',
-      ],
-    },
-    terms: {
-      title: 'Términos de uso',
-      description: 'Términos de uso de Arkanium.',
-      sections: [
-        'Al utilizar este sitio, aceptas usar su contenido de forma responsable y evitar usos abusivos o ilícitos de nuestros materiales y servicios.',
-        'Arkanium puede actualizar el contenido de esta web sin previo aviso, incluyendo información sobre servicios, publicaciones y canales de contacto.',
-        'El contenido se ofrece únicamente con fines informativos y no constituye asesoramiento legal, fiscal, profesional o contractual.',
-      ],
-    },
-    cookies: {
-      title: 'Política de cookies',
-      description: 'Política de cookies de Arkanium.',
-      sections: [
-        'Este sitio puede utilizar cookies o tecnologías similares para mejorar la navegación, la analítica y el rendimiento del servicio.',
-        'Las cookies nos ayudan a entender qué secciones son relevantes, medir el tráfico y mejorar la experiencia de usuario sin identificarte personalmente salvo que tú proporciones datos voluntariamente.',
-        'Puedes configurar tu navegador para rechazar o eliminar cookies, aunque algunas funciones del sitio pueden verse afectadas.',
-      ],
-    },
-    disclaimer: {
-      title: 'Aviso legal',
-      description: 'Aviso legal de Arkanium.',
-      sections: [
-        'La información de este sitio se ofrece con carácter general y puede cambiar sin previo aviso.',
-        'Nada de lo que aparece en esta web debe interpretarse como garantía de resultados, disponibilidad u outcome legal o financiero para un proyecto concreto.',
-        'El sitio puede incluir enlaces a recursos externos; Arkanium no asume responsabilidad por su contenido, disponibilidad o políticas.',
-      ],
-    },
-  },
-  pt: {
-    privacy: {
-      title: 'Política de privacidade',
-      description: 'Política de privacidade da Arkanium.',
-      sections: [
-        'Respeitamos a sua privacidade e tratamos os dados pessoais apenas para prestar os nossos serviços de consultoria e comunicação empresarial.',
-        'Não vendemos dados pessoais. As informações podem ser usadas para gerir contactos, propostas e obrigações contratuais ou administrativas.',
-        'Os dados são mantidos apenas pelo tempo necessário para cumprir a finalidade para a qual foram recolhidos ou por exigência legal.',
-      ],
-    },
-    terms: {
-      title: 'Termos de uso',
-      description: 'Termos de uso da Arkanium.',
-      sections: [
-        'Ao utilizar este site, você concorda em utilizar o conteúdo de forma responsável e evitar usos abusivos ou ilícitos dos nossos materiais e serviços.',
-        'A Arkanium pode atualizar o conteúdo deste website sem aviso prévio, incluindo informações sobre serviços, publicações e canais de contacto.',
-        'O conteúdo é fornecido apenas para fins informativos e não constitui aconselhamento jurídico, fiscal, de consultoria ou contratual.',
-      ],
-    },
-    cookies: {
-      title: 'Política de cookies',
-      description: 'Política de cookies da Arkanium.',
-      sections: [
-        'Este site pode utilizar cookies ou tecnologias semelhantes para melhorar a navegação, a análise e o desempenho do serviço.',
-        'Os cookies ajudam-nos a entender quais as secções relevantes, medir o tráfego e melhorar a experiência do utilizador sem o identificar pessoalmente, a menos que você voluntariamente forneça dados.',
-        'Pode configurar o seu navegador para rejeitar ou eliminar cookies, embora algumas funcionalidades do site possam ser afetadas.',
-      ],
-    },
-    disclaimer: {
-      title: 'Aviso legal',
-      description: 'Aviso legal da Arkanium.',
-      sections: [
-        'A informação neste site é fornecida apenas para fins informativos e pode ser alterada sem aviso prévio.',
-        'Nada neste site deve ser interpretado como garantia de resultados, disponibilidade ou consequências legais ou financeiras para um projeto específico.',
-        'O site pode incluir links para recursos externos; a Arkanium não assume responsabilidade pelo seu conteúdo, disponibilidade ou políticas.',
-      ],
-    },
-  },
-  fr: {
-    privacy: {
-      title: 'Politique de confidentialité',
-      description: 'Politique de confidentialité de Arkanium.',
-      sections: [
-        'Nous respectons votre vie privée et traitons les informations personnelles uniquement pour fournir nos services de conseil et de communication d’entreprise.',
-        'Nous ne vendons pas de données personnelles. Les informations peuvent être utilisées pour gérer les demandes, les propositions et les obligations contractuelles ou administratives.',
-        'Les données sont conservées uniquement pendant le temps nécessaire à la finalité pour laquelle elles ont été collectées, ou conformément à la loi.',
-      ],
-    },
-    terms: {
-      title: 'Conditions d’utilisation',
-      description: 'Conditions d’utilisation de Arkanium.',
-      sections: [
-        'En utilisant ce site, vous acceptez d’utiliser son contenu de manière responsable et d’éviter toute utilisation abusive ou illégale de nos matériaux et services.',
-        'Arkanium peut mettre à jour le contenu de ce site sans préavis, y compris les informations sur les services, les publications et les canaux de contact.',
-        'Le contenu est fourni à titre informatif uniquement et ne constitue pas de conseil juridique, fiscal, professionnel ou contractuel.',
-      ],
-    },
-    cookies: {
-      title: 'Politique des cookies',
-      description: 'Politique des cookies de Arkanium.',
-      sections: [
-        'Ce site peut utiliser des cookies ou des technologies similaires pour améliorer la navigation, l’analyse et la performance du service.',
-        'Les cookies nous aident à comprendre quelles sections sont pertinentes, à mesurer le trafic et à améliorer l’expérience utilisateur sans vous identifier personnellement à moins que vous ne fournissiez des données volontairement.',
-        'Vous pouvez configurer votre navigateur pour refuser ou supprimer les cookies, même si certaines fonctionnalités du site peuvent être affectées.',
-      ],
-    },
-    disclaimer: {
-      title: 'Mentions légales',
-      description: 'Mentions légales de Arkanium.',
-      sections: [
-        'Les informations de ce site sont fournies à titre informatif général et peuvent être modifiées sans préavis.',
-        'Rien sur ce site ne doit être interprété comme une garantie de résultats, de disponibilité ou de conséquences juridiques ou financières pour un projet spécifique.',
-        'Le site peut inclure des liens vers des ressources externes ; Arkanium n’assume aucune responsabilité pour leur contenu, leur disponibilité ou leurs politiques.',
-      ],
-    },
-  },
-};
-
-if (!(legalLocale in legalContentByLocale)) {
-  throw new Error(`Unsupported legal locale: ${legalLocale}`);
-}
-
-if (!(legalKey in legalContentByLocale[legalLocale])) {
-  throw new Error(`Unsupported legal page: ${page}`);
-}
-
-const pageContent = legalContentByLocale[legalLocale][legalKey];
+const pageContent = (await getLegalPages(legalLocale)).find((doc) => doc.value === page);
+if (!pageContent) throw new Error(`Unsupported legal page: ${page}`);
 ---
 
 <PageLayout locale={legalLocale} title={`${pageContent.title} | ${translations.meta.title}`} description={pageContent.description}>

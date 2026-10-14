@@ -1,0 +1,11 @@
+{
+  "id": "privacy",
+  "value": "privacy",
+  "title": "Privacy policy",
+  "description": "Privacy policy for Arkanium.",
+  "sections": [
+    "We respect your privacy and process personal information only to provide our consulting and business communication services.",
+    "We do not sell personal data. Information may be used to manage inquiries, proposals, and contractual or administrative obligations.",
+    "The data is kept only for the time necessary to fulfil the purpose for which it was collected, or as required by law."
+  ]
+}

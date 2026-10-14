@@ -1,0 +1,11 @@
+{
+  "id": "disclaimer",
+  "value": "disclaimer",
+  "title": "Aviso legal",
+  "description": "Aviso legal de Arkanium.",
+  "sections": [
+    "La información de este sitio se ofrece con carácter general y puede cambiar sin previo aviso.",
+    "Nada de lo que aparece en esta web debe interpretarse como garantía de resultados, disponibilidad u outcome legal o financiero para un proyecto concreto.",
+    "El sitio puede incluir enlaces a recursos externos; Arkanium no asume responsabilidad por su contenido, disponibilidad o políticas."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "privacy",
+  "value": "privacy",
+  "title": "Política de privacidade",
+  "description": "Política de privacidade da Arkanium.",
+  "sections": [
+    "Respeitamos a sua privacidade e tratamos os dados pessoais apenas para prestar os nossos serviços de consultoria e comunicação empresarial.",
+    "Não vendemos dados pessoais. As informações podem ser usadas para gerir contactos, propostas e obrigações contratuais ou administrativas.",
+    "Os dados são mantidos apenas pelo tempo necessário para cumprir a finalidade para a qual foram recolhidos ou por exigência legal."
+  ]
+}

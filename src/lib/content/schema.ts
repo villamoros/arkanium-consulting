@@ -127,9 +127,18 @@ export const CONTENT_SDL = /* GraphQL */ `
     categories: [ServiceCategory!]!
   }
 
+  type LegalPage {
+    id: String
+    value: String
+    title: String
+    description: String
+    sections: [String]
+  }
+
   type Query {
     articles(locale: Locale!): [Article!]!
     article(locale: Locale!, slug: String!): Article
     serviceFamilies(locale: Locale!): [ServiceFamily!]!
+    legalPages(locale: Locale!): [LegalPage!]!
   }
 `;

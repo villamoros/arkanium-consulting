@@ -1,0 +1,11 @@
+{
+  "id": "disclaimer",
+  "value": "disclaimer",
+  "title": "Disclaimer",
+  "description": "Legal disclaimer for Arkanium.",
+  "sections": [
+    "The information on this website is provided for general informational purposes and is subject to change without notice.",
+    "Nothing on this site should be interpreted as a guarantee of results, availability, or legal or financial outcome for any specific project.",
+    "The website may include links to external resources; Arkanium assumes no responsibility for their content, availability, or policies."
+  ]
+}

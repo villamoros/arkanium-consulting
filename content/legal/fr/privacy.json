@@ -1,0 +1,11 @@
+{
+  "id": "privacy",
+  "value": "privacy",
+  "title": "Politique de confidentialité",
+  "description": "Politique de confidentialité de Arkanium.",
+  "sections": [
+    "Nous respectons votre vie privée et traitons les informations personnelles uniquement pour fournir nos services de conseil et de communication d’entreprise.",
+    "Nous ne vendons pas de données personnelles. Les informations peuvent être utilisées pour gérer les demandes, les propositions et les obligations contractuelles ou administratives.",
+    "Les données sont conservées uniquement pendant le temps nécessaire à la finalité pour laquelle elles ont été collectées, ou conformément à la loi."
+  ]
+}

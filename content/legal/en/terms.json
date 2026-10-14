@@ -1,0 +1,11 @@
+{
+  "id": "terms",
+  "value": "terms",
+  "title": "Terms of use",
+  "description": "Terms of use for Arkanium.",
+  "sections": [
+    "By using this site, you agree to use its content responsibly and to avoid unlawful or abusive use of our materials and services.",
+    "Arkanium may update the content of this website without prior notice, including information about services, publications and contact channels.",
+    "The content is provided for informational purposes only and does not constitute legal, tax, advisory or contractual advice."
+  ]
+}

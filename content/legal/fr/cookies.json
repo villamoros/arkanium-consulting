@@ -1,0 +1,11 @@
+{
+  "id": "cookies",
+  "value": "cookies",
+  "title": "Politique des cookies",
+  "description": "Politique des cookies de Arkanium.",
+  "sections": [
+    "Ce site peut utiliser des cookies ou des technologies similaires pour améliorer la navigation, l’analyse et la performance du service.",
+    "Les cookies nous aident à comprendre quelles sections sont pertinentes, à mesurer le trafic et à améliorer l’expérience utilisateur sans vous identifier personnellement à moins que vous ne fournissiez des données volontairement.",
+    "Vous pouvez configurer votre navigateur pour refuser ou supprimer les cookies, même si certaines fonctionnalités du site peuvent être affectées."
+  ]
+}

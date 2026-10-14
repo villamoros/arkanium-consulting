@@ -32,3 +32,9 @@ Cada archivo contiene la familia y la categoría (con su orden), y el servicio:
 
 Los servicios fuera de este alcance no existen en el contenido. No se muestran como «próximamente».
 Las pruebas de integridad (`npm run test:services`) comprueban que los cuatro idiomas tienen los mismos valores y campos completos.
+
+## Páginas legales (`content/legal/<idioma>/<página>.json`)
+
+Cuatro documentos por idioma: `privacy`, `terms`, `cookies`, `disclaimer`. Cada uno tiene `title`, `description` y `sections` (párrafos).
+Los textos son los originales de la página, sin cambios. Son **borradores de texto legal**: deben revisarlos abogados antes de publicarse.
+Las pruebas (`npm run test:legal`) comprueban que los cuatro documentos existen en los cuatro idiomas.
