@@ -172,10 +172,6 @@ export const en = {
       emailLabel: "Business email",
       priorityLabel: "What is your immediate priority?",
       priorities: {
-        assessment: "Architecture assessment",
-        modernization: "Legacy modernization",
-        cto: "Fractional CTO",
-        governance: "Engineering Governance",
         unsure: "Not sure — I want to explore options",
       },
       contextLabel: "Briefly describe your problem (optional)",

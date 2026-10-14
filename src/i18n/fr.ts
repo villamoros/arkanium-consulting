@@ -172,10 +172,6 @@ export const fr: TranslationSchema = {
       emailLabel: "E-mail professionnel",
       priorityLabel: "Quelle est votre priorité immédiate ?",
       priorities: {
-        assessment: "Audit d'architecture",
-        modernization: "Modernisation legacy",
-        cto: "CTO Fractionnel",
-        governance: "Gouvernance d'ingénierie et revue d'architecture",
         unsure: "Je ne suis pas sûr — je veux explorer les options",
       },
       contextLabel: "Décrivez brièvement votre problème (optionnel)",

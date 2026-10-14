@@ -172,10 +172,6 @@ export const es: TranslationSchema = {
       emailLabel: "Email empresarial",
       priorityLabel: "¿Cuál es tu prioridad inmediata?",
       priorities: {
-        assessment: "Evaluación de arquitectura",
-        modernization: "Modernización legacy",
-        cto: "CTO Fraccional",
-        governance: "Gobernanza de ingeniería",
         unsure: "No estoy seguro — quiero explorar opciones",
       },
       contextLabel: "Cuéntanos brevemente el problema (opcional)",

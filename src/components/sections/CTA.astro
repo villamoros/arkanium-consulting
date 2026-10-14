@@ -6,10 +6,11 @@ import type { TranslationSchema } from '../../i18n/utils';
 
 interface Props {
   content: HomeCta;
+  families: Array<{ slug: string; name: string }>;
   form: TranslationSchema['cta']['form'];
   ui: TranslationSchema['ui'];
 }
-const { content: cta, form, ui } = Astro.props;
+const { content: cta, families, form, ui } = Astro.props;
 ---
 
 <section class="assessment section-band" id="cta" aria-labelledby="assessment-heading">
@@ -80,7 +81,8 @@ const { content: cta, form, ui } = Astro.props;
         <label class="field field--select">
           <span class="field-control">
             <select name="priority" aria-labelledby="priority-label">
-              {Object.entries(form.priorities).map(([value, label]) => <option value={value}>{label}</option>)}
+              {families.map((f) => <option value={f.slug}>{f.name}</option>)}
+              <option value="unsure">{form.priorities.unsure}</option>
             </select>
             <span class="field-label" id="priority-label">
               <span>{form.priorityLabel}</span>
