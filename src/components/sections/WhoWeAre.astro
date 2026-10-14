@@ -1,10 +1,11 @@
 ---
+import type { HomeAbout } from '../../lib/home';
 import CarouselControls from '../ui/CarouselControls.astro';
 import { aboutIcons } from '../../content/static/icons';
 import type { TranslationSchema } from '../../i18n/utils';
 
 interface Props {
-  content: TranslationSchema['about'];
+  content: HomeAbout;
   ui: TranslationSchema['ui'];
 }
 const { content, ui } = Astro.props;

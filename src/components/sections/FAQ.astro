@@ -1,10 +1,10 @@
 ---
+import type { HomeFaq } from '../../lib/home';
 import SectionHeading from '../ui/SectionHeading.astro';
 import FAQItem from '../ui/FAQItem.astro';
-import type { TranslationSchema } from '../../i18n/utils';
 
 interface Props {
-  content: TranslationSchema['faq'];
+  content: HomeFaq;
 }
 const { content } = Astro.props;
 ---

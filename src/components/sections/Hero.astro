@@ -1,14 +1,16 @@
 ---
+import type { HomeHero } from '../../lib/home';
 import Button from '../ui/Button.astro';
 import type { Locale } from '../../i18n/config';
 import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
 
 interface Props {
   locale: Locale;
-  content: TranslationSchema['hero'];
+  content: HomeHero;
+  buttons: { ctaPrimary: string; ctaSecondary: string };
   ui: TranslationSchema['ui'];
 }
-const { locale, content, ui } = Astro.props;
+const { locale, content, buttons, ui } = Astro.props;
 ---
 
 <section class="hero section-band" id="top" aria-labelledby="hero-heading">
@@ -59,8 +61,8 @@ const { locale, content, ui } = Astro.props;
       <h1 id="hero-heading">{content.title}</h1>
       <p class="hero-lede">{content.lede}</p>
       <div class="hero-actions" role="group" aria-label={ui.primaryActions}>
-        <Button href={getLocalizedPath(locale, '/#cta')}>{content.ctaPrimary}</Button>
-        <Button href={getLocalizedPath(locale, '/#services')} variant="secondary">{content.ctaSecondary}</Button>
+        <Button href={getLocalizedPath(locale, '/#cta')}>{buttons.ctaPrimary}</Button>
+        <Button href={getLocalizedPath(locale, '/#services')} variant="secondary">{buttons.ctaSecondary}</Button>
       </div>
     </div>
 

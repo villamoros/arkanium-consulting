@@ -1,9 +1,10 @@
 ---
+import type { HomeProcess } from '../../lib/home';
 import SectionHeading from '../ui/SectionHeading.astro';
 import type { TranslationSchema } from '../../i18n/utils';
 
 interface Props {
-  content: TranslationSchema['process'];
+  content: HomeProcess;
   ui: TranslationSchema['ui'];
 }
 const { content, ui } = Astro.props;

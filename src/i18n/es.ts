@@ -83,193 +83,19 @@ export const es: TranslationSchema = {
     },
   },
   hero: {
-    eyebrow: "Consultoría de infraestructura digital",
-    title: "El diseño de la infraestructura de las empresas modernas",
-    lede: "Ayudamos a empresas en crecimiento a modernizar sistemas legacy, reducir riesgo técnico y construir infraestructura digital escalable.",
     ctaPrimary: "Solicitar evaluación de arquitectura",
     ctaSecondary: "Explorar servicios",
-    metrics: [
-      {
-        value: "97.8%",
-        label: "Integridad de sistema post-modernización",
-      },
-      {
-        value: "4",
-        label: "Fases de modernización estructuradas",
-      },
-      {
-        value: "0",
-        label: "Playbooks genéricos — cada caso es único",
-      },
-    ],
   },
   about: {
-    eyebrow: "Quiénes somos",
-    title: "Liderazgo tecnológico para organizaciones que necesitan escalar con confianza.",
-    intro: "Arkanium Consulting es una firma boutique especializada en estrategia tecnológica, arquitectura de software y gobernanza de ingeniería.",
     cardLabel: "Enfoque",
-    cards: [
-      {
-        kicker: "Quiénes somos",
-        title: "Una firma boutique de estrategia tecnológica",
-        body: "Ayudamos a fundadores, directivos y equipos técnicos a transformar sistemas complejos en capacidades estratégicas que soporten el crecimiento del negocio.",
-      },
-      {
-        kicker: "Qué hacemos",
-        title: "Convertimos complejidad tecnológica en dirección ejecutable",
-        body: "Evaluamos arquitecturas, identificamos riesgos, diseñamos estrategias de modernización y proporcionamos liderazgo tecnológico para organizaciones que necesitan tomar decisiones críticas con mayor claridad.",
-      },
-      {
-        kicker: "Cómo trabajamos",
-        title: "Metodologías estructuradas. Resultados accionables.",
-        body: "Todos nuestros compromisos siguen marcos propios diseñados para generar visibilidad, alineación y capacidad de ejecución. Cada iniciativa produce diagnósticos claros, recomendaciones priorizadas, roadmaps ejecutables, métricas de gobierno y próximos pasos definidos.",
-      },
-      {
-        kicker: "Nuestro enfoque",
-        title: "No vendemos horas. Aplicamos metodología.",
-        body: "Arkanium opera mediante ASTM, la Arkanium Strategic Transformation Methodology, un sistema propio diseñado para evaluar, modernizar, gobernar y liderar ecosistemas tecnológicos.",
-      },
-    ],
-  },
-  challenges: {
-    eyebrow: "Realidad operativa",
-    title: "El crecimiento expone los sistemas débiles",
-    intro: "Cuando el negocio crece más rápido que la arquitectura de software, la empresa necesita liderazgo de ingeniería, no más desarrolladores.",
-    items: [
-      {
-        title: "Despliegues frágiles",
-        body: "Los ciclos de release se vuelven más lentos, más riesgosos y más difíciles de coordinar con el negocio.",
-      },
-      {
-        title: "Deuda técnica acumulada",
-        body: "Las decisiones del pasado se convierten en fricción de mantenimiento que frena cada nueva entrega.",
-      },
-      {
-        title: "Cuellos de botella al escalar",
-        body: "Los límites de rendimiento, flujo de datos e infraestructura empiezan a dictar las decisiones de negocio.",
-      },
-      {
-        title: "Silos de conocimiento",
-        body: "Los sistemas críticos dependen de contexto no documentado y de pocas personas sobrecargadas.",
-      },
-    ],
   },
   solutions: {
-    eyebrow: "Líneas de negocio",
-    groupTitle: "Consultoría",
-    title: "ESTRATEGIA, ARQUITECTURA, GOBERNANZA Y LIDERAZGO",
-    intro: "Compromisos enfocados agrupados en un portafolio coherente para empresas que necesitan claridad técnica, profundidad y disciplina de ejecución.",
-    lines: {
-      strategy: {
-        title: "Estrategia",
-        body: "Convertimos la incertidumbre técnica en una dirección priorizada para decidir qué cambiar, por qué y en qué orden.",
-      },
-      architecture: {
-        title: "Arquitectura",
-        body: "Diseñamos arquitecturas objetivo y rutas de modernización prácticas que mejoran la resiliencia, mantenibilidad y capacidad de escalar.",
-      },
-      governance: {
-        title: "Gobernanza",
-        body: "Definimos estándares, responsabilidades y mecanismos de seguimiento para que las decisiones tecnológicas se tomen con consistencia y los riesgos sean visibles.",
-      },
-      leadership: {
-        title: "Liderazgo",
-        body: "Acompañamos a equipos y directivos con dirección técnica, prioridades claras y guía para ejecutar la estrategia tecnológica.",
-      },
-    },
     labels: {
       engagement: "Modalidad",
       investment: "Inversión",
       problem: "Problema",
       solution: "Solución",
       outcome: "Resultado",
-    },
-  },
-  process: {
-    eyebrow: "Framework Arkanium",
-    title: "Diagnosticar. Arquitectar. Modernizar. Escalar.",
-    intro: "Un camino práctico del caos sistémico a la infraestructura digital duradera.",
-    phases: {
-      assess: {
-        label: "Evaluar",
-        kicker: "Fase 01",
-        title: "Evaluar",
-        body: "Entender el negocio, los sistemas, los riesgos y las restricciones.",
-        items: [
-          "Revisión de arquitectura",
-          "Evaluación de riesgo técnico",
-          "Informe ejecutivo de hallazgos",
-        ],
-      },
-      architect: {
-        label: "Arquitectar",
-        kicker: "Fase 02",
-        title: "Arquitectar",
-        body: "Diseñar el estado futuro del sistema.",
-        items: [
-          "Arquitectura objetivo",
-          "Plan de modernización",
-          "Marco de priorización",
-        ],
-      },
-      modernize: {
-        label: "Modernizar",
-        kicker: "Fase 03",
-        title: "Modernizar",
-        body: "Guiar la implementación y la transformación del sistema.",
-        items: [
-          "Supervisión estratégica",
-          "Gobierno de arquitectura",
-          "Reducción de riesgo",
-        ],
-      },
-      scale: {
-        label: "Escalar",
-        kicker: "Fase 04",
-        title: "Escalar",
-        body: "Soportar el crecimiento sostenible del negocio.",
-        items: ["Apoyo de liderazgo", "Revisiones de arquitectura", "Guía continua"],
-      },
-    },
-  },
-  why: {
-    eyebrow: "Por qué Arkanium",
-    title: "Liderazgo de ingeniería más allá del desarrollo de software",
-    items: [
-      {
-        title: "Pensamiento orientado al negocio",
-        body: "Cada decisión técnica está vinculada al riesgo, la escalabilidad y la continuidad del negocio, no a preferencias de stack.",
-      },
-      {
-        title: "Mentalidad de infraestructura",
-        body: "Los sistemas se tratan como fundamentos operacionales, no como características aisladas. Cada decisión considera el impacto en producción a largo plazo.",
-      },
-      {
-        title: "Guía a nivel ejecutivo",
-        body: "Comunicamos el estado técnico en términos que la dirección puede evaluar y sobre los que puede actuar con confianza.",
-      },
-      {
-        title: "Arquitectura escalable",
-        body: "Diseñamos estructuras que soportan el crecimiento futuro sin acumular nueva deuda técnica en el proceso.",
-      },
-      {
-        title: "Mantenibilidad a largo plazo",
-        body: "Las decisiones de modernización están diseñadas para seguir siendo mantenibles después de que termine el compromiso.",
-      },
-      {
-        title: "Apoyo en decisiones tecnológicas",
-        body: "Ayudamos a evaluar opciones, proveedores y arquitecturas con criterios técnicos y de negocio alineados.",
-      },
-    ],
-    gain: {
-      eyebrow: "Lo que obtiene el liderazgo",
-      items: [
-        "Mayor visibilidad del riesgo técnico",
-        "Prioridades de modernización claras",
-        "Resultados de entrega más predecibles",
-        "Mejor alineación entre tecnología y objetivos de negocio",
-        "Más confianza en decisiones estratégicas",
-      ],
     },
   },
   caseStudies: {
@@ -336,49 +162,7 @@ export const es: TranslationSchema = {
     tags: "Etiquetas",
     by: "Por",
   },
-  faq: {
-    eyebrow: "Preguntas frecuentes",
-    title: "Respuestas directas",
-    items: [
-      {
-        question: "¿Con qué tipo de empresas trabajan?",
-        answer: "Trabajamos con empresas B2B en crecimiento, SaaS con deuda técnica acumulada, empresas con sistemas legacy críticos y organizaciones que necesitan liderazgo de arquitectura antes de escalar.",
-      },
-      {
-        question: "¿Ofrecen desarrollo de software?",
-        answer: "No. Arkanium no vende desarrolladores ni entrega código. Proveemos liderazgo de ingeniería, estrategia técnica y supervisión arquitectónica. Trabajamos con los equipos existentes del cliente.",
-      },
-      {
-        question: "¿Cuánto dura una Evaluación de Arquitectura?",
-        answer: "Típicamente entre 2 y 4 semanas, dependiendo de la complejidad del sistema. Al finalizar, el cliente recibe un informe ejecutivo con riesgos priorizados y un plan de modernización ejecutable.",
-      },
-      {
-        question: "¿Reemplaza al CTO interno?",
-        answer: "No. El servicio de CTO Fraccional complementa y fortalece al liderazgo técnico existente. En empresas sin CTO, actúa como esa función hasta que una contratación a tiempo completo tenga sentido.",
-      },
-      {
-        question: "¿Pueden trabajar junto a equipos de ingeniería existentes?",
-        answer: "Sí, es la norma. Trabajamos directamente con los equipos internos — no los reemplazamos. El objetivo es fortalecer su capacidad y transferir conocimiento.",
-      },
-      {
-        question: "¿Apoyan la implementación después de la evaluación?",
-        answer: "Sí. Podemos acompañar la ejecución a través del servicio de CTO Fraccional o compromisos específicos de supervisión arquitectónica durante la modernización.",
-      },
-      {
-        question: "¿En qué industrias se especializan?",
-        answer: "Trabajamos con empresas B2B independientemente del sector. El denominador común es el problema: sistemas legacy que frenan el crecimiento, deuda técnica que acumula riesgo operacional y arquitectura que no escala.",
-      },
-    ],
-  },
   cta: {
-    eyebrow: "Empezar con claridad",
-    title: "Tu software debería acelerar el crecimiento. No frenarlo.",
-    intro: "Empieza con una Evaluación de Arquitectura y convierte la incertidumbre técnica en un plan de modernización ejecutable.",
-    steps: [
-      "Recibirás respuesta en menos de 24 horas hábiles.",
-      "Agendamos una llamada de 30 minutos para entender tu contexto.",
-      "Definimos juntos el alcance y los próximos pasos concretos.",
-    ],
     form: {
       kicker: "Siguiente paso",
       title: "Solicitar evaluación",
@@ -422,7 +206,6 @@ export const es: TranslationSchema = {
       instagram: "Instagram",
       facebook: "Facebook",
       tiktok: "TikTok",
-      
     },
     legal: {
       label: "Legal",

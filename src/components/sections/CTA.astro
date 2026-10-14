@@ -1,14 +1,15 @@
 ---
+import type { HomeCta } from '../../lib/home';
 import SectionHeading from '../ui/SectionHeading.astro';
 import { siteConfig } from '../../content/static/site';
 import type { TranslationSchema } from '../../i18n/utils';
 
 interface Props {
-  content: TranslationSchema['cta'];
+  content: HomeCta;
+  form: TranslationSchema['cta']['form'];
   ui: TranslationSchema['ui'];
 }
-const { content: cta, ui } = Astro.props;
-const { form } = cta;
+const { content: cta, form, ui } = Astro.props;
 ---
 
 <section class="assessment section-band" id="cta" aria-labelledby="assessment-heading">

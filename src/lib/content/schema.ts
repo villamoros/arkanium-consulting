@@ -135,10 +135,127 @@ export const CONTENT_SDL = /* GraphQL */ `
     sections: [String]
   }
 
+  type Metric {
+    value: String
+    label: String
+  }
+
+  type HomeHero {
+    eyebrow: String
+    title: String
+    lede: String
+    metrics: [Metric]
+  }
+
+  type AboutCard {
+    kicker: String
+    title: String
+    body: String
+  }
+
+  type HomeAbout {
+    eyebrow: String
+    title: String
+    intro: String
+    cards: [AboutCard]
+  }
+
+  type TitledBody {
+    title: String
+    body: String
+  }
+
+  type HomeChallenges {
+    eyebrow: String
+    title: String
+    intro: String
+    items: [TitledBody]
+  }
+
+  type BusinessLines {
+    strategy: TitledBody
+    architecture: TitledBody
+    governance: TitledBody
+    leadership: TitledBody
+  }
+
+  type HomeSolutions {
+    eyebrow: String
+    title: String
+    intro: String
+    groupTitle: String
+    lines: BusinessLines
+  }
+
+  type ProcessPhase {
+    label: String
+    kicker: String
+    title: String
+    body: String
+    items: [String]
+  }
+
+  type ProcessPhases {
+    assess: ProcessPhase
+    architect: ProcessPhase
+    modernize: ProcessPhase
+    scale: ProcessPhase
+  }
+
+  type HomeProcess {
+    eyebrow: String
+    title: String
+    intro: String
+    phases: ProcessPhases
+  }
+
+  type WhyGain {
+    eyebrow: String
+    items: [String]
+  }
+
+  type HomeWhy {
+    eyebrow: String
+    title: String
+    items: [TitledBody]
+    gain: WhyGain
+  }
+
+  type QuestionAnswer {
+    question: String
+    answer: String
+  }
+
+  type HomeFaq {
+    eyebrow: String
+    title: String
+    items: [QuestionAnswer]
+  }
+
+  type HomeCta {
+    eyebrow: String
+    title: String
+    intro: String
+    steps: [String]
+  }
+
+  type HomePage {
+    id: String
+    hero: HomeHero
+    about: HomeAbout
+    challenges: HomeChallenges
+    solutions: HomeSolutions
+    process: HomeProcess
+    why: HomeWhy
+    faq: HomeFaq
+    cta: HomeCta
+  }
+
   type Query {
     articles(locale: Locale!): [Article!]!
     article(locale: Locale!, slug: String!): Article
     serviceFamilies(locale: Locale!): [ServiceFamily!]!
     legalPages(locale: Locale!): [LegalPage!]!
+    homePage(locale: Locale!): HomePage
   }
 `;

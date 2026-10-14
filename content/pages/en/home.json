@@ -1,0 +1,231 @@
+{
+  "id": "home",
+  "hero": {
+    "eyebrow": "Digital infrastructure consulting",
+    "title": "Engineering the Infrastructure of Modern Business",
+    "lede": "We help growing companies modernize legacy systems, reduce technical risk, and build scalable digital infrastructure.",
+    "metrics": [
+      {
+        "value": "97.8%",
+        "label": "System integrity post-modernization"
+      },
+      {
+        "value": "4",
+        "label": "Structured modernization phases"
+      },
+      {
+        "value": "0",
+        "label": "Generic playbooks — every case is unique"
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "Who We Are",
+    "title": "Technology leadership for organizations that need to scale with confidence.",
+    "intro": "Arkanium Consulting is a boutique firm specializing in technology strategy, software architecture, and engineering governance.",
+    "cards": [
+      {
+        "kicker": "Who we are",
+        "title": "A boutique technology strategy firm",
+        "body": "We help founders, executives, and technical teams turn complex systems into strategic capabilities that support business growth."
+      },
+      {
+        "kicker": "What we do",
+        "title": "We turn technological complexity into executable direction",
+        "body": "We assess architectures, identify risks, design modernization strategies, and provide technology leadership for organizations that need to make critical decisions with greater clarity."
+      },
+      {
+        "kicker": "How we work",
+        "title": "Structured methodologies. Actionable outcomes.",
+        "body": "Every engagement follows proprietary frameworks designed to generate visibility, alignment, and execution capacity. Each initiative produces clear diagnostics, prioritized recommendations, executable roadmaps, governance metrics, and defined next steps."
+      },
+      {
+        "kicker": "Our approach",
+        "title": "We do not sell hours. We apply methodology.",
+        "body": "Arkanium operates through ASTM, the Arkanium Strategic Transformation Methodology, a proprietary system designed to assess, modernize, govern, and lead technology ecosystems."
+      }
+    ]
+  },
+  "challenges": {
+    "eyebrow": "Operational reality",
+    "title": "Growth Exposes Weak Systems",
+    "intro": "When business growth outpaces software architecture, companies need engineering leadership, not more developers.",
+    "items": [
+      {
+        "title": "Fragile Deployments",
+        "body": "Release cycles become slower, riskier, and harder to coordinate with the business."
+      },
+      {
+        "title": "Technical Debt",
+        "body": "Past decisions compound into maintenance friction that slows every new delivery."
+      },
+      {
+        "title": "Scaling Bottlenecks",
+        "body": "Performance, data flow, and infrastructure limits begin to drive business decisions."
+      },
+      {
+        "title": "Knowledge Silos",
+        "body": "Critical systems depend on undocumented context and a few overloaded people."
+      }
+    ]
+  },
+  "solutions": {
+    "eyebrow": "Business lines",
+    "title": "STRATEGY, ARCHITECTURE, GOVERNANCE, AND LEADERSHIP",
+    "intro": "Focused engagements grouped into a coherent portfolio for companies that need clarity, technical depth, and execution discipline.",
+    "groupTitle": "Consulting",
+    "lines": {
+      "strategy": {
+        "title": "Strategy",
+        "body": "We turn technical uncertainty into a prioritized direction that leaders can use to decide what to change, why, and in what order."
+      },
+      "architecture": {
+        "title": "Architecture",
+        "body": "We design practical target architectures and modernization paths that improve resilience, maintainability, and the capacity to scale."
+      },
+      "governance": {
+        "title": "Governance",
+        "body": "We define standards, decision rights, and oversight mechanisms so technology decisions remain consistent and risks stay visible."
+      },
+      "leadership": {
+        "title": "Leadership",
+        "body": "We guide executives and engineering teams with clear technical direction, priorities, and support for executing technology strategy."
+      }
+    }
+  },
+  "process": {
+    "eyebrow": "Arkanium Framework",
+    "title": "Diagnose. Architect. Modernize. Scale.",
+    "intro": "A practical path from system chaos to durable digital infrastructure.",
+    "phases": {
+      "assess": {
+        "label": "Assess",
+        "kicker": "Phase 01",
+        "title": "Assess",
+        "body": "Understand the business, systems, risks, and constraints.",
+        "items": [
+          "Architecture Review",
+          "Technical Risk Assessment",
+          "Executive Findings Report"
+        ]
+      },
+      "architect": {
+        "label": "Architect",
+        "kicker": "Phase 02",
+        "title": "Architect",
+        "body": "Design the future state of the system.",
+        "items": [
+          "Target Architecture",
+          "Modernization Plan",
+          "Prioritization Framework"
+        ]
+      },
+      "modernize": {
+        "label": "Modernize",
+        "kicker": "Phase 03",
+        "title": "Modernize",
+        "body": "Guide implementation and system transformation.",
+        "items": [
+          "Strategic Oversight",
+          "Architecture Governance",
+          "Risk Reduction"
+        ]
+      },
+      "scale": {
+        "label": "Scale",
+        "kicker": "Phase 04",
+        "title": "Scale",
+        "body": "Support sustainable business growth.",
+        "items": [
+          "Leadership Support",
+          "Architecture Reviews",
+          "Continuous Guidance"
+        ]
+      }
+    }
+  },
+  "why": {
+    "eyebrow": "Why Arkanium",
+    "title": "Engineering Leadership Beyond Software Development",
+    "items": [
+      {
+        "title": "Business-First Thinking",
+        "body": "Every technical decision is tied to risk, scalability, and business continuity — not stack preferences."
+      },
+      {
+        "title": "Infrastructure Mindset",
+        "body": "Systems are treated as operational foundations, not isolated features. Every decision considers long-term production impact."
+      },
+      {
+        "title": "Executive-Level Guidance",
+        "body": "We communicate technical state in terms leadership can evaluate and act on with confidence."
+      },
+      {
+        "title": "Scalable Architecture",
+        "body": "We design structures that support future growth without accumulating new technical debt in the process."
+      },
+      {
+        "title": "Long-Term Maintainability",
+        "body": "Modernization choices are designed to stay maintainable after the engagement ends."
+      },
+      {
+        "title": "Technology Decision Support",
+        "body": "We help evaluate options, vendors, and architectures with aligned technical and business criteria."
+      }
+    ],
+    "gain": {
+      "eyebrow": "What Leaders Gain",
+      "items": [
+        "Greater visibility into technical risk",
+        "Clear modernization priorities",
+        "More predictable delivery outcomes",
+        "Better alignment between technology and business goals",
+        "Increased confidence in strategic decisions"
+      ]
+    }
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "title": "Straight Answers",
+    "items": [
+      {
+        "question": "What types of companies do you work with?",
+        "answer": "We work with B2B companies in growth stage, SaaS with accumulated technical debt, companies running critical legacy systems, and organizations that need architecture leadership before scaling."
+      },
+      {
+        "question": "Do you provide software development?",
+        "answer": "No. Arkanium does not sell developers or deliver code. We provide engineering leadership, technical strategy, and architectural oversight. We work alongside the client's existing teams."
+      },
+      {
+        "question": "How long does an Architecture Assessment take?",
+        "answer": "Typically 2 to 4 weeks depending on system complexity. At the end, the client receives an executive report with prioritized risks and an actionable modernization plan."
+      },
+      {
+        "question": "Do you replace an internal CTO?",
+        "answer": "No. The Fractional CTO service complements and strengthens existing technical leadership. In companies without a CTO, it acts as that function until a full-time hire makes sense."
+      },
+      {
+        "question": "Can you work alongside existing engineering teams?",
+        "answer": "Yes, that is the standard. We work directly with internal teams — we don't replace them. The goal is to strengthen their capability and transfer knowledge."
+      },
+      {
+        "question": "Do you support implementation after the assessment?",
+        "answer": "Yes. We can accompany execution through the Fractional CTO service or specific architectural oversight engagements during modernization."
+      },
+      {
+        "question": "What industries do you specialize in?",
+        "answer": "We work with B2B companies regardless of sector. The common denominator is the problem: legacy systems slowing growth, technical debt accumulating operational risk, and architecture that does not scale."
+      }
+    ]
+  },
+  "cta": {
+    "eyebrow": "Start with clarity",
+    "title": "Your Software Should Accelerate Growth. Not Limit It.",
+    "intro": "Start with an Architecture Assessment and turn technical uncertainty into an actionable modernization plan.",
+    "steps": [
+      "You'll receive a response within 24 business hours.",
+      "We schedule a 30-minute call to understand your context.",
+      "Together we define scope and concrete next steps."
+    ]
+  }
+}

@@ -15,6 +15,7 @@ import { getTranslations } from '../../i18n/utils';
 import { getCatalog } from '../../lib/catalog';
 import { getCaseStudies, homeCaseStudies } from '../../lib/case-studies';
 import { getArticleSummaries } from '../../lib/insights';
+import { getHomePage } from '../../lib/home';
 
 // Solo se generan las rutas de idiomas soportados; cualquier otro /xx/ responde 404.
 export function getStaticPaths() {
@@ -23,20 +24,21 @@ export function getStaticPaths() {
 
 const locale = Astro.params.locale as Locale;
 const t = getTranslations(locale);
+const home = await getHomePage(locale);
 const catalog = await getCatalog(locale);
 const caseStudies = homeCaseStudies(await getCaseStudies(locale));
 const insights = (await getArticleSummaries(locale)).slice(0, 3);
 ---
 
 <PageLayout locale={locale} title={t.meta.title} description={t.meta.description}>
-  <Hero locale={locale} content={t.hero} ui={t.ui} />
-  <WhoWeAre content={t.about} ui={t.ui} />
-  <Challenges content={t.challenges} />
-  <Solutions locale={locale} content={t.solutions} ui={t.ui} page={t.solutionsPage} catalog={catalog} allLabel={t.navigation.allSolutions} />
-  <HowWeWork content={t.process} ui={t.ui} />
-  <WhyArkanium content={t.why} />
+  <Hero locale={locale} content={home.hero} buttons={t.hero} ui={t.ui} />
+  <WhoWeAre content={home.about} ui={t.ui} />
+  <Challenges content={home.challenges} />
+  <Solutions locale={locale} content={home.solutions} ui={t.ui} page={t.solutionsPage} catalog={catalog} allLabel={t.navigation.allSolutions} />
+  <HowWeWork content={home.process} ui={t.ui} />
+  <WhyArkanium content={home.why} />
   <CaseStudiesPreview locale={locale} content={t.caseStudies} items={caseStudies} />
   <InsightsPreview locale={locale} content={t.insights} items={insights} />
-  <FAQ content={t.faq} />
-  <CTA content={t.cta} ui={t.ui} />
+  <FAQ content={home.faq} />
+  <CTA content={home.cta} form={t.cta.form} ui={t.ui} />
 </PageLayout>

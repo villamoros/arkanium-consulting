@@ -1,9 +1,9 @@
 ---
+import type { HomeWhy } from '../../lib/home';
 import SectionHeading from '../ui/SectionHeading.astro';
-import type { TranslationSchema } from '../../i18n/utils';
 
 interface Props {
-  content: TranslationSchema['why'];
+  content: HomeWhy;
 }
 const { content } = Astro.props;
 ---

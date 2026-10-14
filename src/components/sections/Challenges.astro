@@ -1,9 +1,9 @@
 ---
+import type { HomeChallenges } from '../../lib/home';
 import SectionHeading from '../ui/SectionHeading.astro';
-import type { TranslationSchema } from '../../i18n/utils';
 
 interface Props {
-  content: TranslationSchema['challenges'];
+  content: HomeChallenges;
 }
 const { content } = Astro.props;
 ---
