@@ -8,20 +8,32 @@
   "publishedAt": "2026-09-15T00:00:00Z",
   "title": "Modernización de un ERP legado en manufactura",
   "summary": "Un ERP de 12 años con módulos acoplados, sin documentación y ciclos de despliegue de 3 semanas.",
-  "industry": { "slug": "manufacturing", "name": "Manufactura" },
+  "industry": {
+    "slug": "manufacturing",
+    "name": "Manufactura"
+  },
   "challengeSummary": "Un ERP de 12 años con módulos acoplados, sin documentación y ciclos de despliegue de 3 semanas.",
   "challengeDetails": "Cada cambio pequeño exigía revisar gran parte del sistema, y el conocimiento estaba en pocas personas. Las entregas se coordinaban con el negocio durante semanas.",
   "approach": "Primero una evaluación de arquitectura, después fronteras de módulo y una hoja de ruta por fases con criterios para avanzar.",
   "approachSteps": [
-    { "phase": "ASSESSMENT", "body": "Mapa de dependencias, módulos de mayor riesgo y separación entre lo que el negocio usa y lo que no." },
-    { "phase": "ARCHITECTURE", "body": "Fronteras de módulo con dueño de datos definido e interfaces explícitas, y diseño de la arquitectura objetivo para los módulos prioritarios." },
-    { "phase": "GOVERNANCE", "body": "Registro de riesgos técnicos con responsables, revisión periódica de decisiones e informe sencillo para la dirección en cada fase." }
+    {
+      "phase": "ASSESSMENT",
+      "body": "Mapa de dependencias, módulos de mayor riesgo y separación entre lo que el negocio usa y lo que no."
+    },
+    {
+      "phase": "ARCHITECTURE",
+      "body": "Fronteras de módulo con dueño de datos definido e interfaces explícitas, y diseño de la arquitectura objetivo para los módulos prioritarios."
+    },
+    {
+      "phase": "GOVERNANCE",
+      "body": "Registro de riesgos técnicos con responsables, revisión periódica de decisiones e informe sencillo para la dirección en cada fase."
+    }
   ],
   "solution": "Modernización por partes, no por reemplazo completo: cada cambio toca solo su frontera, y cada decisión queda documentada con su razón.",
   "outcomes": [
-    "Reducción del riesgo de despliegue (resultado esperado)",
-    "Fronteras de módulo claras (resultado esperado)",
-    "Visibilidad operacional mejorada (resultado esperado)"
+    "Reducción del riesgo de despliegue",
+    "Fronteras de módulo claras",
+    "Visibilidad operacional mejorada"
   ],
   "deliverables": [
     "Evaluación de arquitectura",
@@ -29,12 +41,29 @@
     "Diseño de arquitectura de solución para los módulos prioritarios"
   ],
   "services": [
-    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
-    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
-    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } }
+    {
+      "slug": "architecture-assessment",
+      "family": {
+        "slug": "architecture"
+      }
+    },
+    {
+      "slug": "architecture-modernization-roadmap",
+      "family": {
+        "slug": "architecture"
+      }
+    },
+    {
+      "slug": "solution-architecture-design",
+      "family": {
+        "slug": "architecture"
+      }
+    }
   ],
   "evidenceStatus": "NOT_REQUIRED",
-  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "publicationAuthorization": {
+    "status": "NOT_REQUIRED"
+  },
   "seo": {
     "title": "Modernización de un ERP legado en manufactura | Caso representativo",
     "description": "Escenario representativo: cómo se ordena un ERP acoplado y sin documentación antes de cambiarlo, con qué servicios y con qué expectativas."
