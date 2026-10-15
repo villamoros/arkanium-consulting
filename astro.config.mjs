@@ -8,7 +8,7 @@ const env = loadEnv(process.env.NODE_ENV ?? 'development', process.cwd(), '');
 
 // Fuente única de la URL pública. Usada por Astro (`Astro.site`) para
 // canonical, hreflang y URLs absolutas de Open Graph.
-const site = env.PUBLIC_SITE_URL || 'https://arkaniumconsulting.com';
+const site = env.PUBLIC_SITE_URL || 'https://arkanium.consulting';
 
 const xml = (value) => value.replace(/[<>&'\"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]));
 const attribute = (html, name) => new RegExp(`<link\\s+[^>]*rel=["']${name}["'][^>]*href=["']([^"']+)["']`, 'i').exec(html)?.[1];

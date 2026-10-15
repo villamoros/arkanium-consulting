@@ -7,7 +7,7 @@ const same = (actual, expected, label) => {
 };
 
 console.log('SEO integrity');
-same(canonicalUrl('/es/solutions/foo/?utm_source=linkedin#overview'), 'https://arkaniumconsulting.com/es/solutions/foo/', 'canonical removes query parameters and fragments');
+same(canonicalUrl('/es/solutions/foo/?utm_source=linkedin#overview'), 'https://arkanium.consulting/es/solutions/foo/', 'canonical removes query parameters and fragments');
 same(pageTitle('Architecture Consulting', 'fallback'), 'Architecture Consulting | Arkanium Consulting', 'page title receives the branded suffix once');
 same(
   localeAlternates('/en/insights/legacy-architecture/', {

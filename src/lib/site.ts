@@ -2,7 +2,7 @@ import { siteConfig } from '../content/static/site';
 
 /** URL absoluta a partir de una ruta, usando `Astro.site` (PUBLIC_SITE_URL). */
 export function absoluteUrl(path: string, site: URL | undefined): string {
-  return new URL(path, site ?? 'https://arkaniumconsulting.com').toString();
+  return new URL(path, site ?? 'https://arkanium.consulting').toString();
 }
 
 /** JSON-LD base (Organization + ProfessionalService + WebSite), migrado del index.html original. */

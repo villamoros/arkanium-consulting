@@ -4,7 +4,7 @@ import { siteConfig } from '../../content/static/site.ts';
 /** Single source of truth for public SEO identity. */
 export const seoConfig = {
   siteName: siteConfig.name,
-  siteUrl: 'https://arkaniumconsulting.com',
+  siteUrl: 'https://arkanium.consulting',
   defaultLocale,
   supportedLocales: locales,
   defaultOgImage: siteConfig.defaultOgImage,
