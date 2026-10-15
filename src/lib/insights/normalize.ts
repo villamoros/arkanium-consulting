@@ -1,17 +1,15 @@
 /**
- * Normalización + REGLAS DE PUBLICACIÓN de Insights.
+ * Normalización + REGLAS DE PUBLICACIÓN de Insights (contrato ARK-BLOG-004).
  *
- * Un artículo es público en un idioma solo si:
- *   stage PUBLISHED (lo garantiza la query)  +  localizado en ese idioma (title, slug, excerpt)
- *   +  publishedAt ≤ ahora  +  scheduledAt ausente o ≤ ahora  +  editorialStatus ∈ {READY, sin definir}
- * Sin traducción NO hay fallback al inglés: esa versión simplemente no existe.
+ * Un artículo es público en un idioma solo si tiene título, slug y extracto en ese idioma,
+ * `publishedAt` ya pasó y `editorialStatus` es READY o no existe. Sin traducción no hay fallback.
  *
- * Lo no publicable se omite (no es un error); lo corrupto (slug inválido, Rich Text roto,
- * slugs duplicados, localizado sin contenido) rompe el build.
+ * Lo no publicable se omite. Lo publicable pero incompleto (sin formato, categoría o texto alternativo
+ * de portada), el Rich Text roto, los slugs duplicados o un JSON corrupto rompen el build.
  */
 import type { RawArticle, RawArticles } from './raw';
 import { readingMinutes, sanitizeRichText } from './richtext.ts';
-import type { Article, ArticleImage, ArticleSummary } from './types';
+import { ARTICLE_FORMATS, type Article, type ArticleFormat, type ArticleImage, type ArticleSummary } from './types.ts';
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /** IDEA / WRITING / REVIEW / ARCHIVED no son públicos aunque el stage sea PUBLISHED. */
@@ -49,15 +47,33 @@ export function publicationOf(r: RawArticle, now: number): Publication {
   return 'public';
 }
 
-function image(a: RawArticle['featuredImage']): ArticleImage | undefined {
-  const url = httpsUrl(a?.url);
+function image(r: RawArticle, where: string): ArticleImage | undefined {
+  const url = httpsUrl(r.featuredImage?.url);
   if (!url) return undefined;
+  const alt = text(r.coverAlt);
+  if (!alt) throw new Error(`[insights] ${where}: tiene portada pero falta coverAlt (texto alternativo obligatorio).`);
   const num = (v: unknown) => (typeof v === 'number' && v > 0 ? v : undefined);
-  return { url, alt: text(a?.altText) ?? '', caption: text(a?.caption), width: num(a?.width), height: num(a?.height) };
+  return { url, alt, caption: text(r.featuredImage?.caption), width: num(r.featuredImage?.width), height: num(r.featuredImage?.height) };
+}
+
+function formatOf(r: RawArticle, where: string): ArticleFormat {
+  const f = text(r.format);
+  if (!f || !(ARTICLE_FORMATS as readonly string[]).includes(f)) {
+    throw new Error(`[insights] ${where}: formato ${JSON.stringify(r.format)} no válido. Use "analysis" o "guide".`);
+  }
+  return f as ArticleFormat;
+}
+
+function categoryOf(r: RawArticle, where: string): { slug: string; name: string } {
+  const slug = r.category?.slug;
+  const name = text(r.category?.name);
+  if (!slug || !name) throw new Error(`[insights] ${where}: falta la categoría principal (slug y nombre).`);
+  return { slug: slugOf(slug, `${where} category`), name };
 }
 
 function summaryOf(r: RawArticle): ArticleSummary {
   const slug = slugOf(r.slug, 'article');
+  const where = `artículo "${slug}"`;
   const id = text(r.id);
   if (!id) throw new Error(`[insights] El artículo "${slug}" no tiene id.`);
   return {
@@ -68,16 +84,16 @@ function summaryOf(r: RawArticle): ArticleSummary {
     featured: r.featured === true,
     publishedAt: text(r.publishedAt) as string,
     updatedAt: time(r.updatedAt) !== undefined ? text(r.updatedAt) : undefined,
-    featuredImage: image(r.featuredImage),
-    categories: (r.categories ?? []).flatMap((c) => (c?.slug && text(c.name) ? [{ slug: slugOf(c.slug, `${slug} category`), name: text(c.name) as string }] : [])),
+    format: formatOf(r, where),
+    category: categoryOf(r, where),
+    featuredImage: image(r, where),
     author: text(r.author?.name) ? { name: text(r.author?.name) as string, slug: text(r.author?.slug) } : undefined,
     noIndex: r.seo?.noIndex === true,
   };
 }
 
-/** featured primero, luego publishedAt descendente. */
-const byPriority = (a: ArticleSummary, b: ArticleSummary) =>
-  a.featured !== b.featured ? (a.featured ? -1 : 1) : Date.parse(b.publishedAt) - Date.parse(a.publishedAt);
+/** Orden del listado y del teaser: fecha editorial descendente. El destacado NO altera el orden. */
+const byDate = (a: ArticleSummary, b: ArticleSummary) => Date.parse(b.publishedAt) - Date.parse(a.publishedAt) || a.slug.localeCompare(b.slug);
 
 export function normalizeSummaries(raw: RawArticles, now: number): ArticleSummary[] {
   const out: ArticleSummary[] = [];
@@ -89,7 +105,9 @@ export function normalizeSummaries(raw: RawArticles, now: number): ArticleSummar
   const slugs = out.map((a) => a.slug);
   const dup = slugs.find((s, i) => slugs.indexOf(s) !== i);
   if (dup) throw new Error(`[insights] Slug duplicado "${dup}" en el mismo idioma.`);
-  return out.sort(byPriority);
+  const featured = out.filter((a) => a.featured).length;
+  if (featured > 1) console.warn(`[insights] Hay ${featured} artículos destacados en un idioma; el listado resalta el más reciente (máximo recomendado: 1).`);
+  return out.sort(byDate);
 }
 
 export function normalizeArticle(r: RawArticle | null | undefined, now: number): Article | undefined {

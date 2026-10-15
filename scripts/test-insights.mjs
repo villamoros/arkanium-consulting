@@ -8,7 +8,7 @@ import { plainText, readingMinutes, sanitizeRichText } from '../src/lib/insights
 
 const NOW = Date.parse('2026-10-07T00:00:00Z');
 const rt = { children: [{ type: 'paragraph', children: [{ text: 'Hola mundo' }] }] };
-const art = { id: 'a1', slug: 'hello', title: 'T', excerpt: 'E', publishedAt: '2026-03-01T00:00:00Z', editorialStatus: 'READY', content: { raw: rt } };
+const art = { id: 'a1', slug: 'hello', title: 'T', excerpt: 'E', publishedAt: '2026-03-01T00:00:00Z', editorialStatus: 'READY', content: { raw: rt }, format: 'analysis', category: { slug: 'strategy-business', name: 'Estrategia' } };
 const sums = (...items) => normalizeSummaries({ articles: items }, NOW);
 let n = 0;
 const ok = (name, fn) => { fn(); n++; console.log('  ✓', name); };
@@ -31,9 +31,9 @@ ok('slug duplicado en el mismo idioma rompe el build', () => assert.throws(() =>
 ok('mismo slug en idiomas distintos es válido (cada idioma es su propio conjunto)', () => { assert.equal(sums(art).length, 1); assert.equal(sums({ ...art, id: 'b' }).length, 1); });
 
 console.log('Orden y detalle');
-ok('featured primero, luego publishedAt descendente', () => {
+ok('orden por fecha descendente; el destacado NO altera el orden', () => {
   const r = sums({ ...art, id: '1', slug: 'a', publishedAt: '2026-01-01' }, { ...art, id: '2', slug: 'b', publishedAt: '2026-06-01' }, { ...art, id: '3', slug: 'c', featured: true, publishedAt: '2025-01-01' });
-  assert.deepEqual(r.map((a) => a.slug), ['c', 'b', 'a']);
+  assert.deepEqual(r.map((a) => a.slug), ['b', 'a', 'c']);
 });
 ok('detalle: no público → undefined', () => assert.equal(normalizeArticle({ ...art, editorialStatus: 'REVIEW' }, NOW), undefined));
 ok('detalle: localizado sin contenido rompe el build', () => assert.throws(() => normalizeArticle({ ...art, content: { raw: { children: [] } } }, NOW), /sin contenido/));
@@ -44,9 +44,21 @@ ok('canonicalUrl es opcional; si no es https se descarta', () => {
   assert.equal(normalizeArticle({ ...art, seo: { canonicalUrl: 'https://example.com/x' } }, NOW).seo.canonical, 'https://example.com/x');
 });
 ok('autor: avatar/linkedin solo https', () => assert.equal(normalizeArticle({ ...art, author: { name: 'A', linkedin: 'http://x', website: 'https://ok.com' } }, NOW).authorDetail.linkedin, undefined));
-ok('imagen destacada solo https; alt vacío si no hay', () => {
-  assert.equal(normalizeArticle({ ...art, featuredImage: { url: 'http://x/i.png' } }, NOW).featuredImage, undefined);
-  assert.equal(normalizeArticle({ ...art, featuredImage: { url: 'https://x/i.png' } }, NOW).featuredImage.alt, '');
+ok('imagen destacada solo https; el alt viene de coverAlt', () => {
+  assert.equal(normalizeArticle({ ...art, featuredImage: { url: 'http://x/i.png' }, coverAlt: 'Portada' }, NOW).featuredImage, undefined);
+  assert.equal(normalizeArticle({ ...art, featuredImage: { url: 'https://x/i.png' }, coverAlt: 'Portada' }, NOW).featuredImage.alt, 'Portada');
+});
+ok('portada sin coverAlt rompe el build (texto alternativo obligatorio)', () => assert.throws(() => normalizeArticle({ ...art, featuredImage: { url: 'https://x/i.png' } }, NOW), /coverAlt/));
+
+console.log('Reglas editoriales v2');
+ok('artículo publicado sin formato rompe el build', () => assert.throws(() => sums({ ...art, format: undefined }), /formato/));
+ok('formato fuera de analysis/guide rompe el build', () => assert.throws(() => sums({ ...art, format: 'opinion' }), /formato/));
+ok('artículo publicado sin categoría rompe el build', () => assert.throws(() => sums({ ...art, category: undefined }), /categoría/));
+ok('una categoría se expone también como lista (para las tarjetas)', () => assert.equal(sums(art)[0].category.name, 'Estrategia'));
+ok('no publicable sin formato se omite sin error (no es un error editorial)', () => assert.equal(sums({ ...art, format: undefined, editorialStatus: 'REVIEW' }).length, 0));
+ok('dos destacados en un idioma: se permite (avisa), ambos conservan su fecha', () => {
+  const r = sums({ ...art, id: '1', slug: 'a', featured: true }, { ...art, id: '2', slug: 'b', featured: true, publishedAt: '2026-05-01T00:00:00Z' });
+  assert.equal(r.length, 2);
 });
 
 console.log('Rich Text: seguridad por construcción');

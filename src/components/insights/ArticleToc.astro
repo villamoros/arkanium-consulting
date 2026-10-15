@@ -1,0 +1,32 @@
+---
+/**
+ * Índice del artículo. En escritorio es un panel lateral fijo; en móvil, un desplegable (mismo patrón que el FAQ).
+ * Los enlaces apuntan a los H2 con id `sec-N` que asigna withHeadingIds().
+ */
+import type { TocEntry } from '../../lib/insights/listing.ts';
+
+interface Props {
+  entries: TocEntry[];
+  title: string;
+  mobile?: boolean;
+}
+const { entries, title, mobile = false } = Astro.props;
+---
+
+{
+  mobile ? (
+    <details class="article-toc article-toc--mobile">
+      <summary class="article-toc-title">{title}</summary>
+      <ol>
+        {entries.map((e) => <li><a href={`#${e.id}`}>{e.text}</a></li>)}
+      </ol>
+    </details>
+  ) : (
+    <nav class="article-toc article-toc--desktop" aria-label={title}>
+      <p class="article-toc-title">{title}</p>
+      <ol>
+        {entries.map((e) => <li><a href={`#${e.id}`}>{e.text}</a></li>)}
+      </ol>
+    </nav>
+  )
+}

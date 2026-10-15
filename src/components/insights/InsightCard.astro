@@ -1,6 +1,7 @@
 ---
 import { articlePath, type ArticleSummary } from '../../lib/insights';
 import { formatDate } from '../../lib/insights/format';
+import InsightCover from './InsightCover.astro';
 import type { Locale } from '../../i18n/config';
 import type { TranslationSchema } from '../../i18n/utils';
 
@@ -12,17 +13,15 @@ interface Props {
   large?: boolean;
 }
 const { item, locale, content, large = false } = Astro.props;
-const image = item.featuredImage;
 ---
 
 <article class={`insight-card reveal${large ? ' insight-card--large' : ''}`}>
-  {
-    image && (
-      <img class="insight-card-image" src={image.url} alt={image.alt} width={image.width} height={image.height} loading="lazy" decoding="async" />
-    )
-  }
+  <InsightCover image={item.featuredImage} variant={large ? 'large' : 'card'} />
   <div class="insight-card-body">
-    {item.categories.length > 0 && <p class="insight-card-categories">{item.categories.map((c) => c.name).join(' · ')}</p>}
+    <p class="insight-card-top">
+      <span class="insight-format">{content.formats[item.format]}</span>
+      <span class="insight-card-categories">{item.category.name}</span>
+    </p>
     <h3><a class="insight-card-link" href={articlePath(locale, item.slug)}>{item.title}</a></h3>
     <p class="insight-card-excerpt">{item.excerpt}</p>
     <p class="insight-card-meta">

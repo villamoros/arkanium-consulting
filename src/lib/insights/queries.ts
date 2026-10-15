@@ -15,8 +15,10 @@ export const ARTICLE_SUMMARIES_QUERY = /* GraphQL */ `
       updatedAt
       scheduledAt
       editorialStatus
-      featuredImage { url width height altText caption }
-      categories { slug name }
+      format
+      category { slug name }
+      coverAlt
+      featuredImage { url width height caption }
       author { name slug }
       seo { noIndex }
     }
@@ -35,10 +37,12 @@ export const ARTICLE_DETAIL_QUERY = /* GraphQL */ `
       updatedAt
       scheduledAt
       editorialStatus
+      format
+      category { slug name }
+      coverAlt
       content { raw }
-      featuredImage { url width height altText caption }
+      featuredImage { url width height caption }
       author { name slug role bio avatar { url } linkedin website }
-      categories { slug name }
       tags { slug name }
       services { slug family { slug } }
       offerings { slug service { slug family { slug } } }

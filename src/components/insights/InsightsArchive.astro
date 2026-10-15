@@ -1,0 +1,42 @@
+---
+/** Contenido del listado (destacado + cuadrícula + paginación). Lo usan la página 1 y las páginas siguientes. */
+import SectionHeading from '../ui/SectionHeading.astro';
+import InsightCard from './InsightCard.astro';
+import InsightsPagination from './InsightsPagination.astro';
+import type { ArticleSummary } from '../../lib/insights';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  content: TranslationSchema['insights'];
+  highlight?: ArticleSummary;
+  items: ArticleSummary[];
+  page: number;
+  totalPages: number;
+  basePath: string;
+}
+const { locale, content, highlight, items, page, totalPages, basePath } = Astro.props;
+---
+
+<section class="section-band">
+  {
+    highlight && page === 1 && (
+      <div class="insight-section">
+        <SectionHeading id="insights-featured-heading" title={content.featured} />
+        <InsightCard item={highlight} locale={locale} content={content} large />
+      </div>
+    )
+  }
+  {
+    items.length > 0 && (
+      <div class="insight-section">
+        <SectionHeading id="insights-latest-heading" title={content.latest} />
+        <div class="insight-grid">
+          {items.map((item) => <InsightCard item={item} locale={locale} content={content} />)}
+        </div>
+      </div>
+    )
+  }
+  {totalPages > 1 && <InsightsPagination current={page} total={totalPages} basePath={basePath} content={content} />}
+</section>

@@ -2,12 +2,22 @@ import type { Seo, ServiceRef } from '../catalog/types';
 import type { OfferingRef } from '../case-studies/types';
 import type { RtNode } from './richtext';
 
+/** Formatos editoriales (contrato ARK-BLOG-002 v2). */
+export const ARTICLE_FORMATS = ['analysis', 'guide'] as const;
+export type ArticleFormat = (typeof ARTICLE_FORMATS)[number];
+
 export interface ArticleImage {
   url: string;
+  /** Texto alternativo de la portada (campo `coverAlt`). Obligatorio cuando hay portada. */
   alt: string;
   caption?: string;
   width?: number;
   height?: number;
+}
+
+export interface ArticleCategory {
+  slug: string;
+  name: string;
 }
 
 export interface ArticleSummary {
@@ -20,8 +30,11 @@ export interface ArticleSummary {
   /** Fecha editorial real de publicación (nunca se inventa ni se sustituye por updatedAt). */
   publishedAt: string;
   updatedAt?: string;
+  format: ArticleFormat;
+  /** Categoría principal (una sola). */
+  category: ArticleCategory;
   featuredImage?: ArticleImage;
-  categories: Array<{ slug: string; name: string }>;
+  /** Autor resuelto desde content/authors. Opcional. */
   author?: { name: string; slug?: string };
   noIndex: boolean;
 }

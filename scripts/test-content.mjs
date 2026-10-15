@@ -14,6 +14,8 @@ import { ARTICLE_DETAIL_QUERY, ARTICLE_SUMMARIES_QUERY } from '../src/lib/insigh
 const NOW = Date.parse('2026-10-14T00:00:00Z');
 const rt = { children: [{ type: 'paragraph', children: [{ text: 'Cuerpo en español' }] }] };
 const base = {
+  format: 'analysis',
+  category: { slug: 'strategy-business', name: 'Estrategia' },
   slug: 'primer-analisis',
   title: 'Primer análisis',
   excerpt: 'Resumen breve',
@@ -32,7 +34,7 @@ const write = async (locale, name, data) => {
 };
 
 // Datos de prueba: un publicado, uno programado, uno solo en inglés, uno ignorado (empieza por _).
-await write('es', 'a1.json', { ...base, id: 'a1', featuredImage: { url: 'https://example.com/c.jpg', width: 1200, height: 630, altText: 'Portada', caption: null } });
+await write('es', 'a1.json', { ...base, id: 'a1', coverAlt: 'Portada', featuredImage: { url: 'https://example.com/c.jpg', width: 1200, height: 630, caption: null } });
 await write('es', 'a2.json', { ...base, id: 'a2', slug: 'futuro', publishedAt: '2999-01-01T00:00:00Z' });
 await write('en', 'b1.json', { ...base, id: 'b1', slug: 'english-only', title: 'English only', excerpt: 'Summary' });
 await write('es', '_borrador.json', { ...base, id: 'x', slug: 'ignorado' });

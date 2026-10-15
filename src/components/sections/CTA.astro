@@ -2,15 +2,18 @@
 import type { HomeCta } from '../../lib/home';
 import SectionHeading from '../ui/SectionHeading.astro';
 import { siteConfig } from '../../content/static/site';
-import type { TranslationSchema } from '../../i18n/utils';
+import type { Locale } from '../../i18n/config';
+import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
 
 interface Props {
+  locale: Locale;
   content: HomeCta;
   families: Array<{ slug: string; name: string }>;
   form: TranslationSchema['cta']['form'];
   ui: TranslationSchema['ui'];
 }
-const { content: cta, families, form, ui } = Astro.props;
+const { locale, content: cta, families, form, ui } = Astro.props;
+const privacyHref = getLocalizedPath(locale, '/legal/privacy/');
 ---
 
 <section class="assessment section-band" id="cta" aria-labelledby="assessment-heading">
@@ -44,13 +47,22 @@ const { content: cta, families, form, ui } = Astro.props;
         class="lead-form"
         aria-label={form.title}
         data-lead-form
+        data-locale={locale}
         data-msg-name={form.errors.name}
         data-msg-email={form.errors.email}
+        data-msg-consent={form.errors.consent}
+        data-msg-send={form.sendError}
+        data-sending={form.sending}
         novalidate
       >
-        <!-- Contexto comercial desde ?service=…&offering=… (ver ctaPath). El envío real llega en otra tarea. -->
+        <!-- Contexto comercial desde ?service=…&offering=… (ver ctaPath). Se valida en el servidor. -->
         <input type="hidden" name="service" />
         <input type="hidden" name="offering" />
+
+        <!-- Campo trampa: los humanos no lo ven ni lo rellenan. Si llega con contenido, el servidor descarta el envío. -->
+        <div class="lead-hp" aria-hidden="true">
+          <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
 
         <div class="form-row">
           <label class="field">
@@ -101,16 +113,52 @@ const { content: cta, families, form, ui } = Astro.props;
           </span>
         </label>
 
+        <div class="form-consent">
+          <label>
+            <input type="checkbox" name="consent" required aria-required="true" />
+            <span>{form.consent} <a href={privacyHref}>{form.consentLink}</a></span>
+          </label>
+          <span class="field-error" id="error-consent" data-error="consent" role="alert" hidden></span>
+        </div>
+
         <button class="button button-primary form-submit" type="submit">{form.submit}</button>
+        <p class="field-error form-send-error" data-send-error role="alert" hidden></p>
         <p class="form-note">{form.note}</p>
       </form>
     </div>
   </div>
 </section>
 
+<style>
+  .lead-hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .form-consent {
+    margin: 0.75rem 0 1rem;
+  }
+  .form-consent label {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .form-consent input {
+    margin-top: 0.3rem;
+    flex: 0 0 auto;
+  }
+  .form-consent a {
+    text-decoration: underline;
+  }
+</style>
+
 <script>
-  // ── Formulario: validación inline + estado de éxito.
-  // TODO(backend): el envío es visual/placeholder. No hay backend en el alcance de 002.
+  // ── Formulario: validación en el navegador + envío a /api/contact (validado de nuevo en el servidor).
+  // Éxito solo con respuesta 200 del endpoint. Si falla, el formulario conserva los datos.
   const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
   const success = document.querySelector<HTMLElement>('[data-form-success]');
 
@@ -124,7 +172,11 @@ const { content: cta, families, form, ui } = Astro.props;
     const messages: Record<string, string> = {
       name: form.dataset.msgName ?? '',
       email: form.dataset.msgEmail ?? '',
+      consent: form.dataset.msgConsent ?? '',
     };
+    const sendError = form.querySelector<HTMLElement>('[data-send-error]');
+    const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const submitLabel = submitButton?.textContent ?? '';
 
     const errorFor = (field: string) => form.querySelector<HTMLElement>(`[data-error="${field}"]`);
     const inputFor = (field: string) => form.querySelector<HTMLInputElement>(`[name="${field}"]`);
@@ -151,17 +203,27 @@ const { content: cta, families, form, ui } = Astro.props;
       input?.removeAttribute('aria-describedby');
     };
 
-    form.addEventListener('submit', (e) => {
+    const setSending = (sending: boolean) => {
+      if (!submitButton) return;
+      submitButton.disabled = sending;
+      submitButton.textContent = sending ? (form.dataset.sending ?? submitLabel) : submitLabel;
+    };
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (sendError) sendError.hidden = true;
+
       const data = new FormData(form);
       const name = String(data.get('name') ?? '').trim();
       const email = String(data.get('email') ?? '').trim();
+      const consent = data.get('consent') === 'on';
 
       const invalid: string[] = [];
       if (!name) invalid.push('name');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) invalid.push('email');
+      if (!consent) invalid.push('consent');
 
-      for (const field of ['name', 'email']) {
+      for (const field of ['name', 'email', 'consent']) {
         if (invalid.includes(field)) showError(field);
         else clearError(field);
       }
@@ -170,14 +232,44 @@ const { content: cta, families, form, ui } = Astro.props;
         return;
       }
 
-      form.hidden = true;
-      if (success) {
-        success.hidden = false;
-        success.focus();
+      setSending(true);
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            priority: String(data.get('priority') ?? ''),
+            service: String(data.get('service') ?? ''),
+            offering: String(data.get('offering') ?? ''),
+            context: String(data.get('context') ?? '').trim(),
+            consent: true,
+            website: String(data.get('website') ?? ''),
+            locale: form.dataset.locale ?? '',
+          }),
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        form.hidden = true;
+        if (success) {
+          success.hidden = false;
+          success.focus();
+        }
+      } catch {
+        if (sendError) {
+          sendError.textContent = form.dataset.msgSend ?? '';
+          sendError.hidden = false;
+          sendError.focus();
+        }
+        setSending(false);
       }
     });
 
     form.addEventListener('input', (e) => {
+      const { name } = e.target as HTMLInputElement;
+      if (name) clearError(name);
+    });
+    form.addEventListener('change', (e) => {
       const { name } = e.target as HTMLInputElement;
       if (name) clearError(name);
     });

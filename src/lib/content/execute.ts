@@ -6,6 +6,7 @@ import { buildSchema, graphql } from 'graphql';
 import path from 'node:path';
 import { CONTENT_SDL } from './schema.ts';
 import { readCollection } from './store.ts';
+import { readAuthors, withAuthors } from './authors.ts';
 import { groupServices } from './services.ts';
 
 const schema = buildSchema(CONTENT_SDL);
@@ -18,9 +19,10 @@ export async function runContentQuery<T>(
   contentRoot: string = DEFAULT_CONTENT_ROOT,
 ): Promise<T> {
   const rootValue = {
-    articles: ({ locale }: { locale: string }) => readCollection(contentRoot, 'insights', locale),
+    articles: async ({ locale }: { locale: string }) =>
+      withAuthors(await readCollection(contentRoot, 'insights', locale), await readAuthors(contentRoot, locale), locale),
     article: async ({ locale, slug }: { locale: string; slug: string }) => {
-      const items = await readCollection(contentRoot, 'insights', locale);
+      const items = withAuthors(await readCollection(contentRoot, 'insights', locale), await readAuthors(contentRoot, locale), locale);
       return items.find((item) => item.slug === slug) ?? null;
     },
     serviceFamilies: async ({ locale }: { locale: string }) => groupServices(await readCollection(contentRoot, 'services', locale)),

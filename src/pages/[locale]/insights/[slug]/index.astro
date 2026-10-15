@@ -88,7 +88,7 @@ const breadcrumbs = [
     breadcrumbLabel={t.solutionsPage.breadcrumb}
     crumbs={[{ label: c.eyebrow, href: insightsPath(locale) }, { label: article.title }]}
   />
-  <ArticleContent article={article} />
+  <ArticleContent article={article} tocLabel={c.toc} />
   <ArticleAuthor article={article} content={c} />
   {services.length > 0 && <RelatedServices locale={locale} heading={c.relatedServices} services={services} />}
   <CaseStudyRelated items={cases} locale={locale} content={t.caseStudies} id="article-cases-heading" />

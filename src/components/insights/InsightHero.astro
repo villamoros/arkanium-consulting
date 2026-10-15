@@ -19,8 +19,11 @@ const showUpdated = article.updatedAt && Date.parse(article.updatedAt) > Date.pa
 
 <section class="page-hero section-band" aria-labelledby="article-heading">
   <Breadcrumb label={breadcrumbLabel} items={crumbs} />
-  {article.categories.length > 0 && <p class="eyebrow">{article.categories.map((c) => c.name).join(' · ')}</p>}
-  <h1 id="article-heading">{article.title}</h1>
+  <p class="insight-card-top article-kicker">
+    <span class="insight-format">{content.formats[article.format]}</span>
+    <span class="insight-card-categories">{article.category.name}</span>
+  </p>
+  <h1 id="article-heading" class="article-title">{article.title}</h1>
   <p class="hero-lede">{article.excerpt}</p>
   <p class="insight-byline">
     {article.author && <span>{content.by} <strong>{article.author.name}</strong> · </span>}

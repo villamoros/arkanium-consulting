@@ -38,3 +38,10 @@ Las pruebas de integridad (`npm run test:services`) comprueban que los cuatro id
 Cuatro documentos por idioma: `privacy`, `terms`, `cookies`, `disclaimer`. Cada uno tiene `title`, `description` y `sections` (párrafos).
 Los textos son los originales de la página, sin cambios. Son **borradores de texto legal**: deben revisarlos abogados antes de publicarse.
 Las pruebas (`npm run test:legal`) comprueban que los cuatro documentos existen en los cuatro idiomas.
+
+## Blog (`content/insights/<idioma>/<id>.json`) y autores (`content/authors/<idioma>/<id>.json`)
+
+Cada artículo es un archivo por idioma. Para publicarse necesita título, slug, extracto, `publishedAt` (fecha ya pasada), `format` (`analysis` o `guide`) y `category` (`{ "slug": "...", "name": "..." }`). Si tiene portada, también `coverAlt` (texto alternativo obligatorio).
+El campo `author` es el `id` de un autor del mismo idioma; si se omite, no hay byline.
+Un artículo público incompleto rompe el build. Uno no publicable (borrador, fecha futura) se omite.
+Ver `docs/ark-blog-004-local-insights-contract.md`. Pruebas: `npm run test:blog` e `npm run test:insights`.

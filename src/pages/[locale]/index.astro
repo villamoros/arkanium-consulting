@@ -40,5 +40,5 @@ const insights = (await getArticleSummaries(locale)).slice(0, 3);
   <CaseStudiesPreview locale={locale} content={t.caseStudies} items={caseStudies} />
   <InsightsPreview locale={locale} content={t.insights} items={insights} />
   <FAQ content={home.faq} />
-  <CTA content={home.cta} families={catalog.families} form={t.cta.form} ui={t.ui} />
+  <CTA locale={locale} content={home.cta} families={catalog.families} form={t.cta.form} ui={t.ui} />
 </PageLayout>

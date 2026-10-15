@@ -14,7 +14,7 @@ export async function rssItems(locale: Locale) {
       link: articlePath(locale, article.slug),
       pubDate: new Date(article.publishedAt),
       author: article.author?.name,
-      categories: article.categories.map((category) => category.name),
+      categories: [article.category.name],
       customData: article.featuredImage ? `<enclosure url="${escapeXml(article.featuredImage.url)}" type="image/*" />` : undefined,
     }));
 }

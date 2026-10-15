@@ -10,7 +10,7 @@ export type RtMarks = { bold?: boolean; italic?: boolean; underline?: boolean; c
 export type BlockTag = 'p' | 'h2' | 'h3' | 'h4' | 'h5' | 'ul' | 'ol' | 'li' | 'blockquote' | 'pre';
 export type RtNode =
   | { kind: 'text'; text: string; marks: RtMarks }
-  | { kind: 'block'; tag: BlockTag; children: RtNode[] }
+  | { kind: 'block'; tag: BlockTag; children: RtNode[]; id?: string }
   | { kind: 'link'; href: string; external: boolean; newTab: boolean; children: RtNode[] }
   | { kind: 'image'; src: string; alt: string; width?: number; height?: number };
 

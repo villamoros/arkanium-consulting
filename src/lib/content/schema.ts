@@ -83,6 +83,9 @@ export const CONTENT_SDL = /* GraphQL */ `
     content: RichText
     featuredImage: Asset
     author: Author
+    format: String
+    category: Taxonomy
+    coverAlt: String
     categories: [Taxonomy]
     tags: [Taxonomy]
     services: [ServiceRef]
