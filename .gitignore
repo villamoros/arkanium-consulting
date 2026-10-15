@@ -1,0 +1,17 @@
+# dependencias y builds
+node_modules/
+dist/
+.astro/
+.next/
+.turbo/
+coverage/
+*.log
+
+# entorno: nunca se versiona; .env.example sí
+.env
+.env.*
+!.env.example
+
+# repositorios y archivos que no forman parte del monorepo
+/arkanium-web/
+/arkanium-web.zip
