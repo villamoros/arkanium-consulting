@@ -1,0 +1,13 @@
+# Desarrollo local de los servicios del monorepo.
+# Producción: contenedores en un VM detrás de un API Gateway (Caddy o Traefik). Ver infra/README.md.
+# Sin secretos aquí: la conexión a la base y las claves de Clerk van en un archivo .env local (no versionado).
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: services/api/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"

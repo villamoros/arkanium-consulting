@@ -2,3 +2,8 @@ packages:
   - "apps/*"
   - "services/*"
   - "packages/*"
+
+# Scripts de compilación nativa permitidos. Cualquier otro se bloquea por seguridad.
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
