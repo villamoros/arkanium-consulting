@@ -1,0 +1,42 @@
+{
+  "id": "cs-fintech-payments-architecture",
+  "slug": "fintech-payments-architecture",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-18T00:00:00Z",
+  "title": "Arquitectura de una plataforma de pagos",
+  "summary": "Una plataforma de pagos con cuellos de botella en datos y lógica de negocio distribuida sin patrón claro.",
+  "industry": { "slug": "fintech", "name": "Fintech" },
+  "challengeSummary": "Una plataforma de pagos con cuellos de botella en datos y lógica de negocio distribuida sin patrón claro.",
+  "challengeDetails": "Las decisiones de cobro y conciliación estaban repartidas entre servicios sin un dueño claro. Cada incidencia de datos tardaba días en localizarse.",
+  "approach": "Evaluación de arquitectura, diseño del flujo de datos de pagos y gobierno del riesgo técnico.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Trazar el recorrido de un pago de extremo a extremo y los puntos donde se duplica la lógica." },
+    { "phase": "ARCHITECTURE", "body": "Definir un dueño por dato y un flujo de eventos explícito entre los servicios de cobro y conciliación." },
+    { "phase": "GOVERNANCE", "body": "Seguimiento del riesgo técnico con responsables y revisión de cada decisión sobre datos." }
+  ],
+  "solution": "Un modelo de datos con dueño por dominio y un flujo de conciliación explícito, introducido por fases sin detener los pagos.",
+  "outcomes": [
+    "Mayor mantenibilidad de la lógica de negocio (resultado esperado)",
+    "Claridad en el flujo de datos (resultado esperado)",
+    "Mayor resiliencia bajo carga (resultado esperado)"
+  ],
+  "deliverables": [
+    "Evaluación de arquitectura",
+    "Diseño de arquitectura de solución para el flujo de datos",
+    "Registro de riesgo técnico con responsables"
+  ],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Arquitectura de una plataforma de pagos | Caso representativo",
+    "description": "Escenario representativo: cómo se ordena una plataforma de pagos con datos sin dueño y lógica distribuida, y con qué servicios."
+  }
+}

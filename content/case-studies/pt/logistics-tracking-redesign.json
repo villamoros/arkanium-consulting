@@ -1,0 +1,42 @@
+{
+  "id": "cs-logistics-tracking-redesign",
+  "slug": "logistics-tracking-redesign",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-20T00:00:00Z",
+  "title": "Redesenho da infraestrutura de rastreamento logístico",
+  "summary": "Um sistema de rastreamento monolítico incapaz de escalar em temporadas de alta demanda.",
+  "industry": { "slug": "logistics", "name": "Logística" },
+  "challengeSummary": "Um sistema de rastreamento monolítico incapaz de escalar em temporadas de alta demanda.",
+  "challengeDetails": "Nas temporadas altas o rastreamento de envios se degradava, e as equipes não conseguiam ver qual fluxo falhava primeiro.",
+  "approach": "Um roadmap de modernização por fronteiras de serviço, com observabilidade nos fluxos críticos.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Identificar os fluxos críticos de rastreamento e seus picos de carga." },
+    { "phase": "ARCHITECTURE", "body": "Separar o monólito por fronteira de negócio, começando pelo rastreamento de envios." },
+    { "phase": "GOVERNANCE", "body": "Risco técnico visível e revisão de cada fase antes da próxima temporada alta." }
+  ],
+  "solution": "Fronteiras de serviço escaláveis e observabilidade nos fluxos críticos, com migração por etapas.",
+  "outcomes": [
+    "Fronteiras de serviço escaláveis",
+    "Melhor observabilidade nos fluxos críticos",
+    "Menor risco antes da temporada alta"
+  ],
+  "deliverables": [
+    "Roadmap de modernização",
+    "Desenho de arquitetura de solução",
+    "Acompanhamento de risco técnico"
+  ],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Redesenho da infraestrutura de rastreamento logístico | Caso representativo",
+    "description": "Cenário representativo: como separar um monólito de rastreamento logístico por fronteiras de serviço antes da temporada alta."
+  }
+}

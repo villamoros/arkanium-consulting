@@ -1,0 +1,60 @@
+{
+  "id": "art-escalabilidad-saas",
+  "slug": "scaling-a-saas-before-adding-servers",
+  "title": "Scaling a SaaS: what to check before adding servers",
+  "excerpt": "A representative scenario: how a SaaS that degrades beyond 500 active customers is measured and how its bottlenecks are prioritized.",
+  "featured": false,
+  "publishedAt": "2026-09-28T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnosis & risk" },
+  "caseStudies": [{ "slug": "saas-scalability-assessment" }],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-plataforma-pagos" }, { "id": "art-seguimiento-logistico" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "This article describes a representative scenario. It does not describe work with a specific client, and the results it mentions are expected, not achieved." }] },
+        { "type": "heading-one", "children": [{ "text": "Scaling blind" }] },
+        { "type": "paragraph", "children": [{ "text": "A SaaS platform began to degrade beyond 500 active customers at the same time. The usual answer, adding infrastructure, cost money without solving the problem, because nobody knew which bottleneck needed it." }] },
+        { "type": "heading-one", "children": [{ "text": "Measure before deciding" }] },
+        { "type": "paragraph", "children": [
+          { "text": "The first step was a " },
+          { "type": "link", "href": "/en/solutions/strategy/technical-health-check/", "children": [{ "text": "technical health check" }] },
+          { "text": " of the platform, to measure what degrades and at which point of the system. The conversation then moved from \"more servers\" to \"which bottleneck first\"." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Prioritize by impact" }] },
+        { "type": "paragraph", "children": [
+          { "text": "The bottlenecks were ordered by their impact on customers and by the cost of fixing them. The " },
+          { "type": "link", "href": "/en/solutions/architecture/architecture-assessment/", "children": [{ "text": "architecture assessment" }] },
+          { "text": " defined migration routes for the first three." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Technical leadership to execute" }] },
+        { "type": "paragraph", "children": [
+          { "text": "A plan without an owner dilutes. That is why the team had " },
+          { "type": "link", "href": "/en/solutions/architecture/fractional-cto-growth-tier/", "children": [{ "text": "fractional technical leadership" }] },
+          { "text": " that decided the order of the improvements and their criteria to move forward." }
+        ] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Measure the degradation before adding infrastructure." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Prioritize by impact on customers, not by ease." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Assign an owner to each migration route." }] }] }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "How to apply it to your platform" }] },
+        { "type": "paragraph", "children": [
+          { "text": "If your SaaS slows down as it grows, measure before you buy. The full scenario is in our " },
+          { "type": "link", "href": "/en/case-studies/saas-scalability-assessment/", "children": [{ "text": "case studies" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Scaling a SaaS: what to check before adding servers | Representative scenario",
+    "metaDescription": "Representative scenario: how to measure and prioritize the bottlenecks of a SaaS before adding infrastructure."
+  }
+}

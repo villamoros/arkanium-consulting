@@ -1,0 +1,55 @@
+{
+  "id": "art-seguimiento-logistico",
+  "slug": "escalar-o-rastreamento-na-alta-temporada",
+  "title": "Por que um sistema de rastreamento não aguenta a alta temporada",
+  "excerpt": "Um cenário representativo: como identificar os fluxos críticos de um monólito de rastreamento e separá-los por fronteiras de serviço.",
+  "featured": false,
+  "publishedAt": "2026-09-26T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "guide",
+  "category": { "slug": "architecture-modernization", "name": "Arquitetura e modernização" },
+  "caseStudies": [{ "slug": "logistics-tracking-redesign" }],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }, { "id": "art-plataforma-pagos" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Este artigo descreve um cenário representativo. Não descreve um trabalho com um cliente específico, e os resultados que menciona são esperados, não alcançados." }] },
+        { "type": "heading-one", "children": [{ "text": "O problema da alta temporada" }] },
+        { "type": "paragraph", "children": [{ "text": "Durante o resto do ano o sistema de rastreamento funciona. Na alta temporada, os picos de consultas degradam o monólito inteiro de uma vez, e ninguém consegue ver qual fluxo falha primeiro." }] },
+        { "type": "heading-one", "children": [{ "text": "Identificar os fluxos críticos" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Antes de dividir qualquer coisa, medimos os fluxos que geram mais carga e os que o cliente final percebe. O ponto de partida é um " },
+          { "type": "link", "href": "/pt/solutions/architecture/architecture-modernization-roadmap/", "children": [{ "text": "roadmap de modernização" }] },
+          { "text": " que prioriza por impacto, e não pela idade do código." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Separar por fronteiras de negócio" }] },
+        { "type": "paragraph", "children": [{ "text": "O rastreamento de envios foi separado primeiro, porque era o fluxo mais consultado. Cada fronteira tem o seu próprio ritmo de escala e as suas próprias métricas, o que permite escalar uma parte sem tocar nas outras." }] },
+        { "type": "heading-one", "children": [{ "text": "Migração por etapas, com risco visível" }] },
+        { "type": "paragraph", "children": [
+          { "text": "A migração foi feita por etapas, cada uma com uma revisão antes da alta temporada seguinte. O desenho de cada fronteira está documentado no " },
+          { "type": "link", "href": "/pt/solutions/architecture/solution-architecture-design/", "children": [{ "text": "desenho de arquitetura de solução" }] },
+          { "text": ", e os riscos são acompanhados no " },
+          { "type": "link", "href": "/pt/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "monitoramento de risco técnico" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "O que esperar desta abordagem" }] },
+        { "type": "paragraph", "children": [{ "text": "Fronteiras de serviço escaláveis, melhor observabilidade nos fluxos críticos e menos risco antes de cada alta temporada. São expectativas do método, não números de um caso real." }] },
+        { "type": "heading-one", "children": [{ "text": "Como aplicar ao seu sistema" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Se o seu sistema desacelera justamente quando é mais usado, comece medindo os seus fluxos. O cenário completo está nos nossos " },
+          { "type": "link", "href": "/pt/case-studies/logistics-tracking-redesign/", "children": [{ "text": "casos de estudo" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Por que um sistema de rastreamento não aguenta a alta temporada | Cenário representativo",
+    "metaDescription": "Cenário representativo: como separar um monólito de rastreamento logístico por fronteiras de serviço antes da alta temporada."
+  }
+}

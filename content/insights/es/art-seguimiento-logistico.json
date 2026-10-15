@@ -1,0 +1,55 @@
+{
+  "id": "art-seguimiento-logistico",
+  "slug": "escalar-seguimiento-temporada-alta",
+  "title": "Por qué un sistema de seguimiento no aguanta la temporada alta",
+  "excerpt": "Un escenario representativo: cómo se identifican los flujos críticos de un monolito de seguimiento y se separan por fronteras de servicio.",
+  "featured": false,
+  "publishedAt": "2026-09-26T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "guide",
+  "category": { "slug": "architecture-modernization", "name": "Arquitectura y modernización" },
+  "caseStudies": [{ "slug": "logistics-tracking-redesign" }],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }, { "id": "art-plataforma-pagos" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Este artículo describe un escenario representativo. No describe un trabajo con un cliente concreto, y los resultados que menciona son esperados, no logrados." }] },
+        { "type": "heading-one", "children": [{ "text": "El problema de la temporada alta" }] },
+        { "type": "paragraph", "children": [{ "text": "Durante el resto del año el sistema de seguimiento funciona. En temporada alta, los picos de consultas hacen que todo el monolito se degrade a la vez, y nadie puede ver qué flujo falla primero." }] },
+        { "type": "heading-one", "children": [{ "text": "Identificar los flujos críticos" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Antes de dividir nada, se midieron los flujos que más carga generan y los que el cliente final percibe. El punto de partida es una " },
+          { "type": "link", "href": "/es/solutions/architecture/architecture-modernization-roadmap/", "children": [{ "text": "hoja de ruta de modernización" }] },
+          { "text": " que priorice por impacto y no por antigüedad del código." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Separar por fronteras de negocio" }] },
+        { "type": "paragraph", "children": [{ "text": "El seguimiento de envíos se separó primero, porque era el flujo más consultado. Cada frontera tiene su propio ritmo de escalado y sus propias métricas, lo que permite escalar una parte sin tocar las demás." }] },
+        { "type": "heading-one", "children": [{ "text": "Migración por etapas, con riesgo visible" }] },
+        { "type": "paragraph", "children": [
+          { "text": "La migración se hizo por etapas, cada una con una revisión antes de la siguiente temporada alta. El diseño de cada frontera se documenta en el " },
+          { "type": "link", "href": "/es/solutions/architecture/solution-architecture-design/", "children": [{ "text": "diseño de arquitectura de solución" }] },
+          { "text": ", y los riesgos se siguen en el " },
+          { "type": "link", "href": "/es/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "monitoreo de riesgo técnico" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Qué esperar de este enfoque" }] },
+        { "type": "paragraph", "children": [{ "text": "Fronteras de servicio escalables, mejor observabilidad en los flujos críticos y menos riesgo antes de cada temporada alta. Son expectativas del método, no cifras de un caso real." }] },
+        { "type": "heading-one", "children": [{ "text": "Cómo aplicarlo a tu sistema" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Si tu sistema se degrada justo cuando más lo usas, empieza por medir sus flujos. El escenario completo está en los " },
+          { "type": "link", "href": "/es/case-studies/logistics-tracking-redesign/", "children": [{ "text": "casos de estudio" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Por qué un sistema de seguimiento no aguanta la temporada alta | Escenario representativo",
+    "metaDescription": "Escenario representativo: cómo separar un monolito de seguimiento logístico por fronteras de servicio antes de la temporada alta."
+  }
+}

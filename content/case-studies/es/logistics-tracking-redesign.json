@@ -1,0 +1,42 @@
+{
+  "id": "cs-logistics-tracking-redesign",
+  "slug": "logistics-tracking-redesign",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-20T00:00:00Z",
+  "title": "Rediseño de la infraestructura de seguimiento logístico",
+  "summary": "Un sistema de seguimiento monolítico incapaz de escalar en temporadas de alta demanda.",
+  "industry": { "slug": "logistics", "name": "Logística" },
+  "challengeSummary": "Un sistema de seguimiento monolítico incapaz de escalar en temporadas de alta demanda.",
+  "challengeDetails": "En temporadas altas el seguimiento de envíos se degradaba, y los equipos no podían ver qué flujo fallaba primero.",
+  "approach": "Hoja de ruta de modernización por fronteras de servicio, con observabilidad en los flujos críticos.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Identificar los flujos críticos de seguimiento y sus picos de carga." },
+    { "phase": "ARCHITECTURE", "body": "Separar el monolito por fronteras de negocio, empezando por el seguimiento de envíos." },
+    { "phase": "GOVERNANCE", "body": "Riesgo técnico visible y revisión de cada fase antes de la siguiente temporada alta." }
+  ],
+  "solution": "Fronteras de servicio escalables y observabilidad en los flujos críticos, con migración por etapas.",
+  "outcomes": [
+    "Fronteras de servicio escalables (resultado esperado)",
+    "Mejor observabilidad en flujos críticos (resultado esperado)",
+    "Menor riesgo antes de la temporada alta (resultado esperado)"
+  ],
+  "deliverables": [
+    "Hoja de ruta de modernización",
+    "Diseño de arquitectura de solución",
+    "Seguimiento de riesgo técnico"
+  ],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Rediseño de la infraestructura de seguimiento logístico | Caso representativo",
+    "description": "Escenario representativo: cómo se separa un monolito de seguimiento logístico por fronteras de servicio para la temporada alta."
+  }
+}

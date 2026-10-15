@@ -1,0 +1,60 @@
+{
+  "id": "art-escalabilidad-saas",
+  "slug": "faire-evoluer-un-saas-avant-d-ajouter-des-serveurs",
+  "title": "Faire évoluer un SaaS : ce qu'il faut vérifier avant d'ajouter des serveurs",
+  "excerpt": "Un scénario représentatif : comment mesurer un SaaS qui se dégrade au-delà de 500 clients actifs et prioriser ses goulots d'étranglement.",
+  "featured": false,
+  "publishedAt": "2026-09-28T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnostic et risque" },
+  "caseStudies": [{ "slug": "saas-scalability-assessment" }],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-plataforma-pagos" }, { "id": "art-seguimiento-logistico" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Cet article décrit un scénario représentatif. Il ne décrit pas une mission auprès d'un client précis, et les résultats mentionnés sont attendus, non atteints." }] },
+        { "type": "heading-one", "children": [{ "text": "Évoluer à l'aveugle" }] },
+        { "type": "paragraph", "children": [{ "text": "Une plateforme SaaS a commencé à se dégrader au-delà de 500 clients actifs simultanés. La réponse habituelle, ajouter de l'infrastructure, coûtait de l'argent sans résoudre le problème, car personne ne savait quel goulot d'étranglement la justifiait." }] },
+        { "type": "heading-one", "children": [{ "text": "Mesurer avant de décider" }] },
+        { "type": "paragraph", "children": [
+          { "text": "La première étape a été un " },
+          { "type": "link", "href": "/fr/solutions/strategy/technical-health-check/", "children": [{ "text": "bilan technique" }] },
+          { "text": " de la plateforme, pour mesurer ce qui se dégrade et à quel endroit du système. La discussion est passée de « plus de serveurs » à « quel goulot d'étranglement en premier »." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Prioriser par impact" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Les goulots d'étranglement ont été classés selon leur impact sur les clients et le coût de leur correction. L'" },
+          { "type": "link", "href": "/fr/solutions/architecture/architecture-assessment/", "children": [{ "text": "évaluation d'architecture" }] },
+          { "text": " a défini des trajectoires de migration pour les trois premiers." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Un leadership technique pour exécuter" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Un plan sans responsable se dilue. C'est pourquoi l'équipe a bénéficié d'un " },
+          { "type": "link", "href": "/fr/solutions/architecture/fractional-cto-growth-tier/", "children": [{ "text": "leadership technique à temps partagé" }] },
+          { "text": " qui décidait de l'ordre des améliorations et de leurs critères d'avancement." }
+        ] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Mesurer la dégradation avant d'ajouter de l'infrastructure." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Prioriser par impact sur les clients, non par facilité." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Attribuer un responsable à chaque trajectoire de migration." }] }] }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Comment l'appliquer à votre plateforme" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Si votre SaaS ralentit en grandissant, mesurez avant d'acheter. Le scénario complet figure dans nos " },
+          { "type": "link", "href": "/fr/case-studies/saas-scalability-assessment/", "children": [{ "text": "cas d'étude" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Faire évoluer un SaaS : ce qu'il faut vérifier avant d'ajouter des serveurs | Scénario représentatif",
+    "metaDescription": "Scénario représentatif : comment mesurer et prioriser les goulots d'étranglement d'un SaaS avant d'ajouter de l'infrastructure."
+  }
+}

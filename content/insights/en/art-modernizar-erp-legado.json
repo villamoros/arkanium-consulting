@@ -1,0 +1,65 @@
+{
+  "id": "art-modernizar-erp-legado",
+  "slug": "order-a-12-year-erp-before-touching-it",
+  "title": "How to put a 12-year-old ERP in order before touching it",
+  "excerpt": "A representative scenario: how a coupled ERP with no documentation is diagnosed, which services are involved and how the change is prioritized.",
+  "featured": false,
+  "publishedAt": "2026-09-22T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "guide",
+  "category": { "slug": "architecture-modernization", "name": "Architecture & modernization" },
+  "caseStudies": [{ "slug": "erp-legacy-manufactura" }],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-plataforma-pagos" }, { "id": "art-seguimiento-logistico" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "This article describes a representative scenario that illustrates how we approach this type of problem. It does not describe work with a specific client, and the results it mentions are expected, not achieved." }] },
+        { "type": "heading-one", "children": [{ "text": "The starting point" }] },
+        { "type": "paragraph", "children": [{ "text": "A mid-sized manufacturer ran a 12-year-old ERP. Its modules were coupled, it had almost no documentation, and every deployment took three weeks to coordinate with the business. Each small change required reviewing much of the system, and the knowledge sat with a few people." }] },
+        { "type": "heading-one", "children": [{ "text": "First, understand before changing" }] },
+        { "type": "paragraph", "children": [
+          { "text": "The first step was not to rewrite anything. An architecture assessment mapped the dependencies, identified the riskiest modules and separated what the business uses from what was simply there. The method is described in the " },
+          { "type": "link", "href": "/en/solutions/architecture/architecture-assessment/", "children": [{ "text": "architecture assessment" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Module boundaries before replacements" }] },
+        { "type": "paragraph", "children": [{ "text": "Instead of a full replacement, clear boundaries were defined between modules: which data each area owns and which interfaces the others may use. Each change then touched only its boundary, and the modernization could move forward in parts." }] },
+        { "type": "paragraph", "children": [
+          { "text": "The resulting roadmap ordered the modernization in phases, with criteria to move forward. That work is described in the " },
+          { "type": "link", "href": "/en/solutions/architecture/architecture-modernization-roadmap/", "children": [{ "text": "modernization roadmap" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Designing the target architecture" }] },
+        { "type": "paragraph", "children": [
+          { "text": "For the priority modules, the solution architecture was designed: components, data flows and integrations with the rest of the system. Every decision was documented with its reason, so the internal team could sustain it without depending on the people who made it. The detail is in the " },
+          { "type": "link", "href": "/en/solutions/architecture/solution-architecture-design/", "children": [{ "text": "solution architecture design" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Risk governance during the transition" }] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "A technical risk register with assigned owners." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Periodic review of architecture decisions." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "A simple report for leadership in each phase." }] }] }
+        ] },
+        { "type": "paragraph", "children": [{ "text": "The transition therefore does not depend on a single project: the risk is visible and managed continuously." }] },
+        { "type": "heading-one", "children": [{ "text": "What to expect from this approach" }] },
+        { "type": "paragraph", "children": [{ "text": "The expected results of work like this are lower deployment risk, clear module boundaries and better operational visibility. They are expectations based on the method, not figures from a real case." }] },
+        { "type": "heading-one", "children": [{ "text": "How to apply it to your system" }] },
+        { "type": "paragraph", "children": [
+          { "text": "If your system has a similar problem, the first step is the same: an assessment that separates the diagnosis from the decision. The full scenario is in our " },
+          { "type": "link", "href": "/en/case-studies/erp-legacy-manufactura/", "children": [{ "text": "case studies" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "How to put a 12-year-old ERP in order before touching it | Representative scenario",
+    "metaDescription": "Representative scenario: how a coupled ERP with no documentation is diagnosed before it changes, with the services involved."
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "art-plataforma-pagos",
+  "slug": "ordenar-datos-plataforma-pagos",
+  "title": "Cuando un pago pasa por demasiados caminos",
+  "excerpt": "Un escenario representativo: cómo se traza una plataforma de pagos con lógica distribuida y datos sin dueño, y qué servicios ordenan el flujo.",
+  "featured": false,
+  "publishedAt": "2026-09-25T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnóstico y riesgo" },
+  "caseStudies": [{ "slug": "fintech-payments-architecture" }],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Este artículo describe un escenario representativo. No describe un trabajo con un cliente concreto, y los resultados que menciona son esperados, no logrados." }] },
+        { "type": "heading-one", "children": [{ "text": "Dónde se pierde la trazabilidad" }] },
+        { "type": "paragraph", "children": [{ "text": "Una plataforma de pagos crece por capas: cobro, antifraude, conciliación y contabilidad. Cuando cada capa decide por su lado, una misma transacción puede tener tres estados distintos. Encontrar cuál es el correcto lleva días." }] },
+        { "type": "heading-one", "children": [{ "text": "Un dueño para cada dato" }] },
+        { "type": "paragraph", "children": [
+          { "text": "El primer cambio fue asignar un dueño a cada dato de la transacción. La decisión de estado queda en un solo servicio, y los demás la consultan. El método de diagnóstico está en la " },
+          { "type": "link", "href": "/es/solutions/architecture/architecture-assessment/", "children": [{ "text": "evaluación de arquitectura" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Un flujo de conciliación explícito" }] },
+        { "type": "paragraph", "children": [
+          { "text": "La conciliación dejó de ser un proceso oculto y pasó a ser un flujo con eventos documentados. El diseño de ese flujo se hace con el " },
+          { "type": "link", "href": "/es/solutions/architecture/solution-architecture-design/", "children": [{ "text": "diseño de arquitectura de solución" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Riesgo que se revisa en cada cambio" }] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Cada riesgo de datos tiene un responsable." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Cada cambio de flujo se revisa antes de salir a producción." }] }] }
+        ] },
+        { "type": "paragraph", "children": [
+          { "text": "Ese seguimiento continuo es el alcance del " },
+          { "type": "link", "href": "/es/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "monitoreo de riesgo técnico" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Cómo aplicarlo a tu plataforma" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Si tus datos de pago se contradicen entre áreas, empieza por la trazabilidad. El escenario completo está en los " },
+          { "type": "link", "href": "/es/case-studies/fintech-payments-architecture/", "children": [{ "text": "casos de estudio" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Cuando un pago pasa por demasiados caminos | Escenario representativo",
+    "metaDescription": "Escenario representativo: cómo ordenar una plataforma de pagos con datos sin dueño y lógica distribuida."
+  }
+}

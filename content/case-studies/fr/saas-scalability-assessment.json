@@ -1,0 +1,42 @@
+{
+  "id": "cs-saas-scalability-assessment",
+  "slug": "saas-scalability-assessment",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-24T00:00:00Z",
+  "title": "Évaluation de la scalabilité d'une plateforme SaaS",
+  "summary": "Une plateforme SaaS dont les performances se dégradent au-delà de 500 clients actifs simultanés.",
+  "industry": { "slug": "saas-b2b", "name": "SaaS B2B" },
+  "challengeSummary": "Une plateforme SaaS dont les performances se dégradent au-delà de 500 clients actifs simultanés.",
+  "challengeDetails": "La décision de monter en charge se prenait sans données : on ajoutait de l'infrastructure sans savoir quel goulot d'étranglement la justifiait.",
+  "approach": "Un bilan technique et une évaluation d'architecture, avec un leadership technique pour prioriser les améliorations.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Mesurer ce qui se dégrade au-delà de 500 clients actifs et à quel endroit du système." },
+    { "phase": "ARCHITECTURE", "body": "Prioriser les goulots d'étranglement par impact et définir les trajectoires de migration." },
+    { "phase": "GOVERNANCE", "body": "Un leadership technique qui décide de l'ordre des améliorations et de leurs critères d'avancement." }
+  ],
+  "solution": "Une carte des goulots d'étranglement priorisée, des trajectoires de migration définies et un plan de leadership technique pour le mettre en œuvre.",
+  "outcomes": [
+    "Goulots d'étranglement priorisés",
+    "Trajectoires de migration définies",
+    "Recommandations de leadership en architecture"
+  ],
+  "deliverables": [
+    "Bilan technique de la plateforme",
+    "Évaluation d'architecture",
+    "Leadership technique à temps partagé pour la mise en œuvre"
+  ],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Évaluation de la scalabilité d'une plateforme SaaS | Cas représentatif",
+    "description": "Scénario représentatif : comment mesurer les goulots d'étranglement d'un SaaS au-delà de 500 clients actifs avant d'ajouter de l'infrastructure."
+  }
+}

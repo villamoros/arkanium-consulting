@@ -1,0 +1,42 @@
+{
+  "id": "cs-erp-legacy-manufactura",
+  "slug": "erp-legacy-manufactura",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-15T00:00:00Z",
+  "title": "Modernizing a legacy ERP in manufacturing",
+  "summary": "A 12-year-old ERP with coupled modules, no documentation and 3-week deployment cycles.",
+  "industry": { "slug": "manufacturing", "name": "Manufacturing" },
+  "challengeSummary": "A 12-year-old ERP with coupled modules, no documentation and 3-week deployment cycles.",
+  "challengeDetails": "Every small change required reviewing much of the system, and the knowledge sat with a few people. Deliveries were coordinated with the business over weeks.",
+  "approach": "First an architecture assessment, then module boundaries and a phased roadmap with clear criteria to move forward.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "A dependency map, the highest-risk modules, and a separation between what the business uses and what it does not." },
+    { "phase": "ARCHITECTURE", "body": "Module boundaries with a defined data owner and explicit interfaces, and target architecture design for the priority modules." },
+    { "phase": "GOVERNANCE", "body": "A technical risk register with owners, periodic review of decisions and a simple report for leadership in each phase." }
+  ],
+  "solution": "Modernization in parts, not a full replacement: each change touches only its boundary, and every decision is documented with its reason.",
+  "outcomes": [
+    "Lower deployment risk",
+    "Clear module boundaries",
+    "Better operational visibility"
+  ],
+  "deliverables": [
+    "Architecture assessment",
+    "Phased modernization roadmap",
+    "Solution architecture design for the priority modules"
+  ],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Modernizing a legacy ERP in manufacturing | Representative case",
+    "description": "Representative scenario: how a coupled ERP with no documentation is put in order before it changes, with which services and what to expect."
+  }
+}

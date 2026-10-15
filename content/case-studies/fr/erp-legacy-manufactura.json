@@ -1,0 +1,42 @@
+{
+  "id": "cs-erp-legacy-manufactura",
+  "slug": "erp-legacy-manufactura",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-15T00:00:00Z",
+  "title": "Modernisation d'un ERP hérité dans l'industrie",
+  "summary": "Un ERP de 12 ans aux modules couplés, sans documentation, avec des cycles de déploiement de 3 semaines.",
+  "industry": { "slug": "manufacturing", "name": "Industrie" },
+  "challengeSummary": "Un ERP de 12 ans aux modules couplés, sans documentation, avec des cycles de déploiement de 3 semaines.",
+  "challengeDetails": "Chaque petit changement exigeait de revoir une grande partie du système, et la connaissance reposait sur peu de personnes. Les livraisons se coordonnaient avec le métier pendant des semaines.",
+  "approach": "D'abord une évaluation d'architecture, puis des frontières de modules et une feuille de route par phases, avec des critères clairs pour avancer.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Une carte des dépendances, les modules les plus risqués et la séparation entre ce que le métier utilise et ce qu'il n'utilise pas." },
+    { "phase": "ARCHITECTURE", "body": "Des frontières de modules avec un propriétaire de données défini et des interfaces explicites, et la conception de l'architecture cible pour les modules prioritaires." },
+    { "phase": "GOVERNANCE", "body": "Un registre des risques techniques avec des responsables, une revue périodique des décisions et un rapport simple pour la direction à chaque phase." }
+  ],
+  "solution": "Une modernisation par parties, sans remplacement complet : chaque changement ne touche que sa frontière, et chaque décision est documentée avec sa raison.",
+  "outcomes": [
+    "Réduction du risque de déploiement",
+    "Frontières de modules claires",
+    "Visibilité opérationnelle améliorée"
+  ],
+  "deliverables": [
+    "Évaluation d'architecture",
+    "Feuille de route de modernisation par phases",
+    "Conception d'architecture de solution pour les modules prioritaires"
+  ],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Modernisation d'un ERP hérité dans l'industrie | Cas représentatif",
+    "description": "Scénario représentatif : comment mettre en ordre un ERP couplé et sans documentation avant de le modifier, avec quels services et quelles attentes."
+  }
+}

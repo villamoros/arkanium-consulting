@@ -1,0 +1,65 @@
+{
+  "id": "art-modernizar-erp-legado",
+  "slug": "ordonner-un-erp-de-12-ans-avant-de-le-modifier",
+  "title": "Comment ordonner un ERP de 12 ans avant de le modifier",
+  "excerpt": "Un scénario représentatif : comment diagnostiquer un ERP couplé et sans documentation, quels services interviennent et comment prioriser le changement.",
+  "featured": false,
+  "publishedAt": "2026-09-22T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "guide",
+  "category": { "slug": "architecture-modernization", "name": "Architecture et modernisation" },
+  "caseStudies": [{ "slug": "erp-legacy-manufactura" }],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-plataforma-pagos" }, { "id": "art-seguimiento-logistico" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Cet article décrit un scénario représentatif qui illustre notre manière d'aborder ce type de problème. Il ne décrit pas une mission auprès d'un client précis, et les résultats mentionnés sont attendus, non atteints." }] },
+        { "type": "heading-one", "children": [{ "text": "Le point de départ" }] },
+        { "type": "paragraph", "children": [{ "text": "Un fabricant de taille moyenne exploitait un ERP de douze ans. Ses modules étaient couplés, il n'avait presque aucune documentation, et chaque déploiement prenait trois semaines à coordonner avec le métier. Chaque petit changement exigeait de revoir une grande partie du système, et la connaissance reposait sur peu de personnes." }] },
+        { "type": "heading-one", "children": [{ "text": "D'abord comprendre avant de changer" }] },
+        { "type": "paragraph", "children": [
+          { "text": "La première étape n'a pas été de réécrire quoi que ce soit. Une évaluation d'architecture a cartographié les dépendances, identifié les modules les plus risqués et séparé ce que le métier utilise de ce qui était simplement là. La méthode est décrite dans l'" },
+          { "type": "link", "href": "/fr/solutions/architecture/architecture-assessment/", "children": [{ "text": "évaluation d'architecture" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Des frontières de modules avant les remplacements" }] },
+        { "type": "paragraph", "children": [{ "text": "Plutôt qu'un remplacement complet, des frontières claires ont été définies entre les modules : quelles données chaque domaine possède et quelles interfaces les autres peuvent utiliser. Chaque changement ne touchait alors que sa frontière, et la modernisation a pu avancer par parties." }] },
+        { "type": "paragraph", "children": [
+          { "text": "La feuille de route qui en est sortie a ordonné la modernisation en phases, avec des critères pour avancer. Ce travail est décrit dans la " },
+          { "type": "link", "href": "/fr/solutions/architecture/architecture-modernization-roadmap/", "children": [{ "text": "feuille de route de modernisation" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Concevoir l'architecture cible" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Pour les modules prioritaires, l'architecture de solution a été conçue : composants, flux de données et intégrations avec le reste du système. Chaque décision a été documentée avec sa raison, afin que l'équipe interne puisse la tenir sans dépendre de ceux qui l'avaient prise. Le détail se trouve dans la " },
+          { "type": "link", "href": "/fr/solutions/architecture/solution-architecture-design/", "children": [{ "text": "conception d'architecture de solution" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Gouverner le risque pendant la transition" }] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Un registre des risques techniques avec des responsables désignés." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Une revue périodique des décisions d'architecture." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Un rapport simple pour la direction à chaque phase." }] }] }
+        ] },
+        { "type": "paragraph", "children": [{ "text": "La transition ne dépend donc pas d'un seul projet : le risque est visible et géré en continu." }] },
+        { "type": "heading-one", "children": [{ "text": "Ce qu'il faut attendre de cette approche" }] },
+        { "type": "paragraph", "children": [{ "text": "Les résultats attendus d'un travail de ce type sont un risque de déploiement plus faible, des frontières de modules claires et une meilleure visibilité opérationnelle. Ce sont des attentes fondées sur la méthode, non des chiffres d'un cas réel." }] },
+        { "type": "heading-one", "children": [{ "text": "Comment l'appliquer à votre système" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Si votre système présente un problème semblable, la première étape est la même : une évaluation qui sépare le diagnostic de la décision. Le scénario complet figure dans nos " },
+          { "type": "link", "href": "/fr/case-studies/erp-legacy-manufactura/", "children": [{ "text": "cas d'étude" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Comment ordonner un ERP de 12 ans avant de le modifier | Scénario représentatif",
+    "metaDescription": "Scénario représentatif : comment diagnostiquer un ERP couplé et sans documentation avant de le modifier, avec les services impliqués."
+  }
+}

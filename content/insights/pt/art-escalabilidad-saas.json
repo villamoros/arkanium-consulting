@@ -1,0 +1,60 @@
+{
+  "id": "art-escalabilidad-saas",
+  "slug": "escalar-um-saas-antes-de-adicionar-servidores",
+  "title": "Escalar um SaaS: o que verificar antes de adicionar servidores",
+  "excerpt": "Um cenário representativo: como medir um SaaS que se degrada a partir de 500 clientes ativos e como priorizar os seus gargalos.",
+  "featured": false,
+  "publishedAt": "2026-09-28T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnóstico e risco" },
+  "caseStudies": [{ "slug": "saas-scalability-assessment" }],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-plataforma-pagos" }, { "id": "art-seguimiento-logistico" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Este artigo descreve um cenário representativo. Não descreve um trabalho com um cliente específico, e os resultados que menciona são esperados, não alcançados." }] },
+        { "type": "heading-one", "children": [{ "text": "Escalar às cegas" }] },
+        { "type": "paragraph", "children": [{ "text": "Uma plataforma SaaS começou a se degradar ao ultrapassar 500 clientes ativos simultâneos. A resposta habitual, adicionar infraestrutura, custava dinheiro sem resolver o problema, porque ninguém sabia qual gargalo a justificava." }] },
+        { "type": "heading-one", "children": [{ "text": "Medir antes de decidir" }] },
+        { "type": "paragraph", "children": [
+          { "text": "O primeiro passo foi um " },
+          { "type": "link", "href": "/pt/solutions/strategy/technical-health-check/", "children": [{ "text": "check-up técnico" }] },
+          { "text": " da plataforma, para medir o que se degrada e em que ponto do sistema. A conversa passou de «mais servidores» para «qual gargalo primeiro»." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Priorizar por impacto" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Os gargalos foram ordenados pelo impacto nos clientes e pelo custo de corrigi-los. A " },
+          { "type": "link", "href": "/pt/solutions/architecture/architecture-assessment/", "children": [{ "text": "avaliação de arquitetura" }] },
+          { "text": " definiu rotas de migração para os três primeiros." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Liderança técnica para executar" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Um plano sem responsável se dissolve. Por isso a equipe contou com uma " },
+          { "type": "link", "href": "/pt/solutions/architecture/fractional-cto-growth-tier/", "children": [{ "text": "liderança técnica fracionada" }] },
+          { "text": " que decidia a ordem das melhorias e os critérios para avançar." }
+        ] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Medir a degradação antes de adicionar infraestrutura." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Priorizar pelo impacto nos clientes, não pela facilidade." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Atribuir um responsável a cada rota de migração." }] }] }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Como aplicar à sua plataforma" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Se o seu SaaS desacelera ao crescer, meça antes de comprar. O cenário completo está nos nossos " },
+          { "type": "link", "href": "/pt/case-studies/saas-scalability-assessment/", "children": [{ "text": "casos de estudo" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Escalar um SaaS: o que verificar antes de adicionar servidores | Cenário representativo",
+    "metaDescription": "Cenário representativo: como medir e priorizar os gargalos de um SaaS antes de adicionar infraestrutura."
+  }
+}

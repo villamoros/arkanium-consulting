@@ -1,0 +1,55 @@
+{
+  "id": "art-seguimiento-logistico",
+  "slug": "faire-passer-le-suivi-a-l-echelle-en-haute-saison",
+  "title": "Pourquoi un système de suivi ne tient pas la haute saison",
+  "excerpt": "Un scénario représentatif : comment identifier les flux critiques d'un monolithe de suivi et les séparer par frontières de services.",
+  "featured": false,
+  "publishedAt": "2026-09-26T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "guide",
+  "category": { "slug": "architecture-modernization", "name": "Architecture et modernisation" },
+  "caseStudies": [{ "slug": "logistics-tracking-redesign" }],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }, { "id": "art-plataforma-pagos" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Cet article décrit un scénario représentatif. Il ne décrit pas une mission auprès d'un client précis, et les résultats mentionnés sont attendus, non atteints." }] },
+        { "type": "heading-one", "children": [{ "text": "Le problème de la haute saison" }] },
+        { "type": "paragraph", "children": [{ "text": "Le reste de l'année, le système de suivi fonctionne. En haute saison, les pics de requêtes dégradent tout le monolithe d'un coup, et personne ne peut voir quel flux tombe en premier." }] },
+        { "type": "heading-one", "children": [{ "text": "Identifier les flux critiques" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Avant de découper quoi que ce soit, on a mesuré les flux qui génèrent le plus de charge et ceux que le client final perçoit. Le point de départ est une " },
+          { "type": "link", "href": "/fr/solutions/architecture/architecture-modernization-roadmap/", "children": [{ "text": "feuille de route de modernisation" }] },
+          { "text": " qui priorise par impact plutôt que par l'ancienneté du code." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Séparer par frontières métier" }] },
+        { "type": "paragraph", "children": [{ "text": "Le suivi des envois a été séparé en premier, car c'était le flux le plus consulté. Chaque frontière a son propre rythme de montée en charge et ses propres métriques, ce qui permet de faire évoluer une partie sans toucher aux autres." }] },
+        { "type": "heading-one", "children": [{ "text": "Migration par étapes, avec un risque visible" }] },
+        { "type": "paragraph", "children": [
+          { "text": "La migration s'est faite par étapes, chacune avec une revue avant la haute saison suivante. La conception de chaque frontière est documentée dans la " },
+          { "type": "link", "href": "/fr/solutions/architecture/solution-architecture-design/", "children": [{ "text": "conception d'architecture de solution" }] },
+          { "text": ", et les risques sont suivis dans le " },
+          { "type": "link", "href": "/fr/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "suivi du risque technique" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Ce qu'il faut attendre de cette approche" }] },
+        { "type": "paragraph", "children": [{ "text": "Des frontières de services évolutives, une meilleure observabilité des flux critiques et moins de risque avant chaque haute saison. Ce sont des attentes de la méthode, non des chiffres d'un cas réel." }] },
+        { "type": "heading-one", "children": [{ "text": "Comment l'appliquer à votre système" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Si votre système ralentit précisément quand il est le plus utilisé, commencez par mesurer ses flux. Le scénario complet figure dans nos " },
+          { "type": "link", "href": "/fr/case-studies/logistics-tracking-redesign/", "children": [{ "text": "cas d'étude" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Pourquoi un système de suivi ne tient pas la haute saison | Scénario représentatif",
+    "metaDescription": "Scénario représentatif : comment découper un monolithe de suivi logistique par frontières de services avant la haute saison."
+  }
+}

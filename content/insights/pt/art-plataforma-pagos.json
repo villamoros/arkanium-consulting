@@ -1,0 +1,59 @@
+{
+  "id": "art-plataforma-pagos",
+  "slug": "organizar-uma-plataforma-de-pagamentos",
+  "title": "Quando um pagamento passa por caminhos demais",
+  "excerpt": "Um cenário representativo: como mapear uma plataforma de pagamentos com lógica distribuída e dados sem dono, e quais serviços colocam o fluxo em ordem.",
+  "featured": false,
+  "publishedAt": "2026-09-25T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnóstico e risco" },
+  "caseStudies": [{ "slug": "fintech-payments-architecture" }],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Este artigo descreve um cenário representativo. Não descreve um trabalho com um cliente específico, e os resultados que menciona são esperados, não alcançados." }] },
+        { "type": "heading-one", "children": [{ "text": "Onde a rastreabilidade se perde" }] },
+        { "type": "paragraph", "children": [{ "text": "Uma plataforma de pagamentos cresce em camadas: cobrança, antifraude, conciliação e contabilidade. Quando cada camada decide por conta própria, uma mesma transação pode ter três estados diferentes. Descobrir qual é o correto leva dias." }] },
+        { "type": "heading-one", "children": [{ "text": "Um dono para cada dado" }] },
+        { "type": "paragraph", "children": [
+          { "text": "A primeira mudança foi atribuir um dono a cada dado da transação. A decisão sobre o estado passa a viver em um único serviço, e os demais a consultam. O método de diagnóstico está descrito na " },
+          { "type": "link", "href": "/pt/solutions/architecture/architecture-assessment/", "children": [{ "text": "avaliação de arquitetura" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Um fluxo de conciliação explícito" }] },
+        { "type": "paragraph", "children": [
+          { "text": "A conciliação deixou de ser um processo oculto e virou um fluxo com eventos documentados. Esse fluxo é desenhado com o " },
+          { "type": "link", "href": "/pt/solutions/architecture/solution-architecture-design/", "children": [{ "text": "desenho de arquitetura de solução" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Risco revisado a cada mudança" }] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Cada risco sobre os dados tem um responsável." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Cada mudança no fluxo é revisada antes de chegar à produção." }] }] }
+        ] },
+        { "type": "paragraph", "children": [
+          { "text": "Esse acompanhamento contínuo é o escopo do " },
+          { "type": "link", "href": "/pt/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "monitoramento de risco técnico" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Como aplicar à sua plataforma" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Se os seus dados de pagamento se contradizem entre áreas, comece pela rastreabilidade. O cenário completo está nos nossos " },
+          { "type": "link", "href": "/pt/case-studies/fintech-payments-architecture/", "children": [{ "text": "casos de estudo" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Quando um pagamento passa por caminhos demais | Cenário representativo",
+    "metaDescription": "Cenário representativo: como organizar uma plataforma de pagamentos com dados sem dono e lógica distribuída."
+  }
+}
