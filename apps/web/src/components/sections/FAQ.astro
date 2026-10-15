@@ -1,0 +1,17 @@
+---
+import type { HomeFaq } from '../../lib/home';
+import SectionHeading from '../ui/SectionHeading.astro';
+import FAQItem from '../ui/FAQItem.astro';
+
+interface Props {
+  content: HomeFaq;
+}
+const { content } = Astro.props;
+---
+
+<section class="faq section-band" id="faq" aria-labelledby="faq-heading">
+  <SectionHeading id="faq-heading" eyebrow={content.eyebrow} title={content.title} />
+  <div class="faq-list reveal">
+    {content.items.map((item) => <FAQItem question={item.question} answer={item.answer} />)}
+  </div>
+</section>

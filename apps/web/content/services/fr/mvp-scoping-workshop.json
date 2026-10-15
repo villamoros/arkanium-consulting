@@ -1,0 +1,26 @@
+{
+  "id": "mvp-scoping-workshop",
+  "value": "mvp-scoping-workshop",
+  "label": "Atelier de cadrage du MVP",
+  "name": "Atelier de cadrage du MVP",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "Stratégie de MVP",
+    "order": 3
+  },
+  "position": 9,
+  "duration": null,
+  "description": "Un atelier ciblé qui définit le plus petit ensemble de fonctionnalités testant la valeur centrale du produit.",
+  "problem": "La première version tend à grossir jusqu’à devenir trop vaste pour valider quoi que ce soit.",
+  "solution": "Nous séparons l’indispensable du souhaitable, définissons les objectifs d’apprentissage du MVP et convenons de la ligne de coupe.",
+  "outcomes": [
+    "Ensemble des fonctionnalités indispensables",
+    "Objectifs d’apprentissage du MVP",
+    "Ligne de coupe convenue"
+  ]
+}

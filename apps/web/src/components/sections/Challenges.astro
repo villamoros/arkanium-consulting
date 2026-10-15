@@ -1,0 +1,29 @@
+---
+import type { HomeChallenges } from '../../lib/home';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  content: HomeChallenges;
+}
+const { content } = Astro.props;
+---
+
+<section class="problem section-band" id="challenges" aria-labelledby="challenges-heading">
+  <SectionHeading
+    id="challenges-heading"
+    eyebrow={content.eyebrow}
+    title={content.title}
+    intro={content.intro}
+  />
+  <div class="problem-grid">
+    {
+      content.items.map((item, i) => (
+        <article class="risk-item reveal">
+          <span aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>

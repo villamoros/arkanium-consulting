@@ -1,0 +1,26 @@
+{
+  "id": "discovery-workshop",
+  "value": "discovery-workshop",
+  "label": "Taller de descubrimiento",
+  "name": "Taller de descubrimiento",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Descubrimiento de producto",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Una sesión facilitada para alinear el problema del usuario, el mercado objetivo y los supuestos a probar.",
+  "problem": "Existe una idea de producto, pero el equipo no comparte la misma visión del problema que resuelve.",
+  "solution": "Dirigimos un taller estructurado que convierte la idea en declaraciones de problema explícitas y supuestos comprobables.",
+  "outcomes": [
+    "Declaración de problema compartida",
+    "Lista de supuestos a probar, ordenada",
+    "Alcance de descubrimiento acordado"
+  ]
+}

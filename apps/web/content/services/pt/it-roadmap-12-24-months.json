@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-12-24-months",
+  "value": "it-roadmap-12-24-months",
+  "label": "Roadmap de TI (12-24 meses)",
+  "name": "Roadmap de TI (12-24 meses)",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Roadmap de TI",
+    "order": 4
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Um roadmap de TI de médio prazo que sequencia iniciativas de modernização e entrega ao longo de um a dois anos.",
+  "problem": "As iniciativas de modernização e entrega não estão sequenciadas no tempo, e os compromissos colidem.",
+  "solution": "Construímos um roadmap sequenciado com marcos, dependências, janelas de financiamento e as decisões que cada fase exige.",
+  "outcomes": [
+    "Roadmap sequenciado de 12 a 24 meses",
+    "Marcos e dependências mapeados",
+    "Decisões necessárias por fase"
+  ]
+}

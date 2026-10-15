@@ -1,0 +1,26 @@
+{
+  "id": "embedded-technical-leadership",
+  "value": "embedded-technical-leadership",
+  "label": "Leadership technique intégré",
+  "name": "Leadership technique intégré",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Leadership technologique",
+    "order": 3
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Un leadership technique intégré à l’organisation pour une période convenue, aux côtés de ses équipes.",
+  "problem": "L'organisation a besoin d'un leadership technique au sein de ses équipes pendant qu'elle construit sa propre capacité.",
+  "solution": "Nous travaillons au sein des équipes pour piloter les décisions techniques et transférer les pratiques, avec un plan de passation défini.",
+  "outcomes": [
+    "Décisions techniques pilotées au sein des équipes",
+    "Pratiques transférées à l’organisation",
+    "Plan de passation défini"
+  ]
+}

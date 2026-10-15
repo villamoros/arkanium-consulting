@@ -1,0 +1,42 @@
+{
+  "id": "cs-erp-legacy-manufactura",
+  "slug": "erp-legacy-manufactura",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-15T00:00:00Z",
+  "title": "Modernização de um ERP legado na indústria",
+  "summary": "Um ERP de 12 anos com módulos acoplados, sem documentação e ciclos de implantação de 3 semanas.",
+  "industry": { "slug": "manufacturing", "name": "Indústria" },
+  "challengeSummary": "Um ERP de 12 anos com módulos acoplados, sem documentação e ciclos de implantação de 3 semanas.",
+  "challengeDetails": "Cada pequena mudança exigia revisar grande parte do sistema, e o conhecimento estava com poucas pessoas. As entregas eram coordenadas com o negócio durante semanas.",
+  "approach": "Primeiro uma avaliação de arquitetura, depois fronteiras de módulos e um roadmap por fases, com critérios claros para avançar.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Um mapa de dependências, os módulos de maior risco e a separação entre o que o negócio usa e o que não usa." },
+    { "phase": "ARCHITECTURE", "body": "Fronteiras de módulos com dono de dados definido e interfaces explícitas, e o desenho da arquitetura-alvo para os módulos prioritários." },
+    { "phase": "GOVERNANCE", "body": "Um registro de riscos técnicos com responsáveis, revisão periódica das decisões e um relatório simples para a liderança em cada fase." }
+  ],
+  "solution": "Modernização por partes, não por substituição completa: cada mudança toca apenas a sua fronteira, e cada decisão fica documentada com a sua justificativa.",
+  "outcomes": [
+    "Redução do risco de implantação",
+    "Fronteiras de módulos claras",
+    "Maior visibilidade operacional"
+  ],
+  "deliverables": [
+    "Avaliação de arquitetura",
+    "Roadmap de modernização por fases",
+    "Desenho de arquitetura de solução para os módulos prioritários"
+  ],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Modernização de um ERP legado na indústria | Caso representativo",
+    "description": "Cenário representativo: como organizar um ERP acoplado e sem documentação antes de alterá-lo, com quais serviços e quais expectativas."
+  }
+}

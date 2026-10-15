@@ -1,0 +1,26 @@
+{
+  "id": "product-advisory-light",
+  "value": "product-advisory-light",
+  "label": "Conseil produit (allégé)",
+  "name": "Conseil produit (allégé)",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Management produit",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Conseil léger et périodique pour les responsables produit sur les priorités, les décisions et les pratiques produit.",
+  "problem": "Les responsables produit ont besoin d’un regard extérieur sur leurs décisions, sans nécessiter un rôle à temps plein.",
+  "solution": "Nous nous réunissons périodiquement pour revoir les priorités et les décisions, et partager des pratiques adaptées au stade du produit.",
+  "outcomes": [
+    "Revue périodique des priorités",
+    "Regard extérieur sur les décisions clés",
+    "Pratiques adaptées au stade du produit"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "technical-health-check",
+  "value": "technical-health-check",
+  "label": "Chequeo técnico",
+  "name": "Chequeo técnico",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Diagnóstico tecnológico",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Una revisión enfocada de los sistemas, riesgos y prácticas de entrega que más afectan hoy al negocio.",
+  "problem": "La dirección no tiene una visión clara y breve de dónde está en riesgo la tecnología ni qué corregir primero.",
+  "solution": "Evaluamos los sistemas críticos y las prácticas de entrega, y entregamos una lista priorizada de riesgos y acciones.",
+  "outcomes": [
+    "Registro de riesgos priorizado",
+    "Visión clara de los problemas técnicos más urgentes",
+    "Lista corta de primeras acciones"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "solution-architecture-design",
+  "value": "solution-architecture-design",
+  "label": "Desenho de arquitetura de solução",
+  "name": "Desenho de arquitetura de solução",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Consultoria de arquitetura",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "O desenho de uma solução específica: componentes, integrações, fluxos de dados e as decisões que os sustentam.",
+  "problem": "Uma nova solução é planejada sem um desenho que as equipes possam construir e operar.",
+  "solution": "Desenhamos a arquitetura da solução, documentamos as decisões-chave e a validamos com as equipes que a construirão.",
+  "outcomes": [
+    "Arquitetura da solução documentada",
+    "Decisões-chave registradas com justificativa",
+    "Desenho revisado com as equipes de construção"
+  ]
+}

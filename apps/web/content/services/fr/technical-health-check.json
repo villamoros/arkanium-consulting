@@ -1,0 +1,26 @@
+{
+  "id": "technical-health-check",
+  "value": "technical-health-check",
+  "label": "Bilan de santé technique",
+  "name": "Bilan de santé technique",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Diagnostic technologique",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Un examen ciblé des systèmes, des risques et des pratiques de livraison qui pèsent le plus sur l'activité aujourd'hui.",
+  "problem": "La direction manque d'une vision claire et synthétique des risques techniques et des priorités de correction.",
+  "solution": "Nous évaluons les systèmes critiques et les pratiques de livraison, puis remettons une liste priorisée de risques et d’actions.",
+  "outcomes": [
+    "Registre des risques priorisé",
+    "Vision claire des problèmes techniques les plus urgents",
+    "Liste courte des premières actions"
+  ]
+}

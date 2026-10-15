@@ -1,0 +1,26 @@
+{
+  "id": "architecture-modernization-roadmap",
+  "value": "architecture-modernization-roadmap",
+  "label": "Architecture Modernization Roadmap",
+  "name": "Architecture Modernization Roadmap",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Architecture Consulting",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "A sequenced plan to move from the current architecture to a target state, one step at a time.",
+  "problem": "Modernisation is wanted but not planned, so it competes with feature work and stalls.",
+  "solution": "We define the target architecture, sequence the migration steps and set the criteria for each stage.",
+  "outcomes": [
+    "Target architecture defined",
+    "Migration steps sequenced",
+    "Criteria for each stage"
+  ]
+}

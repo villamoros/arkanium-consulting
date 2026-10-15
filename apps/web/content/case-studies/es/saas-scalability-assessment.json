@@ -1,0 +1,42 @@
+{
+  "id": "cs-saas-scalability-assessment",
+  "slug": "saas-scalability-assessment",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-24T00:00:00Z",
+  "title": "Evaluación de escalabilidad de una plataforma SaaS",
+  "summary": "Una plataforma SaaS con degradación de rendimiento al superar 500 clientes activos simultáneos.",
+  "industry": { "slug": "saas-b2b", "name": "SaaS B2B" },
+  "challengeSummary": "Una plataforma SaaS con degradación de rendimiento al superar 500 clientes activos simultáneos.",
+  "challengeDetails": "La decisión de escalar se tomaba sin datos: se añadía infraestructura sin saber qué cuello de botella la necesitaba.",
+  "approach": "Chequeo técnico y evaluación de arquitectura, con liderazgo técnico para priorizar las mejoras.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Medir qué se degrada al superar 500 clientes activos y en qué punto del sistema." },
+    { "phase": "ARCHITECTURE", "body": "Priorizar los cuellos de botella por impacto y definir rutas de migración." },
+    { "phase": "GOVERNANCE", "body": "Liderazgo técnico que decide el orden de las mejoras y sus criterios de avance." }
+  ],
+  "solution": "Un mapa de cuellos de botella priorizado, rutas de migración definidas y un plan de liderazgo técnico para ejecutarlo.",
+  "outcomes": [
+    "Cuellos de botella priorizados (resultado esperado)",
+    "Rutas de migración definidas (resultado esperado)",
+    "Recomendaciones de liderazgo de arquitectura (resultado esperado)"
+  ],
+  "deliverables": [
+    "Chequeo técnico de la plataforma",
+    "Evaluación de arquitectura",
+    "Liderazgo técnico fraccional para la ejecución"
+  ],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Evaluación de escalabilidad de una plataforma SaaS | Caso representativo",
+    "description": "Escenario representativo: cómo se miden los cuellos de botella de un SaaS a partir de 500 clientes activos antes de añadir infraestructura."
+  }
+}

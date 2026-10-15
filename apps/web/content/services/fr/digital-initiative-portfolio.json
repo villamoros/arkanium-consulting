@@ -1,0 +1,26 @@
+{
+  "id": "digital-initiative-portfolio",
+  "value": "digital-initiative-portfolio",
+  "label": "Portefeuille d’initiatives numériques",
+  "name": "Portefeuille d’initiatives numériques",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Stratégie numérique",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "Un portefeuille priorisé d’initiatives numériques avec responsables, séquençage et dépendances.",
+  "problem": "Trop d'initiatives se disputent les mêmes équipes et le même budget, et leur ordre n'est pas arrêté.",
+  "solution": "Nous regroupons les initiatives, les séquençons selon la capacité et les dépendances, et convenons des responsables et des points de revue.",
+  "outcomes": [
+    "Portefeuille séquencé avec responsables",
+    "Dépendances et limites de capacité visibles",
+    "Rythme de revue convenu"
+  ]
+}

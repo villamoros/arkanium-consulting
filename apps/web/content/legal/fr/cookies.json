@@ -1,0 +1,20 @@
+{
+  "id": "cookies",
+  "value": "cookies",
+  "title": "Politique des cookies",
+  "description": "Les cookies utilisés par ce site, leur finalité et la manière de modifier votre choix.",
+  "sections": [
+    "Cette politique explique quels cookies et technologies similaires utilise ce site, à quoi ils servent et comment les gérer. Vous pouvez modifier votre choix à tout moment via le lien « Préférences de cookies » en bas de page.",
+    "## Qu’est-ce qu’un cookie ?",
+    "Un cookie est un petit fichier qu’un site enregistre dans votre navigateur. Certains sont nécessaires au fonctionnement du site ; d’autres servent à mesurer ou à personnaliser. Les cookies d’analyse et de marketing nécessitent votre consentement. Les cookies nécessaires n’en ont pas besoin.",
+    "## Cookies utilisés",
+    "arkanium_consent (strictement nécessaire). Il conserve votre choix concernant les cookies pendant 6 mois, afin de ne pas vous le redemander à chaque visite. Il ne contient aucune donnée personnelle : seulement vos préférences et la date de leur enregistrement.",
+    "Cloudflare, notre hébergeur, peut déposer des cookies techniques de sécurité et de performance, comme __cf_bm, qui permettent de distinguer le trafic légitime du trafic automatisé. Ils sont nécessaires à la protection du site.",
+    "## Cookies non utilisés",
+    "Aujourd’hui, ce site n’utilise ni cookies d’analyse ni cookies de marketing, et il ne charge aucun outil tiers qui en dépose. Si nous en ajoutons à l’avenir, nous mettrons cette page à jour et nous vous demanderons votre accord avant de les activer. Ces catégories figurent dans le panneau des préférences, désactivées.",
+    "## Comment modifier votre choix",
+    "Depuis le lien « Préférences de cookies » en bas de page, vous pouvez modifier votre choix à tout moment. Vous pouvez aussi configurer votre navigateur pour bloquer ou supprimer les cookies ; sachez que bloquer les cookies nécessaires peut altérer le fonctionnement du site. La procédure dépend du navigateur : consultez son aide.",
+    "## Modifications",
+    "Si les cookies que nous utilisons changent, nous mettrons à jour cette politique et sa date de révision."
+  ]
+}

@@ -1,0 +1,32 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import { locales, type Locale } from '../../../i18n/config';
+import { getTranslations } from '../../../i18n/utils';
+import { getLegalPages } from '../../../lib/legal';
+
+// Rutas = documentos existentes en content/legal/<idioma>/. Un idioma sin documento no genera página.
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of locales) {
+    for (const doc of await getLegalPages(locale)) paths.push({ params: { locale, page: doc.value } });
+  }
+  return paths;
+}
+
+const { locale, page } = Astro.params;
+const legalLocale = locale as Locale;
+const translations = getTranslations(legalLocale);
+const pageContent = (await getLegalPages(legalLocale)).find((doc) => doc.value === page);
+if (!pageContent) throw new Error(`Unsupported legal page: ${page}`);
+---
+
+<PageLayout locale={legalLocale} title={`${pageContent.title} | ${translations.meta.title}`} description={pageContent.description}>
+  <main id="main" tabindex="-1">
+    <section class="section-band legal-page">
+      <p class="eyebrow">{translations.footer.legal.label}</p>
+      <h1>{pageContent.title}</h1>
+      {/* Párrafos normales; una línea que empieza por "## " es un subtítulo de sección. */}
+      {pageContent.sections.map((section) => (section.startsWith('## ') ? <h2>{section.slice(3)}</h2> : <p>{section}</p>))}
+    </section>
+  </main>
+</PageLayout>

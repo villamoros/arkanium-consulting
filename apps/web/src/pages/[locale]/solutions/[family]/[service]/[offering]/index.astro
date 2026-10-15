@@ -1,0 +1,61 @@
+---
+/** Individual offering detail. The route mirrors the CMS hierarchy: family → area → service → offering. */
+import PageLayout from '../../../../../../layouts/PageLayout.astro';
+import Button from '../../../../../../components/ui/Button.astro';
+import Breadcrumb from '../../../../../../components/solutions/Breadcrumb.astro';
+import SectionHeading from '../../../../../../components/ui/SectionHeading.astro';
+import { siteConfig } from '../../../../../../content/static/site';
+import { locales, type Locale } from '../../../../../../i18n/config';
+import { getLocalizedPath, getTranslations } from '../../../../../../i18n/utils';
+import { ctaPath, findService, getCatalog, offeringPath, servicePath } from '../../../../../../lib/catalog';
+import { absoluteSeoUrl } from '../../../../../../lib/seo';
+import { paragraphs } from '../../../../../../lib/utils';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of locales) {
+    const catalog = await getCatalog(locale);
+    for (const family of catalog.families)
+      for (const category of family.categories)
+        for (const service of category.services)
+          for (const offering of service.offerings)
+            paths.push({ params: { locale, family: family.slug, service: service.slug, offering: offering.slug } });
+  }
+  return paths;
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const p = t.solutionsPage;
+const catalog = await getCatalog(locale);
+const service = findService(catalog, Astro.params.family as string, Astro.params.service as string);
+if (!service) throw new Error(`[catalog] Servicio no encontrado: ${Astro.params.family}/${Astro.params.service}`);
+const offering = service.offerings.find((item) => item.slug === Astro.params.offering);
+if (!offering) throw new Error(`[catalog] Offering no encontrado: ${Astro.params.offering}`);
+const family = catalog.families.find((item) => item.slug === service.familySlug)!;
+const title = offering.seo.title ?? `${offering.name} | ${siteConfig.name}`;
+const description = offering.seo.description ?? offering.shortDescription ?? offering.description ?? service.shortDescription ?? t.meta.description;
+const canonical = offering.seo.canonical ?? offeringPath(locale, family.slug, service.slug, offering.slug);
+const breadcrumbs = [
+  { name: siteConfig.name, url: absoluteSeoUrl(getLocalizedPath(locale), Astro.site) },
+  { name: p.title, url: absoluteSeoUrl(getLocalizedPath(locale, '/solutions/'), Astro.site) },
+  { name: family.name, url: absoluteSeoUrl(getLocalizedPath(locale, `/solutions/${family.slug}/`), Astro.site) },
+  { name: service.name, url: absoluteSeoUrl(servicePath(locale, family.slug, service.slug), Astro.site) },
+  { name: offering.name, url: absoluteSeoUrl(canonical, Astro.site) },
+];
+---
+
+<PageLayout locale={locale} title={title} description={description} canonical={canonical} ogImage={offering.seo.ogImage} noindex={offering.seo.noIndex} breadcrumbs={breadcrumbs}>
+  <section class="page-hero section-band" aria-labelledby="offering-heading">
+    <Breadcrumb label={p.breadcrumb} items={[{ label: p.title, href: getLocalizedPath(locale, '/solutions/') }, { label: family.name, href: getLocalizedPath(locale, `/solutions/${family.slug}/`) }, { label: service.name, href: servicePath(locale, family.slug, service.slug) }, { label: offering.name }]} />
+    <p class="eyebrow">{service.name}</p>
+    <h1 id="offering-heading">{offering.name}</h1>
+    {offering.shortDescription && <p class="hero-lede">{offering.shortDescription}</p>}
+    <div class="hero-actions"><Button href={ctaPath(locale, service.slug, offering.slug)}>{p.ctaDefault}</Button></div>
+  </section>
+  {offering.description && <section class="section-band"><div class="prose">{paragraphs(offering.description).map((paragraph) => <p>{paragraph}</p>)}</div></section>}
+  {offering.problem && <section class="section-band" aria-labelledby="offering-problem"><SectionHeading id="offering-problem" title={t.solutions.labels.problem} /><div class="prose"><p>{offering.problem}</p></div></section>}
+  {offering.solution && <section class="section-band" aria-labelledby="offering-solution"><SectionHeading id="offering-solution" title={t.solutions.labels.solution} /><div class="prose"><p>{offering.solution}</p></div></section>}
+  {offering.outcomes.length > 0 && <section class="section-band" aria-labelledby="offering-outcomes"><SectionHeading id="offering-outcomes" title={t.solutions.labels.outcome} /><ul class="plain-list">{offering.outcomes.map((item) => <li>{item}</li>)}</ul></section>}
+  {offering.deliverables.length > 0 && <section class="section-band" aria-labelledby="offering-deliverables"><SectionHeading id="offering-deliverables" title={p.deliverables} /><ul class="plain-list">{offering.deliverables.map((item) => <li>{item}</li>)}</ul></section>}
+</PageLayout>

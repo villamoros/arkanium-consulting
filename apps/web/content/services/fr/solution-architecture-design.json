@@ -1,0 +1,26 @@
+{
+  "id": "solution-architecture-design",
+  "value": "solution-architecture-design",
+  "label": "Conception d’architecture de solution",
+  "name": "Conception d’architecture de solution",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Conseil en architecture",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "La conception d’une solution spécifique : composants, intégrations, flux de données et décisions qui les fondent.",
+  "problem": "Une nouvelle solution est planifiée sans conception que les équipes puissent construire et exploiter.",
+  "solution": "Nous concevons l’architecture de la solution, documentons les décisions clés et la validons avec les équipes qui la construiront.",
+  "outcomes": [
+    "Architecture de solution documentée",
+    "Décisions clés consignées avec leur justification",
+    "Conception revue avec les équipes de construction"
+  ]
+}

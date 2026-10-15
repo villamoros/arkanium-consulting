@@ -1,0 +1,45 @@
+---
+import type { HomeSolutions } from '../../lib/home';
+/**
+ * Sección Soluciones del Home. Acordeón con el mismo patrón que FAQ (<details name> cierra los demás sin JS):
+ * título de grupo → familia (acordeón) → categoría (subtítulo) → servicio (enlace a su página).
+ * Solo se muestra lo que existe en el contenido: no hay servicios planificados ni etiquetas «próximamente».
+ */
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import { hasServicePage, servicePath, type Catalog } from '../../lib/catalog';
+import type { Locale } from '../../i18n/config';
+import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
+
+interface Props { locale: Locale; content: HomeSolutions; ui: TranslationSchema['ui']; page: TranslationSchema['solutionsPage']; catalog: Catalog; allLabel: string; }
+const { locale, content, catalog, allLabel } = Astro.props;
+---
+
+<section class="services section-band" id="services" aria-labelledby="services-heading">
+  <SectionHeading id="services-heading" eyebrow={content.eyebrow} title={content.title} intro={content.intro} />
+  <h3 class="solutions-group-title">{content.groupTitle}</h3>
+  <div class="faq-list reveal">
+    {
+      catalog.families.map((family) => (
+        <details class="faq-item solutions-accordion" name="solutions">
+          <summary class="faq-question">{family.name}</summary>
+          <div class="faq-answer solutions-accordion-body">
+            {family.categories.map((category) => (
+              <div class="solutions-accordion-category">
+                <h4>{category.name}</h4>
+                <ul>
+                  {category.services.map((service) => (
+                    <li>
+                      {hasServicePage(service) ? <a href={servicePath(locale, family.slug, service.slug)}>{service.label}</a> : <span>{service.label}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </details>
+      ))
+    }
+  </div>
+  <div class="hero-actions reveal"><Button href={getLocalizedPath(locale, '/solutions/')} variant="secondary">{allLabel}</Button></div>
+</section>

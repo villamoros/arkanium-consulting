@@ -1,0 +1,26 @@
+{
+  "id": "roadmap-refresh-quarterly",
+  "value": "roadmap-refresh-quarterly",
+  "label": "Atualização trimestral do roadmap",
+  "name": "Atualização trimestral do roadmap",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Roadmap de TI",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "Uma revisão trimestral que mantém o roadmap de TI alinhado às prioridades do negócio e às mudanças.",
+  "problem": "Os roadmaps ficam desatualizados rapidamente, e ninguém é responsável por atualizá-los.",
+  "solution": "A cada trimestre revisamos avanços e prioridades com a liderança, atualizamos o roadmap e registramos as decisões tomadas.",
+  "outcomes": [
+    "Roadmap atualizado a cada trimestre",
+    "Registro de decisões e mudanças",
+    "Prioridades claras para o próximo trimestre"
+  ]
+}

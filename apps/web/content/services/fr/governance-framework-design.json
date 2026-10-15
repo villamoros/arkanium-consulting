@@ -1,0 +1,26 @@
+{
+  "id": "governance-framework-design",
+  "value": "governance-framework-design",
+  "label": "Conception du cadre de gouvernance",
+  "name": "Conception du cadre de gouvernance",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Gouvernance technologique",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Un cadre de gouvernance qui définit comment les décisions technologiques sont prises, revues et financées.",
+  "problem": "Les décisions technologiques se prennent au coup par coup, avec des responsabilités floues et des critères incohérents.",
+  "solution": "Nous concevons les droits de décision, les instances de revue, les critères et le reporting qu’utilisera la direction.",
+  "outcomes": [
+    "Droits de décision définis",
+    "Instances de revue et critères",
+    "Reporting pour la direction"
+  ]
+}

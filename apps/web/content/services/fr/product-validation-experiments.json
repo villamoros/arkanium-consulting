@@ -1,0 +1,26 @@
+{
+  "id": "product-validation-experiments",
+  "value": "product-validation-experiments",
+  "label": "Expérimentations de validation produit",
+  "name": "Expérimentations de validation produit",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Découverte produit",
+    "order": 1
+  },
+  "position": 4,
+  "duration": null,
+  "description": "De petites expérimentations mesurables qui testent les hypothèses les plus risquées avant de construire un produit.",
+  "problem": "Les hypothèses les plus risquées sont seulement discutées, jamais testées.",
+  "solution": "Nous concevons des expérimentations avec des critères de succès clairs, les menons avec des utilisateurs et rapportons les enseignements.",
+  "outcomes": [
+    "Expérimentations avec critères de succès",
+    "Preuves issues des utilisateurs",
+    "Rapport des enseignements"
+  ]
+}

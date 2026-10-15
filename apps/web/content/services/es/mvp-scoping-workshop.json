@@ -1,0 +1,26 @@
+{
+  "id": "mvp-scoping-workshop",
+  "value": "mvp-scoping-workshop",
+  "label": "Taller de definición de alcance del MVP",
+  "name": "Taller de definición de alcance del MVP",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "Estrategia de MVP",
+    "order": 3
+  },
+  "position": 9,
+  "duration": null,
+  "description": "Un taller enfocado que define el conjunto mínimo de funciones que prueba el valor central del producto.",
+  "problem": "La primera versión tiende a crecer hasta ser demasiado grande para validar nada.",
+  "solution": "Separamos lo imprescindible de lo deseable, definimos los objetivos de aprendizaje del MVP y acordamos la línea de corte.",
+  "outcomes": [
+    "Conjunto de funciones imprescindibles",
+    "Objetivos de aprendizaje del MVP",
+    "Línea de corte acordada"
+  ]
+}

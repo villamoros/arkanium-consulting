@@ -1,0 +1,26 @@
+{
+  "id": "cto-advisory-light",
+  "value": "cto-advisory-light",
+  "label": "Consultoria de CTO (leve)",
+  "name": "Consultoria de CTO (leve)",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Liderança tecnológica",
+    "order": 3
+  },
+  "position": 10,
+  "duration": null,
+  "description": "Assessoria leve e periódica para líderes que têm responsabilidade tecnológica sem um CTO em tempo integral.",
+  "problem": "Os líderes tomam decisões tecnológicas sozinhos e se beneficiariam de uma visão externa periódica.",
+  "solution": "Nos reunimos periodicamente para revisar decisões-chave, questionar opções e compartilhar práticas adequadas à organização.",
+  "outcomes": [
+    "Visão externa sobre decisões-chave",
+    "Opções questionadas antes do compromisso",
+    "Práticas adequadas à organização"
+  ]
+}

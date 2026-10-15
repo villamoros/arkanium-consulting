@@ -1,0 +1,277 @@
+{
+  "id": "art-modernizar-erp-legado",
+  "slug": "modernizar-erp-legado-por-fronteras",
+  "title": "Cómo ordenar un ERP de 12 años antes de tocarlo",
+  "excerpt": "Un escenario representativo: cómo se diagnostica un ERP acoplado y sin documentación, qué servicios intervienen y cómo se prioriza el cambio.",
+  "featured": false,
+  "publishedAt": "2026-09-22T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "guide",
+  "category": {
+    "slug": "architecture-modernization",
+    "name": "Arquitectura y modernización"
+  },
+  "caseStudies": [
+    {
+      "slug": "erp-legacy-manufactura"
+    }
+  ],
+  "services": [
+    {
+      "slug": "architecture-assessment",
+      "family": {
+        "slug": "architecture"
+      }
+    },
+    {
+      "slug": "architecture-modernization-roadmap",
+      "family": {
+        "slug": "architecture"
+      }
+    },
+    {
+      "slug": "solution-architecture-design",
+      "family": {
+        "slug": "architecture"
+      }
+    }
+  ],
+  "content": {
+    "raw": {
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Este artículo describe un escenario representativo que ilustra cómo abordamos este tipo de problema. No describe un trabajo con un cliente concreto, y los resultados que menciona son esperados, no logrados."
+            }
+          ]
+        },
+        {
+          "type": "heading-one",
+          "children": [
+            {
+              "text": "El punto de partida"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Un fabricante mediano operaba un ERP de doce años. Sus módulos estaban acoplados entre sí, casi no tenía documentación y cada despliegue tardaba tres semanas en coordinarse con el negocio. Cada cambio pequeño exigía revisar gran parte del sistema, y el conocimiento estaba en pocas personas."
+            }
+          ]
+        },
+        {
+          "type": "heading-one",
+          "children": [
+            {
+              "text": "Primero, entender antes de cambiar"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "El primer paso no fue reescribir nada. Se hizo una evaluación de arquitectura para mapear dependencias, identificar los módulos con más riesgo y separar lo que el negocio usa de lo que sólo estaba ahí. El método está descrito en la "
+            },
+            {
+              "type": "link",
+              "href": "/es/solutions/architecture/architecture-assessment/",
+              "children": [
+                {
+                  "text": "evaluación de arquitectura"
+                }
+              ]
+            },
+            {
+              "text": "."
+            }
+          ]
+        },
+        {
+          "type": "heading-one",
+          "children": [
+            {
+              "text": "Fronteras de módulo antes que reemplazos"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "En lugar de un reemplazo completo, se definieron fronteras claras entre módulos: qué datos son propiedad de cada área y qué interfaces pueden usar los demás. Así, cada cambio tocaba solo su frontera y la modernización pudo avanzar por partes."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "La hoja de ruta resultante ordenó la modernización en fases, con criterios para avanzar. Ese trabajo se describe en la "
+            },
+            {
+              "type": "link",
+              "href": "/es/solutions/architecture/architecture-modernization-roadmap/",
+              "children": [
+                {
+                  "text": "hoja de ruta de modernización"
+                }
+              ]
+            },
+            {
+              "text": "."
+            }
+          ]
+        },
+        {
+          "type": "heading-one",
+          "children": [
+            {
+              "text": "Diseño de la arquitectura objetivo"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Para los módulos prioritarios se diseñó la arquitectura de solución: componentes, flujos de datos e integraciones con el resto del sistema. Cada decisión quedó documentada con su razón, para que el equipo interno pudiera sostenerla sin depender de quienes la tomaron. El detalle de ese diseño está en el "
+            },
+            {
+              "type": "link",
+              "href": "/es/solutions/architecture/solution-architecture-design/",
+              "children": [
+                {
+                  "text": "diseño de arquitectura de solución"
+                }
+              ]
+            },
+            {
+              "text": "."
+            }
+          ]
+        },
+        {
+          "type": "heading-one",
+          "children": [
+            {
+              "text": "Gobierno del riesgo durante la transición"
+            }
+          ]
+        },
+        {
+          "type": "bulleted-list",
+          "children": [
+            {
+              "type": "list-item",
+              "children": [
+                {
+                  "type": "list-item-child",
+                  "children": [
+                    {
+                      "text": "Un registro de riesgos técnicos con responsables asignados."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "list-item",
+              "children": [
+                {
+                  "type": "list-item-child",
+                  "children": [
+                    {
+                      "text": "Revisión periódica de las decisiones de arquitectura."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "list-item",
+              "children": [
+                {
+                  "type": "list-item-child",
+                  "children": [
+                    {
+                      "text": "Un informe sencillo para la dirección en cada fase."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Con esto, la transición no depende de un único proyecto: el riesgo se ve y se gestiona de forma continua."
+            }
+          ]
+        },
+        {
+          "type": "heading-one",
+          "children": [
+            {
+              "text": "Qué se espera de este enfoque"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Los resultados que se esperan de un trabajo así son una reducción del riesgo de despliegue, fronteras de módulo claras y mayor visibilidad operacional. Son expectativas basadas en el método, no cifras de un caso real."
+            }
+          ]
+        },
+        {
+          "type": "heading-one",
+          "children": [
+            {
+              "text": "Cómo aplicarlo a tu sistema"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "text": "Si tu sistema tiene un problema parecido, el primer paso es el mismo: una evaluación que separe el diagnóstico de la decisión. El escenario completo está en los "
+            },
+            {
+              "type": "link",
+              "href": "/es/case-studies/erp-legacy-manufactura/",
+              "children": [
+                {
+                  "text": "casos de estudio"
+                }
+              ]
+            },
+            {
+              "text": "."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Cómo ordenar un ERP de 12 años antes de tocarlo | Escenario representativo",
+    "metaDescription": "Escenario representativo: diagnóstico de un ERP acoplado y sin documentación, con los servicios que intervienen y cómo se prioriza el cambio."
+  },
+  "relatedArticles": [
+    {
+      "id": "art-plataforma-pagos"
+    },
+    {
+      "id": "art-seguimiento-logistico"
+    }
+  ]
+}

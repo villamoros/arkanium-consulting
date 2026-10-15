@@ -1,0 +1,26 @@
+{
+  "id": "fractional-head-of-product",
+  "value": "fractional-head-of-product",
+  "label": "Directeur produit à temps partagé",
+  "name": "Directeur produit à temps partagé",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Management produit",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "Un leadership produit senior à temps partagé pour définir la stratégie produit et construire la fonction produit.",
+  "problem": "L'organisation a besoin d'un leadership produit et d'une fonction produit, mais pas encore d'un dirigeant à temps plein.",
+  "solution": "Nous définissons la stratégie produit avec la direction, concevons la fonction produit et accompagnons l'équipe qui la portera.",
+  "outcomes": [
+    "Stratégie produit convenue avec la direction",
+    "Fonction produit conçue",
+    "Équipe accompagnée pour la piloter"
+  ]
+}

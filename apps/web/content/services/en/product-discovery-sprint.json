@@ -1,0 +1,26 @@
+{
+  "id": "product-discovery-sprint",
+  "value": "product-discovery-sprint",
+  "label": "Product Discovery Sprint",
+  "name": "Product Discovery Sprint",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Product Discovery",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "A short discovery sprint that investigates users, the market and the feasibility of a product idea.",
+  "problem": "Product decisions are being made without evidence about users and feasibility.",
+  "solution": "We conduct user research, market review and technical feasibility checks, then recommend whether and how to proceed.",
+  "outcomes": [
+    "Evidence about users and market",
+    "Feasibility assessment",
+    "Recommendation to proceed or stop"
+  ]
+}

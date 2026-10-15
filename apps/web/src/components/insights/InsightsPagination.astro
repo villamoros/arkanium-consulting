@@ -1,0 +1,32 @@
+---
+/** Paginación estática del listado: enlaces reales (sin JavaScript). `rel=prev/next` para buscadores. */
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  current: number;
+  total: number;
+  basePath: string;
+  content: TranslationSchema['insights'];
+}
+const { current, total, basePath, content } = Astro.props;
+const href = (n: number) => (n === 1 ? basePath : `${basePath}page/${n}/`);
+const pages = Array.from({ length: total }, (_, i) => i + 1);
+---
+
+<nav class="insight-pagination" aria-label={content.pagesLabel}>
+  {current > 1 && <a class="insight-page-link" rel="prev" href={href(current - 1)}>← {content.prevPage}</a>}
+  <ol class="insight-page-list">
+    {
+      pages.map((n) => (
+        <li>
+          {n === current ? (
+            <span class="insight-page-current" aria-current="page" aria-label={content.pageLabel.replace('{n}', String(n))}>{n}</span>
+          ) : (
+            <a href={href(n)} aria-label={content.pageLabel.replace('{n}', String(n))}>{n}</a>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+  {current < total && <a class="insight-page-link" rel="next" href={href(current + 1)}>{content.nextPage} →</a>}
+</nav>

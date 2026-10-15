@@ -1,0 +1,19 @@
+{
+  "id": "disclaimer",
+  "value": "disclaimer",
+  "title": "Disclaimer",
+  "description": "The scope of the information on this site, representative cases and limitations.",
+  "sections": [
+    "The information on this site is general in nature. It does not constitute professional, legal, tax, financial or investment advice.",
+    "## Representative cases and results",
+    "The case studies and blog articles are representative scenarios that illustrate how we approach common problems. They do not describe work with specific clients. The results they mention are expected, not achieved, and do not guarantee similar results in your organisation.",
+    "## No professional relationship through use of the site",
+    "Reading this site or sending the contact form does not create a client–consultant relationship. That relationship begins only with a signed agreement.",
+    "## Accuracy and updates",
+    "We review the content carefully, but it may contain errors or omissions or become out of date. We are not responsible for decisions you make based solely on it.",
+    "## Third-party trademarks",
+    "The names of other companies, products or technologies that appear on the site are mentioned for information only. They do not imply endorsement or any relationship with Arkanium Consulting LLC, unless stated expressly.",
+    "## Contact",
+    "For any question about this disclaimer, write to hello@arkanium.consulting."
+  ]
+}

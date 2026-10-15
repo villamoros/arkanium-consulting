@@ -1,0 +1,26 @@
+{
+  "id": "build-vs-buy-analysis",
+  "value": "build-vs-buy-analysis",
+  "label": "Análisis de construir vs. comprar",
+  "name": "Análisis de construir vs. comprar",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Estrategia tecnológica",
+    "order": 3
+  },
+  "position": 10,
+  "duration": null,
+  "description": "Una comparación objetiva de construir una capacidad internamente, comprarla o combinar ambas opciones.",
+  "problem": "Una decisión tecnológica importante se toma por preferencia y no por coste total y riesgo.",
+  "solution": "Comparamos las opciones por coste total de propiedad, tiempo hasta el valor, control y riesgo, y explicitamos los compromisos.",
+  "outcomes": [
+    "Opciones comparadas por coste total y riesgo",
+    "Compromisos explícitos",
+    "Recomendación con condiciones"
+  ]
+}

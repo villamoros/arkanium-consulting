@@ -1,0 +1,26 @@
+{
+  "id": "fractional-cto-startup-tier",
+  "value": "fractional-cto-startup-tier",
+  "label": "Fractional CTO — Startup Tier",
+  "name": "Fractional CTO — Startup Tier",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Technology Leadership",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "A part-time CTO for early-stage companies that need technology leadership to build the first product.",
+  "problem": "An early-stage company needs technology leadership before it can afford a full-time CTO.",
+  "solution": "We lead the technology strategy, the architecture choices and the team set-up for an agreed part-time scope.",
+  "outcomes": [
+    "Technology strategy led",
+    "Architecture choices made",
+    "Team set up for delivery"
+  ]
+}

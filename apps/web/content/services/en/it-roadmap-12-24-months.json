@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-12-24-months",
+  "value": "it-roadmap-12-24-months",
+  "label": "IT Roadmap (12-24 Months)",
+  "name": "IT Roadmap (12-24 Months)",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "IT Roadmapping",
+    "order": 4
+  },
+  "position": 13,
+  "duration": null,
+  "description": "A medium-term IT roadmap that sequences modernisation and delivery initiatives over one to two years.",
+  "problem": "Modernisation and delivery work is not sequenced over time, so commitments collide.",
+  "solution": "We build a sequenced roadmap with milestones, dependencies, funding windows and the decisions each phase needs.",
+  "outcomes": [
+    "Sequenced roadmap for 12 to 24 months",
+    "Milestones and dependencies mapped",
+    "Decisions required per phase"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "digital-initiative-portfolio",
+  "value": "digital-initiative-portfolio",
+  "label": "Digital Initiative Portfolio",
+  "name": "Digital Initiative Portfolio",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Digital Strategy",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "A prioritised portfolio of digital initiatives with owners, sequencing and dependencies.",
+  "problem": "Too many initiatives compete for the same teams and budget, and their order is not agreed.",
+  "solution": "We group the initiatives, sequence them against capacity and dependencies, and agree owners and review points.",
+  "outcomes": [
+    "Sequenced portfolio with owners",
+    "Visible dependencies and capacity limits",
+    "Agreed review cadence"
+  ]
+}

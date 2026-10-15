@@ -1,0 +1,74 @@
+---
+/**
+ * Mega-menú "Solutions". Astro genera el HTML a partir del catálogo en build:
+ * el navegador no consulta el CMS ni descarga el catálogo. El JS solo abre/cierra el panel.
+ */
+import type { MenuFamily } from '../../lib/catalog';
+
+interface Props {
+  label: string;
+  allLabel: string;
+  allHref: string;
+  families: MenuFamily[];
+}
+const { label, allLabel, allHref, families } = Astro.props;
+---
+
+<div class="nav-solutions" data-solutions>
+  <button
+    class="nav-solutions-trigger"
+    type="button"
+    aria-expanded="false"
+    aria-controls="solutions-menu"
+    data-solutions-trigger
+  >
+    <span>{label}</span>
+    <i class="lang-chevron" aria-hidden="true">▾</i>
+  </button>
+  <div class="solutions-menu" id="solutions-menu">
+    <a class="solutions-all" href={allHref}>{allLabel} →</a>
+    <div class="solutions-grid">
+      {
+        families.map((family) => (
+          <div class="solutions-family">
+            <a class="solutions-family-title" href={family.href}>{family.name}</a>
+            {family.categories.map((category) => (
+              <div class="solutions-category">
+                <p class="solutions-category-label">{category.name}</p>
+                {category.services.length > 0 ? (
+                  <ul>
+                    {category.services.map((s) => (
+                      <li>
+                        {s.href ? <a href={s.href}>{s.name}</a> : <span>{s.name}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-solutions]');
+  const trigger = root?.querySelector<HTMLButtonElement>('[data-solutions-trigger]');
+
+  function setOpen(open: boolean, returnFocus = false) {
+    if (!root || !trigger) return;
+    root.classList.toggle('is-open', open);
+    trigger.setAttribute('aria-expanded', String(open));
+    if (!open && returnFocus) trigger.focus();
+  }
+
+  trigger?.addEventListener('click', () => setOpen(!root?.classList.contains('is-open')));
+  root?.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && root.classList.contains('is-open')) setOpen(false, true);
+  });
+  document.addEventListener('click', (e) => {
+    if (root && !root.contains(e.target as Node)) setOpen(false);
+  });
+</script>

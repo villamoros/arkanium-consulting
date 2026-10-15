@@ -1,0 +1,73 @@
+---
+import PageLayout from '../../../../layouts/PageLayout.astro';
+import ServiceCard from '../../../../components/ui/ServiceCard.astro';
+import Breadcrumb from '../../../../components/solutions/Breadcrumb.astro';
+import { siteConfig } from '../../../../content/static/site';
+import { locales, type Locale } from '../../../../i18n/config';
+import { getLocalizedPath, getTranslations } from '../../../../i18n/utils';
+import { familyHasContent, getCatalog, hasServicePage, servicePath } from '../../../../lib/catalog';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of locales) {
+    const catalog = await getCatalog(locale);
+    for (const family of catalog.families) paths.push({ params: { locale, family: family.slug } });
+  }
+  return paths;
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const p = t.solutionsPage;
+const catalog = await getCatalog(locale);
+const family = catalog.families.find((f) => f.slug === Astro.params.family);
+if (!family) throw new Error(`[catalog] Familia no encontrada: ${Astro.params.family}`);
+// Familias sin ningún servicio publicable: página accesible pero fuera del índice (contenido insuficiente).
+const thin = !familyHasContent(family);
+---
+
+<PageLayout
+  locale={locale}
+  title={`${family.name} | ${p.title} | ${siteConfig.name}`}
+  description={family.shortDescription ?? p.intro}
+  noindex={thin}
+>
+  <section class="page-hero section-band" aria-labelledby="family-heading">
+    <Breadcrumb
+      label={p.breadcrumb}
+      items={[
+        { label: p.title, href: getLocalizedPath(locale, '/solutions/') },
+        { label: family.name },
+      ]}
+    />
+    <p class="eyebrow">{p.eyebrow}</p>
+    <h1 id="family-heading">{family.name}</h1>
+    {(family.description ?? family.shortDescription) && <p class="hero-lede">{family.description ?? family.shortDescription}</p>}
+  </section>
+
+  <section class="section-band catalog-family" aria-label={family.name}>
+    <div class="catalog-categories">
+      {
+        family.categories.map((category) => (
+          <div class="catalog-category">
+            <h2 class="catalog-category-title">{category.name}</h2>
+            {category.services.length > 0 ? (
+              <div class="card-stack">
+                {category.services.map((s) => (
+                  <ServiceCard
+                    title={s.name}
+                    description={s.shortDescription}
+                    href={hasServicePage(s) ? servicePath(locale, family.slug, s.slug) : undefined}
+                    soonLabel={p.comingSoon}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p class="catalog-empty"><span class="soon-tag">{p.comingSoon}</span></p>
+            )}
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</PageLayout>

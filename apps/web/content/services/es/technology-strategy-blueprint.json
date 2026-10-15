@@ -1,0 +1,26 @@
+{
+  "id": "technology-strategy-blueprint",
+  "value": "technology-strategy-blueprint",
+  "label": "Blueprint de estrategia tecnológica",
+  "name": "Blueprint de estrategia tecnológica",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Estrategia tecnológica",
+    "order": 3
+  },
+  "position": 9,
+  "duration": null,
+  "description": "Una estrategia tecnológica completa por escrito, con dirección de arquitectura objetivo, hoja de ruta y gobierno.",
+  "problem": "Las decisiones tecnológicas estratégicas carecen de una base documentada que equipos e inversores puedan seguir.",
+  "solution": "Documentamos la estrategia, su dirección de arquitectura objetivo, la hoja de ruta y el gobierno necesario para mantenerla vigente.",
+  "outcomes": [
+    "Estrategia completa por escrito",
+    "Dirección de arquitectura objetivo",
+    "Gobierno para mantenerla vigente"
+  ]
+}

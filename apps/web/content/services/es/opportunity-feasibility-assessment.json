@@ -1,0 +1,26 @@
+{
+  "id": "opportunity-feasibility-assessment",
+  "value": "opportunity-feasibility-assessment",
+  "label": "Evaluación de oportunidad y viabilidad",
+  "name": "Evaluación de oportunidad y viabilidad",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Descubrimiento de producto",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "Una evaluación de la oportunidad comercial y de la viabilidad técnica de una dirección de producto.",
+  "problem": "No está claro si la oportunidad justifica el esfuerzo técnico y el riesgo.",
+  "solution": "Dimensionamos la oportunidad, evaluamos lo que costaría construirla e identificamos los principales riesgos técnicos y comerciales.",
+  "outcomes": [
+    "Oportunidad dimensionada",
+    "Viabilidad de la dirección propuesta",
+    "Principales riesgos identificados"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "technical-health-check",
+  "value": "technical-health-check",
+  "label": "Technical Health Check",
+  "name": "Technical Health Check",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Technology Diagnosis",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "A focused review of the systems, risks and delivery practices that most affect the business today.",
+  "problem": "Leadership lacks a clear, short view of where technology is at risk and what to fix first.",
+  "solution": "We assess the critical systems and delivery practices and return a prioritised list of risks and actions.",
+  "outcomes": [
+    "Prioritised risk register",
+    "Clear view of the most urgent technical issues",
+    "Short list of first actions"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-12-24-months",
+  "value": "it-roadmap-12-24-months",
+  "label": "Feuille de route IT (12-24 mois)",
+  "name": "Feuille de route IT (12-24 mois)",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Feuille de route IT",
+    "order": 4
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Une feuille de route IT à moyen terme qui séquence les initiatives de modernisation et de livraison sur un à deux ans.",
+  "problem": "Les initiatives de modernisation et de livraison ne sont pas séquencées dans le temps, et les engagements se heurtent.",
+  "solution": "Nous construisons une feuille de route séquencée avec jalons, dépendances, fenêtres de financement et décisions nécessaires à chaque phase.",
+  "outcomes": [
+    "Feuille de route séquencée sur 12 à 24 mois",
+    "Jalons et dépendances cartographiés",
+    "Décisions nécessaires par phase"
+  ]
+}

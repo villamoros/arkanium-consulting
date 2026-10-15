@@ -1,0 +1,42 @@
+{
+  "id": "cs-logistics-tracking-redesign",
+  "slug": "logistics-tracking-redesign",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-20T00:00:00Z",
+  "title": "Refonte de l'infrastructure de suivi logistique",
+  "summary": "Un système de suivi monolithique incapable de passer à l'échelle lors des pics de demande.",
+  "industry": { "slug": "logistics", "name": "Logistique" },
+  "challengeSummary": "Un système de suivi monolithique incapable de passer à l'échelle lors des pics de demande.",
+  "challengeDetails": "Pendant les périodes de pointe, le suivi des envois se dégradait, et les équipes ne voyaient pas quel flux tombait en premier.",
+  "approach": "Une feuille de route de modernisation par frontières de services, avec de l'observabilité sur les flux critiques.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Identifier les flux de suivi critiques et leurs pics de charge." },
+    { "phase": "ARCHITECTURE", "body": "Découper le monolithe par frontière métier, en commençant par le suivi des envois." },
+    { "phase": "GOVERNANCE", "body": "Risque technique visible et revue de chaque phase avant le prochain pic." }
+  ],
+  "solution": "Des frontières de services évolutives et de l'observabilité sur les flux critiques, migrés par étapes.",
+  "outcomes": [
+    "Frontières de services évolutives",
+    "Meilleure observabilité des flux critiques",
+    "Moins de risque avant la période de pointe"
+  ],
+  "deliverables": [
+    "Feuille de route de modernisation",
+    "Conception d'architecture de solution",
+    "Surveillance du risque technique"
+  ],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Refonte de l'infrastructure de suivi logistique | Cas représentatif",
+    "description": "Scénario représentatif : comment découper un monolithe de suivi logistique par frontières de services avant la période de pointe."
+  }
+}

@@ -1,0 +1,34 @@
+---
+/** Ficha del caso. El cliente solo aparece si el normalizador lo expuso (REAL + clientVisibility PUBLIC). */
+import type { CaseStudy } from '../../lib/case-studies';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  item: CaseStudy;
+  labels: TranslationSchema['caseStudies']['meta'];
+  services: Array<{ name: string; href?: string }>;
+  offerings: Array<{ name: string; href?: string }>;
+}
+const { item, labels, services, offerings } = Astro.props;
+const clientName = item.client?.name ?? item.clientDescriptor;
+---
+
+<section class="section-band case-meta-band" aria-label={labels.industry}>
+  <dl class="case-meta">
+    {item.industry && <div><dt>{labels.industry}</dt><dd>{item.industry.name}</dd></div>}
+    {
+      clientName && (
+        <div>
+          <dt>{labels.client}</dt>
+          <dd>
+            {item.client?.website ? <a href={item.client.website} rel="noopener noreferrer" target="_blank">{clientName}</a> : clientName}
+          </dd>
+        </div>
+      )
+    }
+    {item.timeline && <div><dt>{labels.timeline}</dt><dd>{item.timeline}</dd></div>}
+    {services.length > 0 && <div><dt>{labels.services}</dt><dd>{services.map((s, i) => <>{i > 0 && ', '}{s.href ? <a href={s.href}>{s.name}</a> : s.name}</>)}</dd></div>}
+    {offerings.length > 0 && <div><dt>{labels.offerings}</dt><dd>{offerings.map((s, i) => <>{i > 0 && ', '}{s.href ? <a href={s.href}>{s.name}</a> : s.name}</>)}</dd></div>}
+    {item.technologies.length > 0 && <div><dt>{labels.technologies}</dt><dd>{item.technologies.map((t) => t.name).join(', ')}</dd></div>}
+  </dl>
+</section>

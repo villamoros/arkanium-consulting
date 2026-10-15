@@ -1,0 +1,26 @@
+{
+  "id": "product-definition-package",
+  "value": "product-definition-package",
+  "label": "Dossier de définition produit",
+  "name": "Dossier de définition produit",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Définition produit",
+    "order": 2
+  },
+  "position": 8,
+  "duration": null,
+  "description": "L’ensemble complet des documents produit nécessaires pour commencer à construire : vision, périmètre, exigences et direction technique.",
+  "problem": "La connaissance du produit est dispersée entre réunions et messages, ce qui ralentit chaque nouveau membre de l'équipe.",
+  "solution": "Nous consolidons les décisions produit dans un dossier unique et documenté auquel l'équipe et les parties prenantes peuvent se référer.",
+  "outcomes": [
+    "Un dossier produit unique et documenté",
+    "Décisions traçables jusqu’à leur origine",
+    "Prêt pour planifier la construction"
+  ]
+}

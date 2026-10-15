@@ -1,0 +1,47 @@
+---
+/**
+ * Listado de Insights (página 1). Destacado (el más reciente marcado), cuadrícula paginada de 12
+ * y paginación estática en /insights/page/{n}/. Solo lo publicado en este idioma.
+ */
+import PageLayout from '../../../layouts/PageLayout.astro';
+import InsightsArchive from '../../../components/insights/InsightsArchive.astro';
+import { siteConfig } from '../../../content/static/site';
+import { locales, type Locale } from '../../../i18n/config';
+import { getTranslations } from '../../../i18n/utils';
+import { getArticleSummaries, insightsPath } from '../../../lib/insights';
+import { pageCount, pageOf, splitListing } from '../../../lib/insights/listing.ts';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const c = t.insights;
+const all = await getArticleSummaries(locale);
+const { highlight, items } = splitListing(all);
+const totalPages = pageCount(items.length);
+const empty = all.length === 0;
+---
+
+<PageLayout locale={locale} title={`${c.eyebrow} | ${siteConfig.name}`} description={t.meta.description} noindex={empty} rssFeed={insightsPath(locale).replace(/insights\/$/, 'rss.xml')}>
+  <section class="page-hero section-band" aria-labelledby="insights-page-heading">
+    <h1 id="insights-page-heading">{c.eyebrow}</h1>
+  </section>
+
+  {
+    empty ? (
+      <section class="section-band"><p class="case-empty">{c.empty}</p></section>
+    ) : (
+      <InsightsArchive
+        locale={locale}
+        content={c}
+        highlight={highlight}
+        items={pageOf(items, 1)}
+        page={1}
+        totalPages={totalPages}
+        basePath={insightsPath(locale)}
+      />
+    )
+  }
+</PageLayout>

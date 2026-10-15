@@ -1,0 +1,119 @@
+---
+import { siteConfig } from '../../content/static/site';
+import type { Locale } from '../../i18n/config';
+import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
+import type { MenuFamily } from '../../lib/catalog';
+
+interface Props {
+  locale: Locale;
+  content: TranslationSchema['footer'];
+  ui: TranslationSchema['ui'];
+  /** Familias del catálogo (CMS): la columna de soluciones se genera con ellas. */
+  families: MenuFamily[];
+  allSolutionsLabel: string;
+  /** Solo se ofrece cuando hay artículos publicados en este idioma. */
+  insights?: { label: string; href: string };
+}
+const { locale, content, ui, families, allSolutionsLabel, insights } = Astro.props;
+const year = new Date().getFullYear();
+const to = (path: string) => getLocalizedPath(locale, path);
+
+// Estructura (no traducible): claves del diccionario → destino.
+const columns = [
+  {
+    label: content.lines.label,
+    links: [
+      { label: allSolutionsLabel, href: to('/solutions/') },
+      ...families.map((f) => ({ label: f.name, href: f.href })),
+    ],
+  },
+  {
+    label: content.company.label,
+    links: [
+      { label: content.company.framework, href: to('/#process') },
+      { label: content.company.why, href: to('/#why-arkanium') },
+      ...(insights ? [{ label: insights.label, href: insights.href }] : []),
+      { label: content.company.contact, href: to('/#cta') },
+    ],
+  },
+  {
+    label: content.connect.label,
+    links: [
+      {
+        label: content.connect.linkedin,
+        href: siteConfig.linkedin,
+        external: true,
+      },
+      {
+        label: content.connect.X,
+        href: siteConfig.x,
+        external: true,
+      },
+      {
+        label: content.connect.instagram,
+        href: siteConfig.instagram,
+        external: true,
+      },
+      {
+        label: content.connect.facebook,
+        href: siteConfig.facebook,
+        external: true,
+      },
+      {
+        label: content.connect.tiktok,
+        href: siteConfig.tiktok,
+        external: true,
+      }
+    ],
+  },
+  {
+    label: content.legal.label,
+    links: [
+      { label: content.legal.privacy, href: to('/legal/privacy/') },
+      { label: content.legal.terms, href: to('/legal/terms/') },
+      { label: content.legal.cookies, href: to('/legal/cookies/') },
+      { label: content.legal.disclaimer, href: to('/legal/disclaimer/') },
+      // Botón, no enlace: reabre el panel de preferencias de cookies (CookieConsent).
+      { label: content.legal.cookieSettings, action: 'cookie-settings' as const },
+    ],
+  },
+];
+---
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="brand footer-brand" href={to('/#top')} aria-label={ui.backToTop}>
+      <img src={siteConfig.assets.logoMark} alt="" width="40" height="34" loading="lazy" />
+      <span>{siteConfig.name}</span>
+    </a>
+    <p>{content.tagline}</p>
+  </div>
+  <nav class="footer-nav" aria-label={ui.footerNav}>
+    {
+      columns.map((column) => (
+        <div class="footer-col">
+          <p class="footer-col-label">{column.label}</p>
+          {column.links.map((link) =>
+            'action' in link ? (
+              <button type="button" class="footer-action" data-cookie-settings>{link.label}</button>
+            ) : 'external' in link ? (
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${link.label} (${ui.newTab})`}
+              >
+                {link.label}
+              </a>
+            ) : (
+              <a href={link.href}>{link.label}</a>
+            ),
+          )}
+        </div>
+      ))
+    }
+  </nav>
+  <p class="footer-copy">
+    <small>© {year} {content.copyright}</small>
+  </p>
+</footer>

@@ -1,0 +1,26 @@
+{
+  "id": "paid-discovery-sprint",
+  "value": "paid-discovery-sprint",
+  "label": "Sprint de descubrimiento pagado",
+  "name": "Sprint de descubrimiento pagado",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Diagnóstico tecnológico",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "Un compromiso corto y pagado que responde una pregunta estratégica antes de un compromiso mayor.",
+  "problem": "Se consideran inversiones grandes sin suficiente evidencia sobre las opciones.",
+  "solution": "Definimos la pregunta, probamos los supuestos críticos y cerramos con una recomendación y una postura de avanzar o no avanzar.",
+  "outcomes": [
+    "Planteamiento claro de la decisión",
+    "Supuestos críticos validados",
+    "Recomendación con postura de avanzar o no avanzar"
+  ]
+}

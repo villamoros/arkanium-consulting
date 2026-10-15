@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-sprint",
+  "value": "it-roadmap-sprint",
+  "label": "Sprint de feuille de route IT",
+  "name": "Sprint de feuille de route IT",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Feuille de route IT",
+    "order": 4
+  },
+  "position": 12,
+  "duration": null,
+  "description": "Un sprint court qui produit une première feuille de route IT que l’organisation peut commencer à exécuter.",
+  "problem": "Le travail technologique répond à des demandes ponctuelles, sans séquence que l'activité puisse suivre.",
+  "solution": "Nous recueillons les priorités, les confrontons à la capacité et aux dépendances, et convenons d’une première feuille de route avec les responsables.",
+  "outcomes": [
+    "Première feuille de route IT avec responsables",
+    "Dépendances et capacité vérifiées",
+    "Prochaines étapes convenues"
+  ]
+}

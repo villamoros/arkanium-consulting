@@ -1,0 +1,44 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Hero from '../../components/sections/Hero.astro';
+import WhoWeAre from '../../components/sections/WhoWeAre.astro';
+import Challenges from '../../components/sections/Challenges.astro';
+import Solutions from '../../components/sections/Solutions.astro';
+import HowWeWork from '../../components/sections/HowWeWork.astro';
+import WhyArkanium from '../../components/sections/WhyArkanium.astro';
+import CaseStudiesPreview from '../../components/sections/CaseStudiesPreview.astro';
+import InsightsPreview from '../../components/sections/InsightsPreview.astro';
+import FAQ from '../../components/sections/FAQ.astro';
+import CTA from '../../components/sections/CTA.astro';
+import { locales, type Locale } from '../../i18n/config';
+import { getTranslations } from '../../i18n/utils';
+import { getCatalog } from '../../lib/catalog';
+import { getCaseStudies, homeCaseStudies } from '../../lib/case-studies';
+import { getArticleSummaries } from '../../lib/insights';
+import { getHomePage } from '../../lib/home';
+
+// Solo se generan las rutas de idiomas soportados; cualquier otro /xx/ responde 404.
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const home = await getHomePage(locale);
+const catalog = await getCatalog(locale);
+const caseStudies = homeCaseStudies(await getCaseStudies(locale));
+const insights = (await getArticleSummaries(locale)).slice(0, 3);
+---
+
+<PageLayout locale={locale} title={t.meta.title} description={t.meta.description}>
+  <Hero locale={locale} content={home.hero} buttons={t.hero} ui={t.ui} />
+  <WhoWeAre content={home.about} ui={t.ui} />
+  <Challenges content={home.challenges} />
+  <Solutions locale={locale} content={home.solutions} ui={t.ui} page={t.solutionsPage} catalog={catalog} allLabel={t.navigation.allSolutions} />
+  <HowWeWork content={home.process} ui={t.ui} />
+  <WhyArkanium content={home.why} />
+  <CaseStudiesPreview locale={locale} content={t.caseStudies} items={caseStudies} />
+  <InsightsPreview locale={locale} content={t.insights} items={insights} />
+  <FAQ content={home.faq} />
+  <CTA locale={locale} content={home.cta} families={catalog.families} form={t.cta.form} ui={t.ui} />
+</PageLayout>

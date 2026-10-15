@@ -1,0 +1,26 @@
+{
+  "id": "digital-maturity-assessment",
+  "value": "digital-maturity-assessment",
+  "label": "Avaliação de maturidade digital",
+  "name": "Avaliação de maturidade digital",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Estratégia digital",
+    "order": 2
+  },
+  "position": 5,
+  "duration": null,
+  "description": "Uma avaliação estruturada de quão preparada está a organização para operar e crescer digitalmente.",
+  "problem": "Não está claro em que ponto a organização está em capacidades, processos e habilidades.",
+  "solution": "Avaliamos as capacidades nas dimensões de negócio e tecnologia e as comparamos com um modelo de maturidade claro.",
+  "outcomes": [
+    "Perfil de maturidade por dimensão",
+    "Lacunas entre o estado atual e o objetivo",
+    "Áreas prioritárias de melhoria"
+  ]
+}

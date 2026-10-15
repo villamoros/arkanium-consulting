@@ -1,0 +1,26 @@
+{
+  "id": "discovery-workshop",
+  "value": "discovery-workshop",
+  "label": "Atelier de découverte",
+  "name": "Atelier de découverte",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Découverte produit",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Une session animée pour aligner le problème utilisateur, le marché cible et les hypothèses à tester.",
+  "problem": "Une idée de produit existe, mais l'équipe ne partage pas la même vision du problème qu'elle résout.",
+  "solution": "Nous animons un atelier structuré qui transforme l’idée en énoncés de problème explicites et en hypothèses testables.",
+  "outcomes": [
+    "Énoncé de problème partagé",
+    "Liste d’hypothèses à tester, classée",
+    "Périmètre de découverte convenu"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "digital-maturity-assessment",
+  "value": "digital-maturity-assessment",
+  "label": "Evaluación de madurez digital",
+  "name": "Evaluación de madurez digital",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Estrategia digital",
+    "order": 2
+  },
+  "position": 5,
+  "duration": null,
+  "description": "Una evaluación estructurada de qué tan preparada está la organización para operar y crecer digitalmente.",
+  "problem": "No está claro en qué punto se encuentra la organización en capacidades, procesos y habilidades.",
+  "solution": "Evaluamos las capacidades en las dimensiones de negocio y tecnología, y las comparamos con un modelo de madurez claro.",
+  "outcomes": [
+    "Perfil de madurez por dimensión",
+    "Brechas entre el estado actual y el objetivo",
+    "Áreas prioritarias de mejora"
+  ]
+}

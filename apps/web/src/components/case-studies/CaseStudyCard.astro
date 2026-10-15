@@ -1,0 +1,38 @@
+---
+import CaseStudyBadge from './CaseStudyBadge.astro';
+import { caseStudyPath, type CaseStudy } from '../../lib/case-studies';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  item: CaseStudy;
+  locale: Locale;
+  content: TranslationSchema['caseStudies'];
+}
+const { item, locale, content } = Astro.props;
+// Un escenario representativo solo habla de resultados ESPERADOS, nunca logrados.
+const outcomeLabel = item.type === 'REPRESENTATIVE' ? content.labels.outcomeExpected : content.labels.outcome;
+const outcome = item.outcomes[0];
+---
+
+<article class="case-card case-card--link reveal">
+  <div class="case-card-header">
+    <div class="case-card-tags">
+      <CaseStudyBadge type={item.type} labels={content.badges} />
+      {item.industry && <span class="case-tag">{item.industry.name}</span>}
+    </div>
+    <h3><a class="case-card-link" href={caseStudyPath(locale, item.slug)}>{item.title}</a></h3>
+  </div>
+  <div class="case-body">
+    <p>{item.summary}</p>
+    {
+      outcome && (
+        <>
+          <p class="service-label">{outcomeLabel}</p>
+          <p>{outcome}</p>
+        </>
+      )
+    }
+    <span class="case-card-cta" aria-hidden="true">{content.readMore} →</span>
+  </div>
+</article>

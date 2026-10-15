@@ -1,0 +1,26 @@
+{
+  "id": "product-discovery-sprint",
+  "value": "product-discovery-sprint",
+  "label": "Sprint de découverte produit",
+  "name": "Sprint de découverte produit",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Découverte produit",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "Un sprint court de découverte qui étudie les utilisateurs, le marché et la faisabilité d’une idée de produit.",
+  "problem": "Des décisions produit sont prises sans preuves sur les utilisateurs ni sur la faisabilité.",
+  "solution": "Nous menons une recherche utilisateurs, une revue de marché et des contrôles de faisabilité technique, puis recommandons si et comment avancer.",
+  "outcomes": [
+    "Preuves sur les utilisateurs et le marché",
+    "Évaluation de faisabilité",
+    "Recommandation pour avancer ou arrêter"
+  ]
+}

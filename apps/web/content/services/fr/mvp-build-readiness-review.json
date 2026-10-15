@@ -1,0 +1,26 @@
+{
+  "id": "mvp-build-readiness-review",
+  "value": "mvp-build-readiness-review",
+  "label": "Revue de préparation à la construction du MVP",
+  "name": "Revue de préparation à la construction du MVP",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "mvp-strategy",
+    "name": "Stratégie de MVP",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "Une revue qui vérifie si le MVP est prêt à être construit : périmètre, équipe, architecture et risques.",
+  "problem": "La construction commence avant que le périmètre, l'équipe ou l'architecture ne soient prêts, et les retards arrivent ensuite.",
+  "solution": "Nous vérifions la préparation selon un jeu court de critères et signalons les écarts à combler avant de commencer la construction.",
+  "outcomes": [
+    "Verdict de préparation selon des critères clairs",
+    "Écarts listés avec responsables",
+    "Recommandation go ou no-go"
+  ]
+}

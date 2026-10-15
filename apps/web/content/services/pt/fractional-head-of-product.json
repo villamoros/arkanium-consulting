@@ -1,0 +1,26 @@
+{
+  "id": "fractional-head-of-product",
+  "value": "fractional-head-of-product",
+  "label": "Head de produto fracionado",
+  "name": "Head de produto fracionado",
+  "family": {
+    "value": "product",
+    "name": "Produto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Gestão de produto",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "Liderança de produto sênior em tempo parcial para definir a estratégia de produto e construir a função de produto.",
+  "problem": "A organização precisa de liderança de produto e de uma função de produto, mas ainda não de um executivo em tempo integral.",
+  "solution": "Definimos a estratégia de produto com a liderança, desenhamos a função de produto e acompanhamos a equipe que a conduzirá.",
+  "outcomes": [
+    "Estratégia de produto acordada com a liderança",
+    "Função de produto desenhada",
+    "Equipe acompanhada para conduzi-la"
+  ]
+}

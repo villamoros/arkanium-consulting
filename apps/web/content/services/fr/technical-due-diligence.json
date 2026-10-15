@@ -1,0 +1,26 @@
+{
+  "id": "technical-due-diligence",
+  "value": "technical-due-diligence",
+  "label": "Due diligence technique",
+  "name": "Due diligence technique",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Conseil en architecture",
+    "order": 1
+  },
+  "position": 5,
+  "duration": null,
+  "description": "Une évaluation indépendante d’un patrimoine technologique avant un investissement, une acquisition ou un partenariat.",
+  "problem": "Une transaction importante est envisagée sans vision claire des risques technologiques qui la sous-tendent.",
+  "solution": "Nous examinons l'architecture, le code et les opérations, identifions les risques significatifs et précisons leur impact sur la transaction.",
+  "outcomes": [
+    "Risques technologiques significatifs identifiés",
+    "Impact sur la transaction précisé",
+    "Constats classés par gravité"
+  ]
+}

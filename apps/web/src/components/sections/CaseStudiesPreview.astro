@@ -1,0 +1,40 @@
+---
+/**
+ * Vista ligera para el Home: solo casos PUBLISHED + PUBLIC (featured primero, luego publishedAt).
+ * Los casos vienen del CMS; aquí no hay contenido de casos.
+ */
+import SectionHeading from '../ui/SectionHeading.astro';
+import Button from '../ui/Button.astro';
+import CaseStudyCard from '../case-studies/CaseStudyCard.astro';
+import { caseStudiesPath, type CaseStudy } from '../../lib/case-studies';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  content: TranslationSchema['caseStudies'];
+  items: CaseStudy[];
+}
+const { locale, content, items } = Astro.props;
+// Si todo lo mostrado es representativo, la sección se titula y explica como tal (no es evidencia de clientes).
+const onlyRepresentative = items.length > 0 && items.every((c) => c.type === 'REPRESENTATIVE');
+---
+
+{
+  items.length > 0 && (
+    <section class="cases section-band" id="case-studies" aria-labelledby="cases-heading">
+      <SectionHeading
+        id="cases-heading"
+        eyebrow={content.eyebrow}
+        title={onlyRepresentative ? content.titleRepresentative : content.title}
+        intro={onlyRepresentative ? content.representativeNote : undefined}
+      />
+      <div class="case-grid">
+        {items.map((item) => <CaseStudyCard item={item} locale={locale} content={content} />)}
+      </div>
+      <div class="hero-actions">
+        <Button href={caseStudiesPath(locale)} variant="secondary">{content.viewAll}</Button>
+      </div>
+    </section>
+  )
+}

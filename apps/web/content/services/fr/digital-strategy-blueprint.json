@@ -1,0 +1,26 @@
+{
+  "id": "digital-strategy-blueprint",
+  "value": "digital-strategy-blueprint",
+  "label": "Blueprint de stratégie numérique",
+  "name": "Blueprint de stratégie numérique",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Stratégie numérique",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Une stratégie numérique écrite qui relie les objectifs de l'activité aux initiatives qui les réalisent.",
+  "problem": "Les efforts numériques avancent en parallèle, sans direction commune ni lien clair avec les objectifs de l'activité.",
+  "solution": "Nous définissons les principes stratégiques, les capacités cibles et les initiatives, et les documentons dans un blueprint utilisable par les dirigeants.",
+  "outcomes": [
+    "Stratégie numérique formalisée",
+    "Capacités cibles et initiatives",
+    "Lien entre chaque initiative et un objectif de l’activité"
+  ]
+}

@@ -1,0 +1,33 @@
+---
+/**
+ * Renderiza el árbol saneado (lib/insights/richtext.ts) con elementos de Astro.
+ * Nunca se inserta HTML del CMS: el texto siempre se escapa. Recursivo.
+ * Los bloques pueden llevar `id` (encabezados del índice).
+ */
+import type { RtNode } from '../../lib/insights/richtext';
+
+interface Props {
+  nodes: RtNode[];
+}
+const { nodes } = Astro.props;
+---
+
+{
+  nodes.map((node) => {
+    if (node.kind === 'text') {
+      return node.marks.code ? <code>{node.text}</code> : node.marks.bold && node.marks.italic ? <strong><em>{node.text}</em></strong> : node.marks.bold ? <strong>{node.text}</strong> : node.marks.italic ? <em>{node.text}</em> : node.marks.underline ? <u>{node.text}</u> : node.text;
+    }
+    if (node.kind === 'link') {
+      return (
+        <a href={node.href} target={node.newTab ? '_blank' : undefined} rel={node.external ? 'noopener noreferrer' : undefined}>
+          <Astro.self nodes={node.children} />
+        </a>
+      );
+    }
+    if (node.kind === 'image') {
+      return <img src={node.src} alt={node.alt} width={node.width} height={node.height} loading="lazy" decoding="async" />;
+    }
+    const Tag = node.tag;
+    return <Tag id={node.id}><Astro.self nodes={node.children} /></Tag>;
+  })
+}

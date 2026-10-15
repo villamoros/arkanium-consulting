@@ -1,0 +1,26 @@
+{
+  "id": "technical-risk-monitoring",
+  "value": "technical-risk-monitoring",
+  "label": "Monitoramento de risco técnico",
+  "name": "Monitoramento de risco técnico",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Governança tecnológica",
+    "order": 2
+  },
+  "position": 9,
+  "duration": null,
+  "description": "Acompanhamento contínuo dos riscos técnicos, com responsáveis claros e relatórios periódicos à liderança.",
+  "problem": "Os riscos técnicos são conhecidos por poucas pessoas e não são relatados até se tornarem incidentes.",
+  "solution": "Mantemos um registro de riscos técnicos, atribuímos responsáveis, acompanhamos as mitigações e informamos o status periodicamente.",
+  "outcomes": [
+    "Registro de riscos técnicos",
+    "Responsáveis e mitigações acompanhados",
+    "Relatório periódico de status"
+  ]
+}

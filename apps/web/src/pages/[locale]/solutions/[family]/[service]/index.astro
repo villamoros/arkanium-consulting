@@ -1,0 +1,145 @@
+---
+/**
+ * Service Landing Page. Estructura común; cada sección se muestra solo si el CMS tiene
+ * contenido para ella (no se inventa copy). Fuente: CMS (Storyblok, pendiente) → Astro → HTML estático.
+ */
+import PageLayout from '../../../../../layouts/PageLayout.astro';
+import Button from '../../../../../components/ui/Button.astro';
+import SectionHeading from '../../../../../components/ui/SectionHeading.astro';
+import FAQItem from '../../../../../components/ui/FAQItem.astro';
+import Breadcrumb from '../../../../../components/solutions/Breadcrumb.astro';
+import OfferingList from '../../../../../components/solutions/OfferingList.astro';
+import RelatedServices from '../../../../../components/solutions/RelatedServices.astro';
+import CaseStudyRelated from '../../../../../components/case-studies/CaseStudyRelated.astro';
+import { siteConfig } from '../../../../../content/static/site';
+import { locales, type Locale } from '../../../../../i18n/config';
+import { getLocalizedPath, getTranslations } from '../../../../../i18n/utils';
+import { ctaPath, familyPath, findService, getCatalog, getRelatedServices, hasServicePage } from '../../../../../lib/catalog';
+import { caseStudiesForService, getCaseStudies } from '../../../../../lib/case-studies';
+import { paragraphs } from '../../../../../lib/utils';
+import { absoluteSeoUrl } from '../../../../../lib/seo';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const locale of locales) {
+    const catalog = await getCatalog(locale);
+    for (const family of catalog.families)
+      for (const category of family.categories)
+        for (const service of category.services)
+          if (hasServicePage(service)) paths.push({ params: { locale, family: family.slug, service: service.slug } });
+  }
+  return paths;
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const p = t.solutionsPage;
+const catalog = await getCatalog(locale);
+const service = findService(catalog, Astro.params.family as string, Astro.params.service as string);
+if (!service) throw new Error(`[catalog] Servicio no encontrado: ${Astro.params.family}/${Astro.params.service}`);
+const family = catalog.families.find((f) => f.slug === service.familySlug)!;
+const category = family.categories.find((c) => c.slug === service.categorySlug)!;
+const related = getRelatedServices(catalog, service);
+const cases = caseStudiesForService(await getCaseStudies(locale), family.slug, service.slug);
+
+const { seo } = service;
+const title = seo.title ?? `${service.name} | ${family.name} | ${siteConfig.name}`;
+const description = seo.description ?? service.shortDescription ?? t.meta.description;
+const cta = ctaPath(locale, service.slug);
+const breadcrumbs = [
+  { name: siteConfig.name, url: absoluteSeoUrl(getLocalizedPath(locale), Astro.site) },
+  { name: p.title, url: absoluteSeoUrl(getLocalizedPath(locale, '/solutions/'), Astro.site) },
+  { name: family.name, url: absoluteSeoUrl(getLocalizedPath(locale, `/solutions/${family.slug}/`), Astro.site) },
+  { name: service.name, url: absoluteSeoUrl(Astro.url.pathname, Astro.site) },
+];
+---
+
+<PageLayout locale={locale} title={title} description={description} canonical={seo.canonical} ogImage={seo.ogImage} noindex={seo.noIndex} breadcrumbs={breadcrumbs}>
+  <section class="page-hero section-band" aria-labelledby="service-heading">
+    <Breadcrumb
+      label={p.breadcrumb}
+      items={[
+        { label: p.title, href: getLocalizedPath(locale, '/solutions/') },
+        { label: family.name, href: familyPath(locale, family.slug) },
+        { label: service.name },
+      ]}
+    />
+    <p class="eyebrow">{category.name}{service.duration && ` · ${service.duration}`}</p>
+    <h1 id="service-heading">{service.name}</h1>
+    {service.shortDescription && <p class="hero-lede">{service.shortDescription}</p>}
+    <div class="hero-actions">
+      <Button href={cta}>{service.ctaLabel ?? p.ctaDefault}</Button>
+    </div>
+  </section>
+
+  {
+    service.problem && (
+      <section class="section-band" aria-labelledby="problem-heading">
+        <SectionHeading id="problem-heading" title={p.problem} />
+        <div class="prose">{paragraphs(service.problem).map((x) => <p>{x}</p>)}</div>
+      </section>
+    )
+  }
+
+  {
+    service.description && (
+      <section class="section-band" aria-labelledby="what-heading">
+        <SectionHeading id="what-heading" title={p.whatWeDo} />
+        <div class="prose">{paragraphs(service.description).map((x) => <p>{x}</p>)}</div>
+      </section>
+    )
+  }
+
+  {
+    service.approach && (
+      <section class="section-band" aria-labelledby="approach-heading">
+        <SectionHeading id="approach-heading" title={p.approach} />
+        <div class="prose">{paragraphs(service.approach).map((x) => <p>{x}</p>)}</div>
+      </section>
+    )
+  }
+
+  {
+    (service.outcomes.length > 0 || service.deliverables.length > 0) && (
+      <section class="section-band" aria-labelledby="outcomes-heading">
+        <SectionHeading id="outcomes-heading" title={service.outcomes.length ? p.outcomes : p.deliverables} />
+        <div class="why-grid">
+          {[...service.outcomes, ...service.deliverables].map((x) => (
+            <article class="why-card reveal"><p>{x}</p></article>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    service.offerings.length > 0 && (
+      <section class="section-band" aria-labelledby="engagement-heading">
+        <SectionHeading id="engagement-heading" title={p.engagementOptions} />
+        <OfferingList locale={locale} familySlug={family.slug} serviceSlug={service.slug} offerings={service.offerings} page={p} labels={t.solutions.labels} />
+      </section>
+    )
+  }
+
+  <CaseStudyRelated items={cases} locale={locale} content={t.caseStudies} id="service-cases-heading" />
+
+  {related.length > 0 && <RelatedServices locale={locale} heading={p.related} services={related} />}
+
+  {
+    service.faqs.length > 0 && (
+      <section class="faq section-band" aria-labelledby="service-faq-heading">
+        <SectionHeading id="service-faq-heading" title={p.faq} />
+        <div class="faq-list reveal">
+          {service.faqs.map((item) => <FAQItem question={item.question} answer={item.answer} />)}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section-band cta-band" aria-labelledby="service-cta-heading">
+    <div class="cta-band-inner reveal">
+      <h2 id="service-cta-heading">{p.ctaHeading}</h2>
+      <Button href={cta}>{service.ctaLabel ?? p.ctaDefault}</Button>
+    </div>
+  </section>
+</PageLayout>

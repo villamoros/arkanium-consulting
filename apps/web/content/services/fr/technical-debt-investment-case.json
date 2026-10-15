@@ -1,0 +1,26 @@
+{
+  "id": "technical-debt-investment-case",
+  "value": "technical-debt-investment-case",
+  "label": "Dossier d’investissement sur la dette technique",
+  "name": "Dossier d’investissement sur la dette technique",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Stratégie technologique",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "Un dossier d'affaires qui transforme la dette technique en coûts, en risques et en décision d'investissement.",
+  "problem": "La dette technique est discutée en termes généraux, ce qui rend son financement et sa priorisation difficiles.",
+  "solution": "Nous identifions les principaux éléments de dette, estimons leur coût et leur risque, et construisons un dossier qui compare les options de remédiation.",
+  "outcomes": [
+    "Principaux éléments de dette avec coût et risque",
+    "Options de remédiation comparées",
+    "Dossier d’investissement prêt pour décision"
+  ]
+}

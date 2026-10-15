@@ -1,0 +1,26 @@
+{
+  "id": "product-requirements-backlog",
+  "value": "product-requirements-backlog",
+  "label": "Product Requirements & Backlog",
+  "name": "Product Requirements & Backlog",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Product Definition",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Clear product requirements and a prioritised backlog that engineering teams can act on.",
+  "problem": "Requirements are vague, so the backlog changes every sprint and delivery slows down.",
+  "solution": "We write the requirements as user-centred stories with acceptance criteria and order the backlog by value and dependencies.",
+  "outcomes": [
+    "Requirements with acceptance criteria",
+    "Backlog ordered by value",
+    "Dependencies visible to the team"
+  ]
+}

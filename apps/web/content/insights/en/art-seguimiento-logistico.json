@@ -1,0 +1,55 @@
+{
+  "id": "art-seguimiento-logistico",
+  "slug": "scaling-tracking-for-peak-season",
+  "title": "Why a tracking system cannot handle peak season",
+  "excerpt": "A representative scenario: how the critical flows of a tracking monolith are identified and separated by service boundaries.",
+  "featured": false,
+  "publishedAt": "2026-09-26T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "guide",
+  "category": { "slug": "architecture-modernization", "name": "Architecture & modernization" },
+  "caseStudies": [{ "slug": "logistics-tracking-redesign" }],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }, { "id": "art-plataforma-pagos" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "This article describes a representative scenario. It does not describe work with a specific client, and the results it mentions are expected, not achieved." }] },
+        { "type": "heading-one", "children": [{ "text": "The peak-season problem" }] },
+        { "type": "paragraph", "children": [{ "text": "For most of the year the tracking system works. In peak season, spikes in queries degrade the whole monolith at once, and nobody can see which flow fails first." }] },
+        { "type": "heading-one", "children": [{ "text": "Identifying the critical flows" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Before splitting anything, the flows that generate the most load and the ones the end customer notices were measured. The starting point is a " },
+          { "type": "link", "href": "/en/solutions/architecture/architecture-modernization-roadmap/", "children": [{ "text": "modernization roadmap" }] },
+          { "text": " that prioritizes by impact rather than by the age of the code." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Separating by business boundaries" }] },
+        { "type": "paragraph", "children": [{ "text": "Shipment tracking was separated first, because it was the most queried flow. Each boundary has its own scaling pace and its own metrics, which allows one part to scale without touching the others." }] },
+        { "type": "heading-one", "children": [{ "text": "Staged migration with visible risk" }] },
+        { "type": "paragraph", "children": [
+          { "text": "The migration was done in stages, each with a review before the next peak season. The design of each boundary is documented in the " },
+          { "type": "link", "href": "/en/solutions/architecture/solution-architecture-design/", "children": [{ "text": "solution architecture design" }] },
+          { "text": ", and the risks are tracked in the " },
+          { "type": "link", "href": "/en/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "technical risk monitoring" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "What to expect from this approach" }] },
+        { "type": "paragraph", "children": [{ "text": "Scalable service boundaries, better observability on the critical flows and less risk before each peak season. These are expectations of the method, not figures from a real case." }] },
+        { "type": "heading-one", "children": [{ "text": "How to apply it to your system" }] },
+        { "type": "paragraph", "children": [
+          { "text": "If your system slows down exactly when it is used most, start by measuring its flows. The full scenario is in our " },
+          { "type": "link", "href": "/en/case-studies/logistics-tracking-redesign/", "children": [{ "text": "case studies" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Why a tracking system cannot handle peak season | Representative scenario",
+    "metaDescription": "Representative scenario: how to split a logistics tracking monolith by service boundaries before peak season."
+  }
+}

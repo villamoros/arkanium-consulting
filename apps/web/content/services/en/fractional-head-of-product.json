@@ -1,0 +1,26 @@
+{
+  "id": "fractional-head-of-product",
+  "value": "fractional-head-of-product",
+  "label": "Fractional Head of Product",
+  "name": "Fractional Head of Product",
+  "family": {
+    "value": "product",
+    "name": "Product",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Product Management",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "Senior product leadership on a part-time basis to set the product strategy and build the product function.",
+  "problem": "The organisation needs product leadership and a product function, but not yet a full-time executive.",
+  "solution": "We set the product strategy with leadership, define the product function and coach the team that will run it.",
+  "outcomes": [
+    "Product strategy agreed with leadership",
+    "Product function designed",
+    "Team coached to run it"
+  ]
+}

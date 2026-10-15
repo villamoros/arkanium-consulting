@@ -1,0 +1,42 @@
+{
+  "id": "cs-saas-scalability-assessment",
+  "slug": "saas-scalability-assessment",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-24T00:00:00Z",
+  "title": "Scalability assessment of a SaaS platform",
+  "summary": "A SaaS platform whose performance degrades beyond 500 active customers at the same time.",
+  "industry": { "slug": "saas-b2b", "name": "B2B SaaS" },
+  "challengeSummary": "A SaaS platform whose performance degrades beyond 500 active customers at the same time.",
+  "challengeDetails": "The decision to scale was made without data: infrastructure was added without knowing which bottleneck needed it.",
+  "approach": "A technical health check and an architecture assessment, with technical leadership to prioritize the improvements.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Measure what degrades beyond 500 active customers and at which point of the system." },
+    { "phase": "ARCHITECTURE", "body": "Prioritize the bottlenecks by impact and define migration routes." },
+    { "phase": "GOVERNANCE", "body": "Technical leadership that decides the order of the improvements and the criteria to move forward." }
+  ],
+  "solution": "A prioritized bottleneck map, defined migration routes and a technical leadership plan to carry it out.",
+  "outcomes": [
+    "Prioritized bottlenecks",
+    "Defined migration routes",
+    "Architecture leadership recommendations"
+  ],
+  "deliverables": [
+    "Technical health check of the platform",
+    "Architecture assessment",
+    "Fractional technical leadership for execution"
+  ],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Scalability assessment of a SaaS platform | Representative case",
+    "description": "Representative scenario: how the bottlenecks of a SaaS beyond 500 active customers are measured before adding infrastructure."
+  }
+}

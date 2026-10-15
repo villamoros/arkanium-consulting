@@ -1,0 +1,26 @@
+{
+  "id": "technical-risk-monitoring",
+  "value": "technical-risk-monitoring",
+  "label": "Technical Risk Monitoring",
+  "name": "Technical Risk Monitoring",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Technology Governance",
+    "order": 2
+  },
+  "position": 9,
+  "duration": null,
+  "description": "Ongoing tracking of technical risks, with clear owners and a regular report to leadership.",
+  "problem": "Technical risks are known by a few people and are not reported until they become incidents.",
+  "solution": "We keep a register of technical risks, assign owners, track mitigation and report the status regularly.",
+  "outcomes": [
+    "Register of technical risks",
+    "Owners and mitigation tracked",
+    "Regular status report"
+  ]
+}

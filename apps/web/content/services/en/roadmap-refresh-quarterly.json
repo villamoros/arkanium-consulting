@@ -1,0 +1,26 @@
+{
+  "id": "roadmap-refresh-quarterly",
+  "value": "roadmap-refresh-quarterly",
+  "label": "Roadmap Refresh (Quarterly)",
+  "name": "Roadmap Refresh (Quarterly)",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "IT Roadmapping",
+    "order": 4
+  },
+  "position": 14,
+  "duration": null,
+  "description": "A quarterly review that keeps the IT roadmap aligned with business priorities and what has changed.",
+  "problem": "Roadmaps go stale quickly, and nobody is responsible for updating them.",
+  "solution": "Each quarter we review progress and priorities with leadership, update the roadmap and record the decisions taken.",
+  "outcomes": [
+    "Roadmap kept current each quarter",
+    "Record of decisions and changes",
+    "Clear priorities for the next quarter"
+  ]
+}

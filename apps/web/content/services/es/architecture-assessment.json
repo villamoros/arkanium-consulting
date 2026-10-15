@@ -1,0 +1,26 @@
+{
+  "id": "architecture-assessment",
+  "value": "architecture-assessment",
+  "label": "Evaluación de arquitectura",
+  "name": "Evaluación de arquitectura",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitectura",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Consultoría de arquitectura",
+    "order": 1
+  },
+  "position": 1,
+  "duration": null,
+  "description": "Una revisión independiente de la arquitectura actual, sus riesgos y qué tan bien soporta al negocio.",
+  "problem": "La dirección no está segura de si la arquitectura puede soportar la siguiente etapa de crecimiento.",
+  "solution": "Revisamos la arquitectura, sus dependencias y sus riesgos operativos, e informamos los hallazgos con prioridades.",
+  "outcomes": [
+    "Hallazgos de arquitectura con prioridades",
+    "Riesgos y dependencias mapeados",
+    "Resumen ejecutivo"
+  ]
+}

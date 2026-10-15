@@ -1,0 +1,26 @@
+{
+  "id": "technical-debt-investment-case",
+  "value": "technical-debt-investment-case",
+  "label": "Technical Debt Investment Case",
+  "name": "Technical Debt Investment Case",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Technology Strategy",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "A business case that turns technical debt into costs, risks and an investment decision.",
+  "problem": "Technical debt is discussed in general terms, which makes it hard to fund and prioritise.",
+  "solution": "We identify the main debt items, estimate their cost and risk, and build a case that compares remediation options.",
+  "outcomes": [
+    "Main debt items with cost and risk",
+    "Remediation options compared",
+    "Investment case ready for decision"
+  ]
+}

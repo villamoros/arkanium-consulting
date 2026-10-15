@@ -1,0 +1,20 @@
+{
+  "id": "cookies",
+  "value": "cookies",
+  "title": "Cookies policy",
+  "description": "Which cookies this site uses, what they are for, and how to change your choice.",
+  "sections": [
+    "This policy explains which cookies and similar technologies this site uses, what they are for, and how you can manage them. You can change your choice at any time from the “Cookie preferences” link in the footer.",
+    "## What a cookie is",
+    "A cookie is a small file that a site stores in your browser. Some are necessary for the site to work; others are used to measure or personalise. Analytics and marketing cookies require your consent. Necessary cookies do not.",
+    "## Cookies we use",
+    "arkanium_consent (strictly necessary). It stores your cookie choice for 6 months, so we do not ask you again on every visit. It contains no personal data: only your preferences and the date you saved them.",
+    "Cloudflare, our hosting provider, may set technical security and performance cookies, such as __cf_bm, which help distinguish legitimate traffic from automated traffic. They are necessary to protect the site.",
+    "## Cookies we do not use",
+    "Today this site does not use analytics or marketing cookies, and it does not load third-party tools that set them. If we add any in the future, we will update this page and ask for your permission before activating them. These categories appear in the preferences panel, switched off.",
+    "## How to change your choice",
+    "From the “Cookie preferences” link in the footer you can change your choice at any time. You can also configure your browser to block or delete cookies; note that blocking necessary cookies may affect how the site works. The steps depend on the browser: see its help pages.",
+    "## Changes",
+    "If the cookies we use change, we will update this policy and its review date."
+  ]
+}

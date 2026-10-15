@@ -1,0 +1,13 @@
+---
+interface Props {
+  question: string;
+  answer: string;
+}
+const { question, answer } = Astro.props;
+---
+
+<!-- `name` agrupa los <details>: el navegador cierra los demás sin JavaScript. -->
+<details class="faq-item" name="faq">
+  <summary class="faq-question">{question}</summary>
+  <p class="faq-answer">{answer}</p>
+</details>

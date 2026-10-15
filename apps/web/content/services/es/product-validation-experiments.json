@@ -1,0 +1,26 @@
+{
+  "id": "product-validation-experiments",
+  "value": "product-validation-experiments",
+  "label": "Experimentos de validación de producto",
+  "name": "Experimentos de validación de producto",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Descubrimiento de producto",
+    "order": 1
+  },
+  "position": 4,
+  "duration": null,
+  "description": "Experimentos pequeños y medibles que prueban los supuestos más arriesgados antes de construir un producto.",
+  "problem": "Los supuestos más arriesgados solo se discuten, no se prueban.",
+  "solution": "Diseñamos experimentos con criterios de éxito claros, los ejecutamos con usuarios e informamos lo aprendido.",
+  "outcomes": [
+    "Experimentos con criterios de éxito",
+    "Evidencia de usuarios",
+    "Informe de lo aprendido"
+  ]
+}

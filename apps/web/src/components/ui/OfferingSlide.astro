@@ -1,0 +1,51 @@
+---
+import { cx } from '../../lib/utils';
+import type { TranslationSchema } from '../../i18n/utils';
+
+/** Tarjeta de offering del carrusel de la home. Solo recibe datos ya resueltos. */
+export interface SlideData {
+  line: string;
+  title: string;
+  duration?: string;
+  /** Texto de inversión ya formateado según investmentVisibility; si no hay, no se muestra. */
+  investment?: string;
+  problem?: string;
+  solution?: string;
+  outcome?: string;
+  /** Contenido interior del SVG (constante propia, ver content/static/offering-icons.ts). */
+  icon: string;
+}
+
+interface Props {
+  slide: SlideData;
+  lineLabel: string;
+  labels: TranslationSchema['solutions']['labels'];
+  active?: boolean;
+}
+const { slide, lineLabel, labels, active = false } = Astro.props;
+---
+
+<article
+  class={cx('service-card', active && 'is-active')}
+  data-service-line={slide.line}
+  data-carousel-slide
+  role="group"
+  aria-roledescription="slide"
+  aria-label={slide.title}
+>
+  <div class="service-card-top">
+    <span class="service-line">{lineLabel}</span>
+    <div class="service-icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" set:html={slide.icon} />
+    </div>
+    <div class="service-duration">
+      {slide.duration && (<><span class="duration-label">{labels.engagement}</span><span class="duration-value">{slide.duration}</span></>)}
+      {slide.investment && (<><span class="price-label">{labels.investment}</span><span class="price-value">{slide.investment}</span></>)}
+    </div>
+  </div>
+  <h3>{slide.title}</h3>
+  <hr class="service-divider" />
+  {slide.problem && (<><p class="service-label">{labels.problem}</p><p>{slide.problem}</p></>)}
+  {slide.solution && (<><p class="service-label">{labels.solution}</p><p>{slide.solution}</p></>)}
+  {slide.outcome && (<><p class="service-label">{labels.outcome}</p><p>{slide.outcome}</p></>)}
+</article>

@@ -1,0 +1,26 @@
+{
+  "id": "digital-opportunity-workshop",
+  "value": "digital-opportunity-workshop",
+  "label": "Atelier d’opportunités numériques",
+  "name": "Atelier d’opportunités numériques",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Stratégie numérique",
+    "order": 2
+  },
+  "position": 4,
+  "duration": null,
+  "description": "Une session de travail animée pour identifier et classer les opportunités numériques de l'activité.",
+  "problem": "Des idées numériques existent dans chaque équipe, mais aucune vision partagée ne dit lesquelles comptent le plus.",
+  "solution": "Nous animons un atelier structuré avec les dirigeants, recueillons les opportunités et les évaluons selon la valeur, la faisabilité et le risque.",
+  "outcomes": [
+    "Liste partagée des opportunités numériques",
+    "Notation par valeur, faisabilité et risque",
+    "Liste courte validée pour l’étape suivante"
+  ]
+}

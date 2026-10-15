@@ -1,0 +1,20 @@
+{
+  "id": "cookies",
+  "value": "cookies",
+  "title": "Política de cookies",
+  "description": "Quais cookies este site usa, para que servem e como pode alterar a sua escolha.",
+  "sections": [
+    "Esta política explica quais cookies e tecnologias semelhantes este site usa, para que servem e como pode geri-los. Pode alterar a sua escolha a qualquer momento através do link «Preferências de cookies» no rodapé.",
+    "## O que é um cookie",
+    "Um cookie é um pequeno ficheiro que um site guarda no seu navegador. Alguns são necessários para o site funcionar; outros servem para medir ou personalizar. Os cookies de análise e de marketing precisam do seu consentimento. Os necessários não.",
+    "## Cookies que usamos",
+    "arkanium_consent (estritamente necessário). Guarda a sua escolha sobre cookies durante 6 meses, para não lhe perguntar em cada visita. Não contém dados pessoais: apenas as suas preferências e a data em que foram guardadas.",
+    "A Cloudflare, nosso fornecedor de alojamento, pode definir cookies técnicos de segurança e desempenho, como __cf_bm, que ajudam a distinguir o tráfego legítimo do automatizado. São necessários para proteger o site.",
+    "## Cookies que não usamos",
+    "Hoje este site não usa cookies de análise nem de marketing, nem carrega ferramentas de terceiros que os instalem. Se no futuro incorporarmos algum, atualizaremos esta página e pediremos a sua permissão antes de o ativar. Estas categorias aparecem no painel de preferências, desativadas.",
+    "## Como alterar a sua escolha",
+    "A partir do link «Preferências de cookies» no rodapé, pode alterar a sua escolha a qualquer momento. Também pode configurar o navegador para bloquear ou apagar cookies; tenha em conta que bloquear os necessários pode afetar o funcionamento do site. Os passos dependem do navegador: consulte a sua ajuda.",
+    "## Alterações",
+    "Se os cookies que usamos mudarem, atualizaremos esta política e a sua data de revisão."
+  ]
+}

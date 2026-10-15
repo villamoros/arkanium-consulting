@@ -1,0 +1,293 @@
+---
+import type { HomeCta } from '../../lib/home';
+import SectionHeading from '../ui/SectionHeading.astro';
+import { siteConfig } from '../../content/static/site';
+import type { Locale } from '../../i18n/config';
+import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  content: HomeCta;
+  families: Array<{ slug: string; name: string }>;
+  form: TranslationSchema['cta']['form'];
+  ui: TranslationSchema['ui'];
+}
+const { locale, content: cta, families, form, ui } = Astro.props;
+const privacyHref = getLocalizedPath(locale, '/legal/privacy/');
+---
+
+<section class="assessment section-band" id="cta" aria-labelledby="assessment-heading">
+  <SectionHeading id="assessment-heading" eyebrow={cta.eyebrow} title={cta.title} />
+
+  <div class="assessment-layout">
+    <div class="assessment-left reveal">
+      <figure class="assessment-visual" data-light-follow>
+        <span class="assessment-visual-glow" aria-hidden="true"></span>
+        <img src={siteConfig.assets.logoLockup} alt={ui.logoAlt} loading="lazy" width="560" height="280" />
+      </figure>
+      <div class="assessment-copy">
+        <p>{cta.intro}</p>
+        <ol class="assessment-steps" aria-label={ui.assessmentSteps}>
+          {cta.steps.map((step) => <li><span>{step}</span></li>)}
+        </ol>
+      </div>
+    </div>
+
+    <div class="assessment-form-card reveal">
+      <div class="assessment-form-header">
+        <p class="panel-kicker">{form.kicker}</p>
+        <h3>{form.title}</h3>
+      </div>
+
+      <div class="form-success" data-form-success aria-live="polite" tabindex="-1" hidden>
+        <p><strong>{form.successTitle}</strong> <span>{form.successBody}</span></p>
+      </div>
+
+      <form
+        class="lead-form"
+        aria-label={form.title}
+        data-lead-form
+        data-locale={locale}
+        data-msg-name={form.errors.name}
+        data-msg-email={form.errors.email}
+        data-msg-consent={form.errors.consent}
+        data-msg-send={form.sendError}
+        data-sending={form.sending}
+        novalidate
+      >
+        <!-- Contexto comercial desde ?service=…&offering=… (ver ctaPath). Se valida en el servidor. -->
+        <input type="hidden" name="service" />
+        <input type="hidden" name="offering" />
+
+        <!-- Campo trampa: los humanos no lo ven ni lo rellenan. Si llega con contenido, el servidor descarta el envío. -->
+        <div class="lead-hp" aria-hidden="true">
+          <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div class="form-row">
+          <label class="field">
+            <span class="field-control">
+              <input type="text" name="name" autocomplete="name" placeholder=" " required aria-required="true" />
+              <span class="field-label">
+                <span>{form.nameLabel}</span>
+                <span class="req" aria-hidden="true">*</span>
+              </span>
+              <span class="field-bar" aria-hidden="true"></span>
+            </span>
+            <span class="field-error" id="error-name" data-error="name" role="alert" hidden></span>
+          </label>
+
+          <label class="field">
+            <span class="field-control">
+              <input type="email" name="email" autocomplete="email" placeholder=" " required aria-required="true" />
+              <span class="field-label">
+                <span>{form.emailLabel}</span>
+                <span class="req" aria-hidden="true">*</span>
+              </span>
+              <span class="field-bar" aria-hidden="true"></span>
+            </span>
+            <span class="field-error" id="error-email" data-error="email" role="alert" hidden></span>
+          </label>
+        </div>
+
+        <label class="field field--select">
+          <span class="field-control">
+            <select name="priority" aria-labelledby="priority-label">
+              {families.map((f) => <option value={f.slug}>{f.name}</option>)}
+              <option value="unsure">{form.priorities.unsure}</option>
+            </select>
+            <span class="field-label" id="priority-label">
+              <span>{form.priorityLabel}</span>
+            </span>
+            <span class="field-bar" aria-hidden="true"></span>
+          </span>
+        </label>
+
+        <label class="field field--area">
+          <span class="field-control">
+            <textarea name="context" rows="4" placeholder=" "></textarea>
+            <span class="field-label">
+              <span>{form.contextLabel}</span>
+            </span>
+            <span class="field-bar" aria-hidden="true"></span>
+          </span>
+        </label>
+
+        <div class="form-consent">
+          <label>
+            <input type="checkbox" name="consent" required aria-required="true" />
+            <span>{form.consent} <a href={privacyHref}>{form.consentLink}</a></span>
+          </label>
+          <span class="field-error" id="error-consent" data-error="consent" role="alert" hidden></span>
+        </div>
+
+        <button class="button button-primary form-submit" type="submit">{form.submit}</button>
+        <p class="field-error form-send-error" data-send-error role="alert" hidden></p>
+        <p class="form-note">{form.note}</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lead-hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .form-consent {
+    margin: 0.75rem 0 1rem;
+  }
+  .form-consent label {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .form-consent input {
+    margin-top: 0.3rem;
+    flex: 0 0 auto;
+  }
+  .form-consent a {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  // ── Formulario: validación en el navegador + envío a /api/contact (validado de nuevo en el servidor).
+  // Éxito solo con respuesta 200 del endpoint. Si falla, el formulario conserva los datos.
+  const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
+  const success = document.querySelector<HTMLElement>('[data-form-success]');
+
+  if (form) {
+    for (const key of ['service', 'offering']) {
+      const value = new URLSearchParams(location.search).get(key);
+      const input = form.querySelector<HTMLInputElement>(`[name="${key}"]`);
+      if (input && value && /^[a-z0-9-]{1,80}$/.test(value)) input.value = value;
+    }
+
+    const messages: Record<string, string> = {
+      name: form.dataset.msgName ?? '',
+      email: form.dataset.msgEmail ?? '',
+      consent: form.dataset.msgConsent ?? '',
+    };
+    const sendError = form.querySelector<HTMLElement>('[data-send-error]');
+    const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const submitLabel = submitButton?.textContent ?? '';
+
+    const errorFor = (field: string) => form.querySelector<HTMLElement>(`[data-error="${field}"]`);
+    const inputFor = (field: string) => form.querySelector<HTMLInputElement>(`[name="${field}"]`);
+
+    const showError = (field: string) => {
+      const error = errorFor(field);
+      const input = inputFor(field);
+      if (error) {
+        error.textContent = messages[field] ?? '';
+        error.hidden = false;
+      }
+      input?.setAttribute('aria-invalid', 'true');
+      input?.setAttribute('aria-describedby', `error-${field}`);
+    };
+
+    const clearError = (field: string) => {
+      const error = errorFor(field);
+      if (error) {
+        error.textContent = '';
+        error.hidden = true;
+      }
+      const input = inputFor(field);
+      input?.removeAttribute('aria-invalid');
+      input?.removeAttribute('aria-describedby');
+    };
+
+    const setSending = (sending: boolean) => {
+      if (!submitButton) return;
+      submitButton.disabled = sending;
+      submitButton.textContent = sending ? (form.dataset.sending ?? submitLabel) : submitLabel;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (sendError) sendError.hidden = true;
+
+      const data = new FormData(form);
+      const name = String(data.get('name') ?? '').trim();
+      const email = String(data.get('email') ?? '').trim();
+      const consent = data.get('consent') === 'on';
+
+      const invalid: string[] = [];
+      if (!name) invalid.push('name');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) invalid.push('email');
+      if (!consent) invalid.push('consent');
+
+      for (const field of ['name', 'email', 'consent']) {
+        if (invalid.includes(field)) showError(field);
+        else clearError(field);
+      }
+      if (invalid.length) {
+        inputFor(invalid[0] as string)?.focus();
+        return;
+      }
+
+      setSending(true);
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            email,
+            priority: String(data.get('priority') ?? ''),
+            service: String(data.get('service') ?? ''),
+            offering: String(data.get('offering') ?? ''),
+            context: String(data.get('context') ?? '').trim(),
+            consent: true,
+            website: String(data.get('website') ?? ''),
+            locale: form.dataset.locale ?? '',
+          }),
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        form.hidden = true;
+        if (success) {
+          success.hidden = false;
+          success.focus();
+        }
+      } catch {
+        if (sendError) {
+          sendError.textContent = form.dataset.msgSend ?? '';
+          sendError.hidden = false;
+          sendError.focus();
+        }
+        setSending(false);
+      }
+    });
+
+    form.addEventListener('input', (e) => {
+      const { name } = e.target as HTMLInputElement;
+      if (name) clearError(name);
+    });
+    form.addEventListener('change', (e) => {
+      const { name } = e.target as HTMLInputElement;
+      if (name) clearError(name);
+    });
+  }
+
+  // ── Halo del panel de imagen: sigue el cursor (sin movimiento con reduced-motion).
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll<HTMLElement>('[data-light-follow]').forEach((panel) => {
+      const reset = () => {
+        panel.style.setProperty('--spot-x', '18%');
+        panel.style.setProperty('--spot-y', '20%');
+      };
+      panel.addEventListener('pointermove', (e) => {
+        const rect = panel.getBoundingClientRect();
+        panel.style.setProperty('--spot-x', `${((e.clientX - rect.left) / rect.width) * 100}%`);
+        panel.style.setProperty('--spot-y', `${((e.clientY - rect.top) / rect.height) * 100}%`);
+      });
+      panel.addEventListener('pointerleave', reset);
+    });
+  }
+</script>

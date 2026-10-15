@@ -1,0 +1,26 @@
+{
+  "id": "full-technology-diagnosis",
+  "value": "full-technology-diagnosis",
+  "label": "Diagnostic technologique complet",
+  "name": "Diagnostic technologique complet",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Diagnostic technologique",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "Un diagnostic de bout en bout de l'architecture, de la livraison, de l'exploitation et de la gouvernance.",
+  "problem": "Les décisions budgétaires et les priorités se prennent sans vision complète du patrimoine technologique.",
+  "solution": "Nous cartographions le patrimoine technologique, l'évaluons au regard des objectifs de l'activité et livrons un diagnostic avec une synthèse dirigeants et des options priorisées.",
+  "outcomes": [
+    "Cartographie complète du patrimoine technologique",
+    "Synthèse dirigeants pour la décision",
+    "Options priorisées avec leurs arbitrages"
+  ]
+}

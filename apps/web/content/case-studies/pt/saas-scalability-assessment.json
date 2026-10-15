@@ -1,0 +1,42 @@
+{
+  "id": "cs-saas-scalability-assessment",
+  "slug": "saas-scalability-assessment",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-24T00:00:00Z",
+  "title": "Avaliação de escalabilidade de uma plataforma SaaS",
+  "summary": "Uma plataforma SaaS cujo desempenho se degrada ao ultrapassar 500 clientes ativos simultâneos.",
+  "industry": { "slug": "saas-b2b", "name": "SaaS B2B" },
+  "challengeSummary": "Uma plataforma SaaS cujo desempenho se degrada ao ultrapassar 500 clientes ativos simultâneos.",
+  "challengeDetails": "A decisão de escalar era tomada sem dados: adicionava-se infraestrutura sem saber qual gargalo a justificava.",
+  "approach": "Um check-up técnico e uma avaliação de arquitetura, com liderança técnica para priorizar as melhorias.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Medir o que se degrada além de 500 clientes ativos e em que ponto do sistema." },
+    { "phase": "ARCHITECTURE", "body": "Priorizar os gargalos por impacto e definir rotas de migração." },
+    { "phase": "GOVERNANCE", "body": "Liderança técnica que decide a ordem das melhorias e os critérios para avançar." }
+  ],
+  "solution": "Um mapa de gargalos priorizado, rotas de migração definidas e um plano de liderança técnica para executá-lo.",
+  "outcomes": [
+    "Gargalos priorizados",
+    "Rotas de migração definidas",
+    "Recomendações de liderança em arquitetura"
+  ],
+  "deliverables": [
+    "Check-up técnico da plataforma",
+    "Avaliação de arquitetura",
+    "Liderança técnica fracionada para a execução"
+  ],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Avaliação de escalabilidade de uma plataforma SaaS | Caso representativo",
+    "description": "Cenário representativo: como medir os gargalos de um SaaS além de 500 clientes ativos antes de adicionar infraestrutura."
+  }
+}

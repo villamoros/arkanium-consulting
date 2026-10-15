@@ -1,0 +1,42 @@
+{
+  "id": "cs-fintech-payments-architecture",
+  "slug": "fintech-payments-architecture",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-18T00:00:00Z",
+  "title": "Architecture d'une plateforme de paiement",
+  "summary": "Une plateforme de paiement aux goulots d'étranglement de données et à une logique métier dispersée, sans modèle clair.",
+  "industry": { "slug": "fintech", "name": "Fintech" },
+  "challengeSummary": "Une plateforme de paiement aux goulots d'étranglement de données et à une logique métier dispersée, sans modèle clair.",
+  "challengeDetails": "Les décisions de facturation et de rapprochement étaient réparties entre des services sans propriétaire clair. Chaque incident de données prenait des jours à localiser.",
+  "approach": "Une évaluation d'architecture, la conception du flux de données de paiement et la gouvernance du risque technique.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Suivre un paiement de bout en bout et repérer où la logique est dupliquée." },
+    { "phase": "ARCHITECTURE", "body": "Définir un propriétaire pour chaque donnée et un flux d'événements explicite entre les services de facturation et de rapprochement." },
+    { "phase": "GOVERNANCE", "body": "Suivi du risque technique avec des responsables et revue de chaque décision portant sur les données." }
+  ],
+  "solution": "Un modèle de données avec un propriétaire par domaine et un flux de rapprochement explicite, introduit par phases sans interrompre les paiements.",
+  "outcomes": [
+    "Meilleure maintenabilité de la logique métier",
+    "Flux de données clair",
+    "Résilience accrue sous charge"
+  ],
+  "deliverables": [
+    "Évaluation d'architecture",
+    "Conception d'architecture de solution pour le flux de données",
+    "Registre des risques techniques avec responsables"
+  ],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Architecture d'une plateforme de paiement | Cas représentatif",
+    "description": "Scénario représentatif : comment mettre en ordre une plateforme de paiement aux données sans propriétaire et à logique distribuée, et avec quels services."
+  }
+}

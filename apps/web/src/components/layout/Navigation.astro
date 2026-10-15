@@ -1,0 +1,96 @@
+---
+import type { Locale } from '../../i18n/config';
+import { getLocalizedPath, type TranslationSchema } from '../../i18n/utils';
+import type { MenuFamily } from '../../lib/catalog';
+import { siteConfig } from '../../content/static/site';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import SolutionsMenu from './SolutionsMenu.astro';
+
+interface Props {
+  locale: Locale;
+  content: TranslationSchema['navigation'];
+  ui: TranslationSchema['ui'];
+  /** Familias → categorías → servicios, ya resueltos por Astro desde el catálogo. */
+  menu: MenuFamily[];
+  localePaths?: Partial<Record<Locale, string>>;
+}
+const { locale, content, ui, menu, localePaths } = Astro.props;
+
+// Estructura (no traducible): clave del diccionario → id de sección del Home.
+// Cuando existan páginas internas (004+), solo cambia el `path` de cada entrada.
+const items = [
+  { key: 'about', path: '/#about' },
+  { key: 'problem', path: '/#challenges' },
+  { key: 'solutions', path: '/solutions/' },
+  { key: 'process', path: '/#process' },
+  { key: 'why', path: '/#why-arkanium' },
+  { key: 'cases', path: '/case-studies/' },
+  { key: 'faq', path: '/#insights' },
+] as const;
+
+const loginHref = getLocalizedPath(locale, siteConfig.loginPath);
+---
+
+<a class="nav-login nav-login-mobile" href={loginHref}>{content.login}</a>
+
+<button
+  class="nav-toggle"
+  type="button"
+  aria-expanded="false"
+  aria-controls="site-menu"
+  aria-label={ui.menuOpen}
+  data-nav-toggle
+  data-label-open={ui.menuOpen}
+  data-label-close={ui.menuClose}
+>
+  <span aria-hidden="true"></span>
+  <span aria-hidden="true"></span>
+</button>
+
+<div class="nav-links" id="site-menu" data-nav-menu>
+  {
+    items.map((item) =>
+      item.key === 'solutions' ? (
+        <SolutionsMenu
+          label={content.solutions}
+          allLabel={content.allSolutions}
+          allHref={getLocalizedPath(locale, item.path)}
+          families={menu}
+        />
+      ) : (
+        <a href={getLocalizedPath(locale, item.path)}>{content[item.key]}</a>
+      ),
+    )
+  }
+  <LanguageSwitcher locale={locale} label={ui.changeLanguage} localePaths={localePaths} />
+  <a class="nav-login" href={loginHref}>{content.login}</a>
+</div>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-nav-menu]');
+
+  function setOpen(open: boolean, returnFocus = false) {
+    if (!toggle || !menu) return;
+    menu.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    const label = open ? toggle.dataset.labelClose : toggle.dataset.labelOpen;
+    if (label) toggle.setAttribute('aria-label', label);
+    if (!open && returnFocus) toggle.focus();
+  }
+
+  toggle?.addEventListener('click', () => setOpen(!menu?.classList.contains('is-open')));
+
+  menu?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a[href]')) setOpen(false, true);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu?.classList.contains('is-open')) setOpen(false, true);
+  });
+
+  document.addEventListener('click', (e) => {
+    const t = e.target as Node;
+    if (menu?.classList.contains('is-open') && !menu.contains(t) && !toggle?.contains(t)) setOpen(false);
+  });
+</script>

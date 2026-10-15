@@ -1,0 +1,26 @@
+{
+  "id": "architecture-modernization-roadmap",
+  "value": "architecture-modernization-roadmap",
+  "label": "Hoja de ruta de modernización de arquitectura",
+  "name": "Hoja de ruta de modernización de arquitectura",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitectura",
+    "order": 3
+  },
+  "category": {
+    "value": "architecture-consulting",
+    "name": "Consultoría de arquitectura",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "Un plan secuenciado para pasar de la arquitectura actual a un estado objetivo, paso a paso.",
+  "problem": "La modernización se quiere, pero no está planificada, así que compite con el trabajo de funcionalidades y se estanca.",
+  "solution": "Definimos la arquitectura objetivo, secuenciamos los pasos de migración y establecemos los criterios de cada etapa.",
+  "outcomes": [
+    "Arquitectura objetivo definida",
+    "Pasos de migración secuenciados",
+    "Criterios para cada etapa"
+  ]
+}

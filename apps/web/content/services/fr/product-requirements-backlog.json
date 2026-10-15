@@ -1,0 +1,26 @@
+{
+  "id": "product-requirements-backlog",
+  "value": "product-requirements-backlog",
+  "label": "Exigences produit et backlog",
+  "name": "Exigences produit et backlog",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Définition produit",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Des exigences produit claires et un backlog priorisé sur lequel les équipes d’ingénierie peuvent agir.",
+  "problem": "Les exigences sont floues, si bien que le backlog change à chaque sprint et que la livraison ralentit.",
+  "solution": "Nous rédigeons les exigences sous forme de récits centrés sur l’utilisateur avec critères d’acceptation, et classons le backlog par valeur et dépendances.",
+  "outcomes": [
+    "Exigences avec critères d’acceptation",
+    "Backlog classé par valeur",
+    "Dépendances visibles pour l’équipe"
+  ]
+}

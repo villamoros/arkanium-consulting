@@ -1,0 +1,27 @@
+---
+/** Solo métricas verificadas llegan aquí (el normalizador descarta el resto). */
+import type { CaseMetric } from '../../lib/case-studies';
+
+interface Props {
+  metrics: CaseMetric[];
+  heading: string;
+  sourceLabel: string;
+}
+const { metrics, heading, sourceLabel } = Astro.props;
+---
+
+<section class="section-band" aria-labelledby="metrics-heading">
+  <div class="section-heading reveal"><h2 id="metrics-heading">{heading}</h2></div>
+  <div class="metric-grid">
+    {
+      metrics.map((m) => (
+        <div class="hero-metric reveal">
+          <strong>{m.value}{m.unit && <span class="metric-unit">{m.unit}</span>}</strong>
+          <span>{m.label}</span>
+          {m.context && <small>{m.context}</small>}
+          {m.source && <small>{sourceLabel}: {m.source}</small>}
+        </div>
+      ))
+    }
+  </div>
+</section>

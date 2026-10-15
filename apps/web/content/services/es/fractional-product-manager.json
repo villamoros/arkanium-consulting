@@ -1,0 +1,26 @@
+{
+  "id": "fractional-product-manager",
+  "value": "fractional-product-manager",
+  "label": "Product Manager fraccional",
+  "name": "Product Manager fraccional",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Gestión de producto",
+    "order": 4
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Un product manager con experiencia que lidera el trabajo de producto a tiempo parcial, con un alcance de responsabilidad definido.",
+  "problem": "El producto necesita responsabilidad y un backlog claro, pero una contratación a tiempo completo aún no se justifica.",
+  "solution": "Aportamos un product manager que se responsabiliza del backlog, las prioridades y la alineación de interesados para un alcance acordado.",
+  "outcomes": [
+    "Responsabilidad sobre backlog y prioridades",
+    "Alineación de interesados",
+    "Alcance acordado al inicio"
+  ]
+}

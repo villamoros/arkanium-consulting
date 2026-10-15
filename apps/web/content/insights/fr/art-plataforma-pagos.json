@@ -1,0 +1,59 @@
+{
+  "id": "art-plataforma-pagos",
+  "slug": "demeler-une-plateforme-de-paiement",
+  "title": "Quand un paiement emprunte trop de chemins",
+  "excerpt": "Un scénario représentatif : comment cartographier une plateforme de paiement à logique distribuée et données sans propriétaire, et quels services remettent le flux en ordre.",
+  "featured": false,
+  "publishedAt": "2026-09-25T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnostic et risque" },
+  "caseStudies": [{ "slug": "fintech-payments-architecture" }],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Cet article décrit un scénario représentatif. Il ne décrit pas une mission auprès d'un client précis, et les résultats mentionnés sont attendus, non atteints." }] },
+        { "type": "heading-one", "children": [{ "text": "Où la traçabilité se perd" }] },
+        { "type": "paragraph", "children": [{ "text": "Une plateforme de paiement grandit par couches : facturation, contrôle de fraude, rapprochement et comptabilité. Lorsque chaque couche décide de son côté, une même transaction peut avoir trois états différents. Trouver le bon prend des jours." }] },
+        { "type": "heading-one", "children": [{ "text": "Un propriétaire pour chaque donnée" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Le premier changement a été d'attribuer un propriétaire à chaque donnée de transaction. La décision sur l'état relève désormais d'un seul service, et les autres la consultent. La méthode de diagnostic est décrite dans l'" },
+          { "type": "link", "href": "/fr/solutions/architecture/architecture-assessment/", "children": [{ "text": "évaluation d'architecture" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Un flux de rapprochement explicite" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Le rapprochement a cessé d'être un processus caché pour devenir un flux d'événements documentés. Ce flux se conçoit avec la " },
+          { "type": "link", "href": "/fr/solutions/architecture/solution-architecture-design/", "children": [{ "text": "conception d'architecture de solution" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Un risque revu à chaque changement" }] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Chaque risque sur les données a un responsable." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Chaque modification du flux est revue avant la production." }] }] }
+        ] },
+        { "type": "paragraph", "children": [
+          { "text": "Ce suivi continu est le périmètre du " },
+          { "type": "link", "href": "/fr/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "suivi du risque technique" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Comment l'appliquer à votre plateforme" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Si vos données de paiement se contredisent d'un domaine à l'autre, commencez par la traçabilité. Le scénario complet figure dans nos " },
+          { "type": "link", "href": "/fr/case-studies/fintech-payments-architecture/", "children": [{ "text": "cas d'étude" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Quand un paiement emprunte trop de chemins | Scénario représentatif",
+    "metaDescription": "Scénario représentatif : comment mettre en ordre une plateforme de paiement aux données sans propriétaire et à logique distribuée."
+  }
+}

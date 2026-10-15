@@ -1,0 +1,26 @@
+{
+  "id": "technology-strategy-sprint",
+  "value": "technology-strategy-sprint",
+  "label": "Sprint de stratégie technologique",
+  "name": "Sprint de stratégie technologique",
+  "family": {
+    "value": "strategy",
+    "name": "Stratégie",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Stratégie technologique",
+    "order": 3
+  },
+  "position": 8,
+  "duration": null,
+  "description": "Un sprint court et ciblé qui produit une stratégie technologique sur laquelle la direction peut trancher.",
+  "problem": "La direction technologique reste implicite, si bien que les décisions d'investissement se prennent au cas par cas.",
+  "solution": "Nous travaillons avec la direction pour définir les principes, les options et une direction recommandée.",
+  "outcomes": [
+    "Principes technologiques convenus",
+    "Options comparées en coût et en risque",
+    "Direction recommandée pour décision"
+  ]
+}

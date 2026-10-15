@@ -1,0 +1,26 @@
+{
+  "id": "embedded-technical-leadership",
+  "value": "embedded-technical-leadership",
+  "label": "Embedded Technical Leadership",
+  "name": "Embedded Technical Leadership",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Technology Leadership",
+    "order": 3
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Technical leadership embedded in the organisation for an agreed period, working alongside its teams.",
+  "problem": "The organisation needs technical leadership inside its teams while it builds its own capability.",
+  "solution": "We work inside the teams to lead technical decisions and transfer practices, with a defined handover plan.",
+  "outcomes": [
+    "Technical decisions led inside the teams",
+    "Practices transferred to the organisation",
+    "Defined handover plan"
+  ]
+}

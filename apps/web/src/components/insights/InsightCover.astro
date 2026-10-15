@@ -1,0 +1,32 @@
+---
+/**
+ * Portada de un artículo. Sin imagen, la portada por defecto aprobada en diseño:
+ * la marca sobre la rejilla dorada, para que todos los artículos se vean coherentes.
+ */
+import type { ArticleImage } from '../../lib/insights';
+import { siteConfig } from '../../content/static/site';
+
+interface Props {
+  image?: ArticleImage;
+  variant?: 'card' | 'large' | 'hero';
+}
+const { image, variant = 'card' } = Astro.props;
+---
+
+{
+  image ? (
+    <img
+      class:list={['insight-cover', `insight-cover--${variant}`]}
+      src={image.url}
+      alt={image.alt}
+      width={image.width}
+      height={image.height}
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <div class:list={['insight-cover', 'insight-cover--fallback', `insight-cover--${variant}`]} aria-hidden="true">
+      <img src={siteConfig.assets.logoMark} alt="" width="64" height="48" loading="lazy" decoding="async" />
+    </div>
+  )
+}

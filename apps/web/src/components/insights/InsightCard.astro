@@ -1,0 +1,33 @@
+---
+import { articlePath, type ArticleSummary } from '../../lib/insights';
+import { formatDate } from '../../lib/insights/format';
+import InsightCover from './InsightCover.astro';
+import type { Locale } from '../../i18n/config';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  item: ArticleSummary;
+  locale: Locale;
+  content: TranslationSchema['insights'];
+  /** Variante grande para el artículo destacado del listado. */
+  large?: boolean;
+}
+const { item, locale, content, large = false } = Astro.props;
+---
+
+<article class={`insight-card reveal${large ? ' insight-card--large' : ''}`}>
+  <InsightCover image={item.featuredImage} variant={large ? 'large' : 'card'} />
+  <div class="insight-card-body">
+    <p class="insight-card-top">
+      <span class="insight-format">{content.formats[item.format]}</span>
+      <span class="insight-card-categories">{item.category.name}</span>
+    </p>
+    <h3><a class="insight-card-link" href={articlePath(locale, item.slug)}>{item.title}</a></h3>
+    <p class="insight-card-excerpt">{item.excerpt}</p>
+    <p class="insight-card-meta">
+      <time datetime={item.publishedAt}>{formatDate(item.publishedAt, locale)}</time>
+      {item.author && <span> · {content.by} {item.author.name}</span>}
+    </p>
+    <span class="insight-card-cta" aria-hidden="true">{content.readMore} →</span>
+  </div>
+</article>

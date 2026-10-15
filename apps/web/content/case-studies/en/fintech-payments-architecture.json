@@ -1,0 +1,42 @@
+{
+  "id": "cs-fintech-payments-architecture",
+  "slug": "fintech-payments-architecture",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-18T00:00:00Z",
+  "title": "Architecture of a payments platform",
+  "summary": "A payments platform with data bottlenecks and business logic spread across services without a clear pattern.",
+  "industry": { "slug": "fintech", "name": "Fintech" },
+  "challengeSummary": "A payments platform with data bottlenecks and business logic spread across services without a clear pattern.",
+  "challengeDetails": "Charging and reconciliation decisions were spread across services with no clear owner. Each data incident took days to trace.",
+  "approach": "An architecture assessment, the design of the payments data flow and technical risk governance.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Trace a payment from end to end and find where the logic is duplicated." },
+    { "phase": "ARCHITECTURE", "body": "Define an owner for each data item and an explicit event flow between the charging and reconciliation services." },
+    { "phase": "GOVERNANCE", "body": "Technical risk tracking with owners and a review of each decision about data." }
+  ],
+  "solution": "A data model with an owner per domain and an explicit reconciliation flow, introduced in phases without stopping payments.",
+  "outcomes": [
+    "Easier maintenance of the business logic",
+    "A clear data flow",
+    "Greater resilience under load"
+  ],
+  "deliverables": [
+    "Architecture assessment",
+    "Solution architecture design for the data flow",
+    "Technical risk register with owners"
+  ],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Architecture of a payments platform | Representative case",
+    "description": "Representative scenario: how a payments platform with unowned data and distributed logic is put in order, and with which services."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "privacy",
+  "value": "privacy",
+  "title": "Privacy policy",
+  "description": "How Arkanium Consulting handles personal data when you use this site or contact us.",
+  "sections": [
+    "This policy explains which personal data we process when you visit this site or send the contact form, why we use it, and what rights you have over it.",
+    "## Data controller",
+    "Controller: Arkanium Consulting LLC, [postal address], New Mexico, United States. For any privacy matter, write to hello@arkanium.consulting.",
+    "## What data we collect",
+    "Browsing the site: we do not ask for data to browse. The servers that host the site record minimal technical data, such as IP address, date and time of the visit and the page requested, to keep the service secure and available. The cookies policy explains what is stored in your browser.",
+    "Contact form: name, email address, the area of interest you choose, an optional description of your problem, the date and time of submission and the language of the page. We do not ask for sensitive data; please do not include it in the free-text field.",
+    "## What we use the data for",
+    "To answer your request and, where appropriate, to arrange a first conversation. Your request reaches our team by email and an internal alert is posted to our Slack channel so the team can follow up. We also use the data to protect the site against abuse, including automated form submissions. We do not use your data for advertising or for automated decisions that affect you.",
+    "## Legal basis",
+    "Your consent, given by ticking the checkbox on the form. You can withdraw it at any time by writing to us, without affecting processing carried out before. We process technical data on the basis of our legitimate interest in protecting the site.",
+    "## Who we share the data with",
+    "We do not sell or transfer personal data. We work with providers that help us run the site: Cloudflare (hosting and server functions), Resend (email delivery) and Slack (internal alert to the team). Some of them are located in the United States, so data may be processed outside your country. Where the law requires it, we rely on standard contractual clauses or equivalent safeguards.",
+    "## How long we keep the data",
+    "Contact requests are kept for [retention period to be defined] from receipt, unless they lead to a business relationship, in which case the terms of that relationship apply. Technical security logs are kept for as long as our hosting provider sets.",
+    "## Your rights",
+    "You can ask us to access, correct or delete your data, to restrict or object to its processing, and to receive it in a portable format. Write to hello@arkanium.consulting with the subject “Data rights”. If you are not satisfied with our answer, you can complain to the data protection authority in your country. If you live in the European Union, the United Kingdom, Brazil or elsewhere with specific rules, these rights apply under your local law.",
+    "## Changes to this policy",
+    "We may update this policy. The current version is the one shown on this page, with its last review date: [review date]."
+  ]
+}

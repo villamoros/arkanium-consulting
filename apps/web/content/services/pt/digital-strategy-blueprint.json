@@ -1,0 +1,26 @@
+{
+  "id": "digital-strategy-blueprint",
+  "value": "digital-strategy-blueprint",
+  "label": "Blueprint de estratégia digital",
+  "name": "Blueprint de estratégia digital",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "digital-strategy",
+    "name": "Estratégia digital",
+    "order": 2
+  },
+  "position": 6,
+  "duration": null,
+  "description": "Uma estratégia digital escrita que liga os objetivos do negócio às iniciativas que os entregam.",
+  "problem": "Os esforços digitais avançam em paralelo, sem uma direção comum nem uma ligação clara com os objetivos do negócio.",
+  "solution": "Definimos os princípios estratégicos, as capacidades-alvo e as iniciativas, e os documentamos em um blueprint que a liderança possa usar.",
+  "outcomes": [
+    "Estratégia digital por escrito",
+    "Capacidades-alvo e iniciativas",
+    "Ligação de cada iniciativa a um objetivo do negócio"
+  ]
+}

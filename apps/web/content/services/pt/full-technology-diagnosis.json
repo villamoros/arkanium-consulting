@@ -1,0 +1,26 @@
+{
+  "id": "full-technology-diagnosis",
+  "value": "full-technology-diagnosis",
+  "label": "Diagnóstico tecnológico completo",
+  "name": "Diagnóstico tecnológico completo",
+  "family": {
+    "value": "strategy",
+    "name": "Estratégia",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Diagnóstico tecnológico",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "Um diagnóstico de ponta a ponta de arquitetura, entrega, operação e governança.",
+  "problem": "Decisões de orçamento e prioridades são tomadas sem uma visão completa do parque tecnológico.",
+  "solution": "Mapeamos o parque tecnológico, avaliamos em relação aos objetivos do negócio e entregamos um diagnóstico com resumo executivo e opções priorizadas.",
+  "outcomes": [
+    "Mapa completo do parque tecnológico",
+    "Resumo executivo para decisores",
+    "Opções priorizadas com seus compromissos"
+  ]
+}

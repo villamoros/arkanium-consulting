@@ -1,0 +1,26 @@
+{
+  "id": "fractional-cto-startup-tier",
+  "value": "fractional-cto-startup-tier",
+  "label": "CTO à temps partagé — offre startup",
+  "name": "CTO à temps partagé — offre startup",
+  "family": {
+    "value": "architecture",
+    "name": "Architecture",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Leadership technologique",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "Un CTO à temps partagé pour les entreprises en phase initiale qui ont besoin d’un leadership technologique pour construire le premier produit.",
+  "problem": "Une entreprise en phase initiale a besoin d'un leadership technologique avant de pouvoir financer un CTO à temps plein.",
+  "solution": "Nous pilotons la stratégie technologique, les choix d'architecture et la mise en place de l'équipe, pour un périmètre partiel convenu.",
+  "outcomes": [
+    "Stratégie technologique pilotée",
+    "Choix d’architecture effectués",
+    "Équipe mise en place pour livrer"
+  ]
+}

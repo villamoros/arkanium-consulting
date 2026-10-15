@@ -1,0 +1,31 @@
+---
+import type { HomeWhy } from '../../lib/home';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+interface Props {
+  content: HomeWhy;
+}
+const { content } = Astro.props;
+---
+
+<section class="why section-band" id="why-arkanium" aria-labelledby="why-heading">
+  <SectionHeading id="why-heading" eyebrow={content.eyebrow} title={content.title} />
+  <div class="why-grid">
+    {
+      content.items.map((item) => (
+        <article class="why-card reveal">
+          <div class="why-card-icon" aria-hidden="true">◈</div>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="why-gain reveal" role="group" aria-labelledby="why-gain-heading">
+    <p class="eyebrow" id="why-gain-heading">{content.gain.eyebrow}</p>
+    <ul class="why-gain-list">
+      {content.gain.items.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+</section>

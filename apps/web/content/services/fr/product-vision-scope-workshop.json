@@ -1,0 +1,26 @@
+{
+  "id": "product-vision-scope-workshop",
+  "value": "product-vision-scope-workshop",
+  "label": "Atelier vision et périmètre produit",
+  "name": "Atelier vision et périmètre produit",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-definition",
+    "name": "Définition produit",
+    "order": 2
+  },
+  "position": 5,
+  "duration": null,
+  "description": "Un atelier qui arrête la vision du produit et le périmètre couvert par la première version.",
+  "problem": "Les parties prenantes ont des idées différentes sur ce qu’est le produit et ce qu’il doit inclure.",
+  "solution": "Nous animons la discussion, arrêtons la vision et traçons la frontière du périmètre avec les parties prenantes qui décident.",
+  "outcomes": [
+    "Vision produit convenue",
+    "Frontière de périmètre pour la première version",
+    "Liste des décisions en suspens"
+  ]
+}

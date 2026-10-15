@@ -1,0 +1,26 @@
+{
+  "id": "it-roadmap-12-24-months",
+  "value": "it-roadmap-12-24-months",
+  "label": "Hoja de ruta de TI (12-24 meses)",
+  "name": "Hoja de ruta de TI (12-24 meses)",
+  "family": {
+    "value": "strategy",
+    "name": "Estrategia",
+    "order": 1
+  },
+  "category": {
+    "value": "it-roadmapping",
+    "name": "Hoja de ruta de TI",
+    "order": 4
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Una hoja de ruta de TI a medio plazo que secuencia las iniciativas de modernización y entrega durante uno a dos años.",
+  "problem": "Las iniciativas de modernización y entrega no están secuenciadas en el tiempo, y los compromisos chocan.",
+  "solution": "Construimos una hoja de ruta secuenciada con hitos, dependencias, ventanas de financiación y las decisiones que necesita cada fase.",
+  "outcomes": [
+    "Hoja de ruta secuenciada de 12 a 24 meses",
+    "Hitos y dependencias mapeados",
+    "Decisiones necesarias por fase"
+  ]
+}

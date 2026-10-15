@@ -1,0 +1,42 @@
+{
+  "id": "cs-logistics-tracking-redesign",
+  "slug": "logistics-tracking-redesign",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-20T00:00:00Z",
+  "title": "Redesigning logistics tracking infrastructure",
+  "summary": "A monolithic tracking system unable to scale during peak demand seasons.",
+  "industry": { "slug": "logistics", "name": "Logistics" },
+  "challengeSummary": "A monolithic tracking system unable to scale during peak demand seasons.",
+  "challengeDetails": "During peak seasons shipment tracking degraded, and teams could not see which flow failed first.",
+  "approach": "A modernization roadmap by service boundaries, with observability on the critical flows.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Identify the critical tracking flows and their load peaks." },
+    { "phase": "ARCHITECTURE", "body": "Split the monolith by business boundary, starting with shipment tracking." },
+    { "phase": "GOVERNANCE", "body": "Visible technical risk and a review of each phase before the next peak season." }
+  ],
+  "solution": "Scalable service boundaries and observability on the critical flows, migrated in stages.",
+  "outcomes": [
+    "Scalable service boundaries",
+    "Better observability on critical flows",
+    "Less risk before peak season"
+  ],
+  "deliverables": [
+    "Modernization roadmap",
+    "Solution architecture design",
+    "Technical risk monitoring"
+  ],
+  "services": [
+    { "slug": "architecture-modernization-roadmap", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Redesigning logistics tracking infrastructure | Representative case",
+    "description": "Representative scenario: how a logistics tracking monolith is split by service boundaries before the peak season."
+  }
+}

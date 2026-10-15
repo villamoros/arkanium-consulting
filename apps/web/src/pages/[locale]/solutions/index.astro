@@ -1,0 +1,63 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro';
+import ServiceCard from '../../../components/ui/ServiceCard.astro';
+import Breadcrumb from '../../../components/solutions/Breadcrumb.astro';
+import { siteConfig } from '../../../content/static/site';
+import { locales, type Locale } from '../../../i18n/config';
+import { getLocalizedPath, getTranslations } from '../../../i18n/utils';
+import { familyPath, getCatalog, hasServicePage, servicePath } from '../../../lib/catalog';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+const p = t.solutionsPage;
+const catalog = await getCatalog(locale);
+---
+
+<PageLayout locale={locale} title={`${p.title} | ${siteConfig.name}`} description={p.intro}>
+  <section class="page-hero section-band" aria-labelledby="catalog-heading">
+    <Breadcrumb
+      label={p.breadcrumb}
+      items={[{ label: siteConfig.name, href: getLocalizedPath(locale) }, { label: p.title }]}
+    />
+    <p class="eyebrow">{p.eyebrow}</p>
+    <h1 id="catalog-heading">{p.title}</h1>
+    <p class="hero-lede">{p.intro}</p>
+  </section>
+
+  {
+    catalog.families.map((family) => (
+      <section class="section-band catalog-family" id={family.slug} aria-labelledby={`${family.slug}-heading`}>
+        <div class="catalog-family-header">
+          <h2 id={`${family.slug}-heading`}>{family.name}</h2>
+          <a class="catalog-family-link" href={familyPath(locale, family.slug)}>{p.explore} {family.name} →</a>
+        </div>
+        {family.shortDescription && <p class="catalog-family-intro">{family.shortDescription}</p>}
+        <div class="catalog-categories">
+          {family.categories.map((category) => (
+            <div class="catalog-category">
+              <h3>{category.name}</h3>
+              {category.services.length > 0 ? (
+                <div class="card-stack">
+                  {category.services.map((s) => (
+                    <ServiceCard
+                      title={s.name}
+                      description={s.shortDescription}
+                      href={hasServicePage(s) ? servicePath(locale, family.slug, s.slug) : undefined}
+                      soonLabel={p.comingSoon}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p class="catalog-empty"><span class="soon-tag">{p.comingSoon}</span></p>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</PageLayout>

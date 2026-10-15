@@ -1,0 +1,14 @@
+---
+/** Etiqueta de naturaleza editorial. Siempre visible: el borde (sólido/punteado) y el texto distinguen el tipo, no solo el color. */
+import type { CaseType } from '../../lib/case-studies';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  type: CaseType;
+  labels: TranslationSchema['caseStudies']['badges'];
+}
+const { type, labels } = Astro.props;
+const text = { REAL: labels.real, REPRESENTATIVE: labels.representative, ANONYMIZED: labels.anonymized }[type];
+---
+
+<span class={`case-badge case-badge--${type.toLowerCase()}`}>{text}</span>

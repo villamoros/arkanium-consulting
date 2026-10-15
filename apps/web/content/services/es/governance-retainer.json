@@ -1,0 +1,26 @@
+{
+  "id": "governance-retainer",
+  "value": "governance-retainer",
+  "label": "Retainer de gobierno",
+  "name": "Retainer de gobierno",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitectura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-governance",
+    "name": "Gobierno tecnológico",
+    "order": 2
+  },
+  "position": 7,
+  "duration": null,
+  "description": "Un servicio de gobierno continuo que mantiene las decisiones tecnológicas revisadas y alineadas con el negocio.",
+  "problem": "El gobierno que se establece una vez se desvanece con el tiempo, y las decisiones se alejan de los criterios acordados.",
+  "solution": "Ejecutamos el ciclo de gobierno de forma continua: foros de revisión, registros de decisiones e informes periódicos.",
+  "outcomes": [
+    "Foros de revisión continuos",
+    "Registros de decisiones actualizados",
+    "Informes periódicos a la dirección"
+  ]
+}

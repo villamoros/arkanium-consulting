@@ -1,0 +1,26 @@
+{
+  "id": "product-discovery-sprint",
+  "value": "product-discovery-sprint",
+  "label": "Sprint de descubrimiento de producto",
+  "name": "Sprint de descubrimiento de producto",
+  "family": {
+    "value": "product",
+    "name": "Producto",
+    "order": 2
+  },
+  "category": {
+    "value": "product-discovery",
+    "name": "Descubrimiento de producto",
+    "order": 1
+  },
+  "position": 2,
+  "duration": null,
+  "description": "Un sprint corto de descubrimiento que investiga usuarios, mercado y viabilidad de una idea de producto.",
+  "problem": "Se toman decisiones de producto sin evidencia sobre usuarios ni viabilidad.",
+  "solution": "Realizamos investigación de usuarios, revisión de mercado y comprobaciones de viabilidad técnica, y recomendamos si avanzar y cómo.",
+  "outcomes": [
+    "Evidencia sobre usuarios y mercado",
+    "Evaluación de viabilidad",
+    "Recomendación para avanzar o detener"
+  ]
+}

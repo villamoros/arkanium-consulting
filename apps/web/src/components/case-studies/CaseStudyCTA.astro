@@ -1,0 +1,17 @@
+---
+import Button from '../ui/Button.astro';
+
+interface Props {
+  heading: string;
+  label: string;
+  href: string;
+}
+const { heading, label, href } = Astro.props;
+---
+
+<section class="section-band cta-band" aria-labelledby="case-cta-heading">
+  <div class="cta-band-inner reveal">
+    <h2 id="case-cta-heading">{heading}</h2>
+    <Button href={href}>{label}</Button>
+  </div>
+</section>

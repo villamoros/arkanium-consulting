@@ -1,0 +1,26 @@
+{
+  "id": "technology-strategy-sprint",
+  "value": "technology-strategy-sprint",
+  "label": "Technology Strategy Sprint",
+  "name": "Technology Strategy Sprint",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-strategy",
+    "name": "Technology Strategy",
+    "order": 3
+  },
+  "position": 8,
+  "duration": null,
+  "description": "A short, focused sprint that produces a technology strategy the leadership team can decide on.",
+  "problem": "The technology direction is implicit, so investment decisions are taken case by case.",
+  "solution": "We work with leadership to set principles, options and a recommended direction.",
+  "outcomes": [
+    "Agreed technology principles",
+    "Options compared on cost and risk",
+    "Recommended direction for decision"
+  ]
+}

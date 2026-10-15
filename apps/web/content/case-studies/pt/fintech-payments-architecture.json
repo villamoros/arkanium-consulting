@@ -1,0 +1,42 @@
+{
+  "id": "cs-fintech-payments-architecture",
+  "slug": "fintech-payments-architecture",
+  "type": "REPRESENTATIVE",
+  "status": "PUBLISHED",
+  "visibility": "PUBLIC",
+  "featured": false,
+  "publishedAt": "2026-09-18T00:00:00Z",
+  "title": "Arquitetura de uma plataforma de pagamentos",
+  "summary": "Uma plataforma de pagamentos com gargalos de dados e lógica de negócio distribuída, sem um padrão claro.",
+  "industry": { "slug": "fintech", "name": "Fintech" },
+  "challengeSummary": "Uma plataforma de pagamentos com gargalos de dados e lógica de negócio distribuída, sem um padrão claro.",
+  "challengeDetails": "As decisões de cobrança e conciliação estavam espalhadas entre serviços sem um dono claro. Cada incidente de dados levava dias para ser localizado.",
+  "approach": "Uma avaliação de arquitetura, o desenho do fluxo de dados de pagamentos e a governança do risco técnico.",
+  "approachSteps": [
+    { "phase": "ASSESSMENT", "body": "Acompanhar um pagamento de ponta a ponta e encontrar onde a lógica está duplicada." },
+    { "phase": "ARCHITECTURE", "body": "Definir um dono para cada dado e um fluxo de eventos explícito entre os serviços de cobrança e conciliação." },
+    { "phase": "GOVERNANCE", "body": "Acompanhamento do risco técnico com responsáveis e revisão de cada decisão sobre dados." }
+  ],
+  "solution": "Um modelo de dados com dono por domínio e um fluxo de conciliação explícito, introduzido por fases sem parar os pagamentos.",
+  "outcomes": [
+    "Maior manutenibilidade da lógica de negócio",
+    "Fluxo de dados claro",
+    "Maior resiliência sob carga"
+  ],
+  "deliverables": [
+    "Avaliação de arquitetura",
+    "Desenho de arquitetura de solução para o fluxo de dados",
+    "Registro de risco técnico com responsáveis"
+  ],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "evidenceStatus": "NOT_REQUIRED",
+  "publicationAuthorization": { "status": "NOT_REQUIRED" },
+  "seo": {
+    "title": "Arquitetura de uma plataforma de pagamentos | Caso representativo",
+    "description": "Cenário representativo: como organizar uma plataforma de pagamentos com dados sem dono e lógica distribuída, e com quais serviços."
+  }
+}

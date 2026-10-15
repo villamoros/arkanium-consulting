@@ -1,0 +1,60 @@
+{
+  "id": "art-escalabilidad-saas",
+  "slug": "escalar-saas-antes-de-anadir-servidores",
+  "title": "Escalar un SaaS: qué mirar antes de añadir servidores",
+  "excerpt": "Un escenario representativo: cómo se mide un SaaS que se degrada a partir de 500 clientes activos y cómo se priorizan sus cuellos de botella.",
+  "featured": false,
+  "publishedAt": "2026-09-28T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnóstico y riesgo" },
+  "caseStudies": [{ "slug": "saas-scalability-assessment" }],
+  "services": [
+    { "slug": "technical-health-check", "family": { "slug": "strategy" } },
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "fractional-cto-growth-tier", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-plataforma-pagos" }, { "id": "art-seguimiento-logistico" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "Este artículo describe un escenario representativo. No describe un trabajo con un cliente concreto, y los resultados que menciona son esperados, no logrados." }] },
+        { "type": "heading-one", "children": [{ "text": "Escalar a ciegas" }] },
+        { "type": "paragraph", "children": [{ "text": "Una plataforma SaaS empezó a degradarse al superar los 500 clientes activos simultáneos. La respuesta habitual, añadir infraestructura, costaba dinero sin resolver el problema, porque nadie sabía qué cuello de botella la necesitaba." }] },
+        { "type": "heading-one", "children": [{ "text": "Medir antes de decidir" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Lo primero fue un " },
+          { "type": "link", "href": "/es/solutions/strategy/technical-health-check/", "children": [{ "text": "chequeo técnico" }] },
+          { "text": " de la plataforma, para medir qué se degrada y en qué punto del sistema. Con eso, la conversación pasó de «más servidores» a «qué cuello de botella primero»." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Priorizar por impacto" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Los cuellos de botella se ordenaron por impacto en clientes y por coste de corregirlos. La " },
+          { "type": "link", "href": "/es/solutions/architecture/architecture-assessment/", "children": [{ "text": "evaluación de arquitectura" }] },
+          { "text": " definió rutas de migración para los primeros tres." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Liderazgo técnico para ejecutar" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Un plan sin responsable se diluye. Por eso el equipo contó con " },
+          { "type": "link", "href": "/es/solutions/architecture/fractional-cto-growth-tier/", "children": [{ "text": "liderazgo técnico fraccional" }] },
+          { "text": " que decidía el orden de las mejoras y sus criterios de avance." }
+        ] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Medir la degradación antes de añadir infraestructura." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Priorizar por impacto en clientes, no por facilidad." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Asignar un responsable a cada ruta de migración." }] }] }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Cómo aplicarlo a tu plataforma" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Si tu SaaS se degrada al crecer, mide antes de comprar. El escenario completo está en los " },
+          { "type": "link", "href": "/es/case-studies/saas-scalability-assessment/", "children": [{ "text": "casos de estudio" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "Escalar un SaaS: qué mirar antes de añadir servidores | Escenario representativo",
+    "metaDescription": "Escenario representativo: cómo medir y priorizar los cuellos de botella de un SaaS antes de añadir infraestructura."
+  }
+}

@@ -1,0 +1,70 @@
+---
+import type { HomeAbout } from '../../lib/home';
+import CarouselControls from '../ui/CarouselControls.astro';
+import { aboutIcons } from '../../content/static/icons';
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  content: HomeAbout;
+  ui: TranslationSchema['ui'];
+}
+const { content, ui } = Astro.props;
+const carousel = ui.aboutCarousel;
+---
+
+<section class="about section-band" id="about" aria-labelledby="about-heading">
+  <div class="about-layout">
+    <div class="about-copy reveal">
+      <p class="eyebrow">{content.eyebrow}</p>
+      <h2 id="about-heading">{content.title}</h2>
+      <p>{content.intro}</p>
+    </div>
+
+    <div
+      class="carousel-wrapper about-carousel reveal"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={carousel.label}
+      tabindex="0"
+      data-carousel
+      data-carousel-dot-label={carousel.dotLabel}
+    >
+      <div class="carousel-track" data-carousel-track>
+        {
+          content.cards.map((card, i) => (
+            <article
+              class:list={['service-card', 'about-card', i === 0 && 'is-active']}
+              data-carousel-slide
+              aria-roledescription="slide"
+            >
+              <div class="service-card-top">
+                <div class="service-icon" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" set:html={aboutIcons[i]} />
+                </div>
+                <div class="service-duration">
+                  <span class="duration-label" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="duration-value">{card.kicker}</span>
+                </div>
+              </div>
+              <h3>{card.title}</h3>
+              <hr class="service-divider" />
+              <p>{card.body}</p>
+            </article>
+          ))
+        }
+      </div>
+      <CarouselControls
+        groupLabel={carousel.controls}
+        prevLabel={carousel.prev}
+        nextLabel={carousel.next}
+        dotsLabel={carousel.dots}
+      />
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initCarousel } from '../../scripts/carousel';
+  const wrapper = document.querySelector<HTMLElement>('.about-carousel[data-carousel]');
+  if (wrapper) initCarousel(wrapper);
+</script>

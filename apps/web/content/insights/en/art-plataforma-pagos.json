@@ -1,0 +1,59 @@
+{
+  "id": "art-plataforma-pagos",
+  "slug": "untangling-a-payments-platform",
+  "title": "When a payment takes too many paths",
+  "excerpt": "A representative scenario: how a payments platform with distributed logic and unowned data is mapped, and which services bring the flow into order.",
+  "featured": false,
+  "publishedAt": "2026-09-25T00:00:00Z",
+  "editorialStatus": "READY",
+  "format": "analysis",
+  "category": { "slug": "diagnosis-risk", "name": "Diagnosis & risk" },
+  "caseStudies": [{ "slug": "fintech-payments-architecture" }],
+  "services": [
+    { "slug": "architecture-assessment", "family": { "slug": "architecture" } },
+    { "slug": "solution-architecture-design", "family": { "slug": "architecture" } },
+    { "slug": "technical-risk-monitoring", "family": { "slug": "architecture" } }
+  ],
+  "relatedArticles": [{ "id": "art-modernizar-erp-legado" }],
+  "content": {
+    "raw": {
+      "children": [
+        { "type": "paragraph", "children": [{ "text": "This article describes a representative scenario. It does not describe work with a specific client, and the results it mentions are expected, not achieved." }] },
+        { "type": "heading-one", "children": [{ "text": "Where traceability gets lost" }] },
+        { "type": "paragraph", "children": [{ "text": "A payments platform grows in layers: charging, fraud checks, reconciliation and accounting. When each layer decides on its own, the same transaction can have three different states. Finding the right one takes days." }] },
+        { "type": "heading-one", "children": [{ "text": "One owner for each piece of data" }] },
+        { "type": "paragraph", "children": [
+          { "text": "The first change was to assign an owner to each piece of transaction data. The decision about the state now lives in one service, and the others consult it. The diagnostic method is described in the " },
+          { "type": "link", "href": "/en/solutions/architecture/architecture-assessment/", "children": [{ "text": "architecture assessment" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "An explicit reconciliation flow" }] },
+        { "type": "paragraph", "children": [
+          { "text": "Reconciliation stopped being a hidden process and became a flow with documented events. That flow is designed through the " },
+          { "type": "link", "href": "/en/solutions/architecture/solution-architecture-design/", "children": [{ "text": "solution architecture design" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "Risk reviewed with every change" }] },
+        { "type": "bulleted-list", "children": [
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Every data risk has an owner." }] }] },
+          { "type": "list-item", "children": [{ "type": "list-item-child", "children": [{ "text": "Every change to the flow is reviewed before it reaches production." }] }] }
+        ] },
+        { "type": "paragraph", "children": [
+          { "text": "That continuous follow-up is the scope of the " },
+          { "type": "link", "href": "/en/solutions/architecture/technical-risk-monitoring/", "children": [{ "text": "technical risk monitoring" }] },
+          { "text": "." }
+        ] },
+        { "type": "heading-one", "children": [{ "text": "How to apply it to your platform" }] },
+        { "type": "paragraph", "children": [
+          { "text": "If your payment data contradicts itself across areas, start with traceability. The full scenario is in our " },
+          { "type": "link", "href": "/en/case-studies/fintech-payments-architecture/", "children": [{ "text": "case studies" }] },
+          { "text": "." }
+        ] }
+      ]
+    }
+  },
+  "seo": {
+    "metaTitle": "When a payment takes too many paths | Representative scenario",
+    "metaDescription": "Representative scenario: how to bring order to a payments platform with unowned data and distributed logic."
+  }
+}

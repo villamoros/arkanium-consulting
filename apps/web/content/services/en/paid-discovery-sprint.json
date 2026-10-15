@@ -1,0 +1,26 @@
+{
+  "id": "paid-discovery-sprint",
+  "value": "paid-discovery-sprint",
+  "label": "Paid Discovery Sprint",
+  "name": "Paid Discovery Sprint",
+  "family": {
+    "value": "strategy",
+    "name": "Strategy",
+    "order": 1
+  },
+  "category": {
+    "value": "technology-diagnosis",
+    "name": "Technology Diagnosis",
+    "order": 1
+  },
+  "position": 3,
+  "duration": null,
+  "description": "A short, paid engagement that answers one strategic question before a larger commitment.",
+  "problem": "Larger investments are being considered without enough evidence about the options.",
+  "solution": "We frame the question, test the critical assumptions and close with a recommendation and a go or no-go view.",
+  "outcomes": [
+    "Clear framing of the decision",
+    "Tested critical assumptions",
+    "Recommendation with go or no-go view"
+  ]
+}

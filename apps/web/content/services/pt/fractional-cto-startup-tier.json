@@ -1,0 +1,26 @@
+{
+  "id": "fractional-cto-startup-tier",
+  "value": "fractional-cto-startup-tier",
+  "label": "CTO fracionado — nível startup",
+  "name": "CTO fracionado — nível startup",
+  "family": {
+    "value": "architecture",
+    "name": "Arquitetura",
+    "order": 3
+  },
+  "category": {
+    "value": "technology-leadership",
+    "name": "Liderança tecnológica",
+    "order": 3
+  },
+  "position": 11,
+  "duration": null,
+  "description": "Um CTO em tempo parcial para empresas em estágio inicial que precisam de liderança tecnológica para construir o primeiro produto.",
+  "problem": "Uma empresa em estágio inicial precisa de liderança tecnológica antes de poder custear um CTO em tempo integral.",
+  "solution": "Lideramos a estratégia tecnológica, as decisões de arquitetura e a montagem da equipe, para um escopo parcial acordado.",
+  "outcomes": [
+    "Estratégia tecnológica liderada",
+    "Decisões de arquitetura tomadas",
+    "Equipe montada para entregar"
+  ]
+}

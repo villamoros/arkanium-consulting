@@ -1,0 +1,26 @@
+{
+  "id": "fractional-product-manager",
+  "value": "fractional-product-manager",
+  "label": "Product Manager à temps partagé",
+  "name": "Product Manager à temps partagé",
+  "family": {
+    "value": "product",
+    "name": "Produit",
+    "order": 2
+  },
+  "category": {
+    "value": "product-management",
+    "name": "Management produit",
+    "order": 4
+  },
+  "position": 13,
+  "duration": null,
+  "description": "Un product manager expérimenté qui pilote le travail produit à temps partagé, avec un périmètre de responsabilité défini.",
+  "problem": "Le produit a besoin d'un responsable et d'un backlog clair, mais un recrutement à temps plein n'est pas encore justifié.",
+  "solution": "Nous mettons à disposition un product manager qui assure le backlog, les priorités et l'alignement des parties prenantes sur un périmètre convenu.",
+  "outcomes": [
+    "Responsabilité du backlog et des priorités",
+    "Alignement des parties prenantes",
+    "Périmètre convenu au départ"
+  ]
+}
