@@ -2,10 +2,25 @@
   "id": "privacy",
   "value": "privacy",
   "title": "Politique de confidentialité",
-  "description": "Politique de confidentialité de Arkanium.",
+  "description": "Comment Arkanium Consulting traite les données personnelles lorsque vous utilisez ce site ou nous contactez.",
   "sections": [
-    "Nous respectons votre vie privée et traitons les informations personnelles uniquement pour fournir nos services de conseil et de communication d’entreprise.",
-    "Nous ne vendons pas de données personnelles. Les informations peuvent être utilisées pour gérer les demandes, les propositions et les obligations contractuelles ou administratives.",
-    "Les données sont conservées uniquement pendant le temps nécessaire à la finalité pour laquelle elles ont été collectées, ou conformément à la loi."
+    "Cette politique explique quelles données personnelles nous traitons lorsque vous visitez ce site ou envoyez le formulaire de contact, pourquoi nous les utilisons et quels droits vous avez sur elles.",
+    "## Responsable du traitement",
+    "Responsable : Arkanium Consulting LLC, [adresse postale], Nouveau-Mexique, États-Unis. Pour toute question de confidentialité, écrivez à hello@arkanium.consulting.",
+    "## Données collectées",
+    "Navigation sur le site : nous ne demandons aucune donnée pour naviguer. Les serveurs qui hébergent le site enregistrent des données techniques minimales, comme l’adresse IP, la date et l’heure de la visite et la page demandée, afin de garantir la sécurité et la disponibilité du service. La politique de cookies explique ce qui est stocké dans votre navigateur.",
+    "Formulaire de contact : nom, adresse e-mail, domaine d’intérêt choisi, description facultative de votre besoin, date et heure d’envoi et langue de la page. Nous ne demandons pas de données sensibles ; merci de ne pas en inclure dans le champ libre.",
+    "## Finalités du traitement",
+    "Répondre à votre demande et, le cas échéant, organiser un premier échange. Votre demande parvient à notre équipe par e-mail, et une alerte interne est publiée dans notre canal Slack pour assurer le suivi. Nous utilisons également les données pour protéger le site contre les abus, y compris les envois automatisés de formulaires. Nous n’utilisons pas vos données à des fins publicitaires ni pour des décisions automatisées qui vous affectent.",
+    "## Base légale",
+    "Votre consentement, donné en cochant la case du formulaire. Vous pouvez le retirer à tout moment en nous écrivant, sans effet sur les traitements réalisés auparavant. Les données techniques sont traitées sur la base de notre intérêt légitime à protéger le site.",
+    "## Destinataires des données",
+    "Nous ne vendons ni ne cédons de données personnelles. Nous travaillons avec des prestataires qui nous aident à exploiter le site : Cloudflare (hébergement et fonctions serveur), Resend (envoi d’e-mails) et Slack (alerte interne à l’équipe). Certains sont situés aux États-Unis, de sorte que les données peuvent être traitées hors de votre pays. Lorsque la réglementation l’exige, nous recourons aux clauses contractuelles types ou à des garanties équivalentes.",
+    "## Durée de conservation",
+    "Les demandes de contact sont conservées [durée à définir] à compter de leur réception, sauf si elles aboutissent à une relation commerciale, auquel cas les conditions de cette relation s’appliquent. Les journaux techniques de sécurité sont conservés pendant la durée fixée par notre hébergeur.",
+    "## Vos droits",
+    "Vous pouvez demander l’accès à vos données, leur rectification ou leur effacement, la limitation ou l’opposition à leur traitement, ainsi que leur portabilité. Écrivez à hello@arkanium.consulting avec pour objet « Droits sur les données ». Si notre réponse ne vous satisfait pas, vous pouvez saisir l’autorité de protection des données de votre pays (en France, la CNIL). Si vous vivez dans l’Union européenne, au Royaume-Uni, au Brésil ou ailleurs avec des règles spécifiques, ces droits s’exercent selon votre droit local.",
+    "## Modifications de cette politique",
+    "Nous pouvons mettre à jour cette politique. La version en vigueur est celle affichée sur cette page, avec sa date de dernière révision : [date de révision]."
   ]
 }

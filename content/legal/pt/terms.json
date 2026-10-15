@@ -2,10 +2,24 @@
   "id": "terms",
   "value": "terms",
   "title": "Termos de uso",
-  "description": "Termos de uso da Arkanium.",
+  "description": "Condições de uso deste site da Arkanium Consulting.",
   "sections": [
-    "Ao utilizar este site, você concorda em utilizar o conteúdo de forma responsável e evitar usos abusivos ou ilícitos dos nossos materiais e serviços.",
-    "A Arkanium pode atualizar o conteúdo deste website sem aviso prévio, incluindo informações sobre serviços, publicações e canais de contacto.",
-    "O conteúdo é fornecido apenas para fins informativos e não constitui aconselhamento jurídico, fiscal, de consultoria ou contratual."
+    "Ao usar este site, você concorda com estas condições. Se não concordar, por favor não o utilize.",
+    "## O que é este site",
+    "É um site informativo sobre os serviços da Arkanium Consulting LLC. O seu conteúdo descreve abordagens e cenários; não constitui uma proposta vinculativa nem um contrato.",
+    "## Utilização permitida",
+    "Pode navegar, ler e partilhar os links do site para fins pessoais ou profissionais. Não deve tentar aceder a áreas não públicas, sobrecarregar o serviço, enviar formulários de forma automatizada nem usar o site para difundir software malicioso ou conteúdos ilícitos.",
+    "## Pedidos e contratação",
+    "Enviar o formulário de contacto não o obriga a contratar nada, nem obriga a Arkanium a prestar qualquer serviço. Um serviço só fica contratado quando ambas as partes assinam uma proposta ou um acordo específico, que prevalece sobre estes termos.",
+    "## Propriedade intelectual",
+    "Os textos, desenhos, logótipos, marcas e materiais do site pertencem à Arkanium Consulting LLC ou aos seus licenciadores. Pode citar pequenos trechos mencionando a fonte. Qualquer outra utilização requer autorização por escrito.",
+    "## Links para terceiros",
+    "O site pode ligar a páginas de terceiros, como redes sociais. Não controlamos esses sites nem respondemos pelos seus conteúdos ou políticas.",
+    "## Limitação de responsabilidade",
+    "Fazemos o razoável para que a informação seja exata e o site esteja disponível, mas o site é oferecido tal como está. Na medida permitida pela lei, não respondemos por danos indiretos decorrentes da utilização do site ou da confiança depositada no seu conteúdo. Nada disto limita responsabilidades que a lei não permita excluir.",
+    "## Lei aplicável e foro",
+    "Estes termos são regidos pelas leis do Estado do Novo México, Estados Unidos, sem prejuízo das normas imperativas de defesa do consumidor do seu país. Qualquer litígio fica sujeito aos tribunais de [foro a confirmar], salvo se a lei impuser outro.",
+    "## Alterações",
+    "Podemos alterar estes termos. As alterações são publicadas nesta página e aplicam-se a partir da publicação."
   ]
 }

@@ -1,0 +1,68 @@
+---
+/**
+ * Banner de cookies y panel de preferencias. Ambos empiezan ocultos y los muestra
+ * scripts/cookie-consent.ts solo si el visitante no ha elegido todavía.
+ */
+import type { TranslationSchema } from '../../i18n/utils';
+
+interface Props {
+  content: TranslationSchema['cookies'];
+  policyHref: string;
+}
+const { content, policyHref } = Astro.props;
+---
+
+<section id="cookie-banner" class="cookie-banner" aria-labelledby="cookie-banner-title" hidden>
+  <div class="cookie-banner-inner">
+    <div class="cookie-banner-text">
+      <h2 id="cookie-banner-title">{content.bannerTitle}</h2>
+      <p>{content.bannerText} <a href={policyHref}>{content.policyLink}</a></p>
+    </div>
+    <div class="cookie-actions">
+      <button type="button" class="button button-secondary" data-action="reject">{content.rejectOptional}</button>
+      <button type="button" class="button button-secondary" data-action="settings">{content.settings}</button>
+      <button type="button" class="button button-primary" data-action="accept">{content.acceptAll}</button>
+    </div>
+  </div>
+</section>
+
+<div id="cookie-dialog" class="cookie-dialog" hidden>
+  <div class="cookie-dialog-panel" role="dialog" aria-modal="true" aria-labelledby="cookie-dialog-title" aria-describedby="cookie-dialog-desc" tabindex="-1">
+    <h2 id="cookie-dialog-title">{content.dialogTitle}</h2>
+    <p id="cookie-dialog-desc">{content.dialogText}</p>
+
+    <ul class="cookie-categories">
+      <li class="cookie-category">
+        <div>
+          <p class="cookie-category-name">{content.necessary}</p>
+          <p class="cookie-category-text">{content.necessaryText}</p>
+        </div>
+        <span class="cookie-always-on">{content.alwaysOn}</span>
+      </li>
+      <li class="cookie-category">
+        <div>
+          <label class="cookie-category-name" for="cookie-analytics">{content.analytics}</label>
+          <p class="cookie-category-text">{content.analyticsText}</p>
+        </div>
+        <input type="checkbox" id="cookie-analytics" class="cookie-toggle" />
+      </li>
+      <li class="cookie-category">
+        <div>
+          <label class="cookie-category-name" for="cookie-marketing">{content.marketing}</label>
+          <p class="cookie-category-text">{content.marketingText}</p>
+        </div>
+        <input type="checkbox" id="cookie-marketing" class="cookie-toggle" />
+      </li>
+    </ul>
+
+    <div class="cookie-actions">
+      <button type="button" class="button button-secondary" data-action="close">{content.close}</button>
+      <button type="button" class="button button-primary" data-action="save">{content.save}</button>
+    </div>
+    <p class="cookie-policy-link"><a href={policyHref}>{content.policyLink}</a></p>
+  </div>
+</div>
+
+<script>
+  import '../../scripts/cookie-consent';
+</script>

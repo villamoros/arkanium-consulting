@@ -35,9 +35,16 @@ Las pruebas de integridad (`npm run test:services`) comprueban que los cuatro id
 
 ## Páginas legales (`content/legal/<idioma>/<página>.json`)
 
-Cuatro documentos por idioma: `privacy`, `terms`, `cookies`, `disclaimer`. Cada uno tiene `title`, `description` y `sections` (párrafos).
-Los textos son los originales de la página, sin cambios. Son **borradores de texto legal**: deben revisarlos abogados antes de publicarse.
-Las pruebas (`npm run test:legal`) comprueban que los cuatro documentos existen en los cuatro idiomas.
+Cuatro documentos por idioma: `privacy`, `terms`, `cookies`, `disclaimer`. Cada uno tiene `title`, `description` y `sections`.
+En `sections`, cada elemento es un párrafo; un elemento que empieza por `"## "` es un subtítulo de sección (se muestra como `h2`).
+Los datos que solo puede confirmar el titular van entre corchetes (`[dirección postal]`, `[plazo por definir]`, `[fecha de revisión]`, `[jurisdicción a confirmar]`). Deben completarse antes de publicar.
+Son **borradores de texto legal**: deben revisarlos abogados antes de publicarse. Las pruebas (`npm run test:legal`) comprueban que los cuatro documentos existen en los cuatro idiomas y que tienen subtítulos.
+
+## Cookies (banner y preferencias)
+
+Lógica en `src/lib/consent/state.ts` (probada con `npm run test:consent`) y comportamiento en `src/scripts/cookie-consent.ts`.
+Una única cookie first-party, `arkanium_consent`, guarda la elección durante 6 meses. Es estrictamente necesaria. Las categorías analítica y marketing están desactivadas porque el sitio no carga ningún script de terceros.
+Un script futuro que necesite una categoría opcional debe comprobar `window.arkaniumConsent.allows('analytics')` (o `'marketing'`) antes de cargarse, o escuchar el evento `arkanium:consent`. Si se añade analítica, actualizar también `cookies.json` en los cuatro idiomas.
 
 ## Blog (`content/insights/<idioma>/<id>.json`) y autores (`content/authors/<idioma>/<id>.json`)
 

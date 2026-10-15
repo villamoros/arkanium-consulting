@@ -10,10 +10,13 @@ import '../styles/components.css';
 import '../styles/solutions.css';
 import '../styles/case-studies.css';
 import '../styles/insights.css';
+import '../styles/consent.css';
+import '../styles/legal.css';
 
+import CookieConsent from '../components/layout/CookieConsent.astro';
 import { siteConfig } from '../content/static/site';
 import { defaultLocale, localeMeta, type Locale } from '../i18n/config';
-import { getTranslations } from '../i18n/utils';
+import { getLocalizedPath, getTranslations } from '../i18n/utils';
 import { absoluteSeoUrl, breadcrumbSchema, globalSchemas, localeAlternates, pageDescription, pageTitle, type BreadcrumbItem, type LocalePaths, type OpenGraphType, xDefaultPath } from '../lib/seo';
 
 export interface Props {
@@ -108,6 +111,7 @@ const xDefault = defaultPath ? absoluteSeoUrl(defaultPath, Astro.site) : undefin
   <body>
     <a class="skip-link" href="#main">{t.ui.skipToContent}</a>
     <slot />
+    <CookieConsent content={t.cookies} policyHref={getLocalizedPath(locale, '/legal/cookies/')} />
     <script>
       import '../scripts/reveal';
     </script>

@@ -21,11 +21,12 @@ if (!pageContent) throw new Error(`Unsupported legal page: ${page}`);
 ---
 
 <PageLayout locale={legalLocale} title={`${pageContent.title} | ${translations.meta.title}`} description={pageContent.description}>
-  <main id="main">
+  <main id="main" tabindex="-1">
     <section class="section-band legal-page">
       <p class="eyebrow">{translations.footer.legal.label}</p>
       <h1>{pageContent.title}</h1>
-      {pageContent.sections.map((section) => <p>{section}</p>)}
+      {/* Párrafos normales; una línea que empieza por "## " es un subtítulo de sección. */}
+      {pageContent.sections.map((section) => (section.startsWith('## ') ? <h2>{section.slice(3)}</h2> : <p>{section}</p>))}
     </section>
   </main>
 </PageLayout>

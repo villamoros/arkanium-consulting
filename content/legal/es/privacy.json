@@ -2,10 +2,25 @@
   "id": "privacy",
   "value": "privacy",
   "title": "Política de privacidad",
-  "description": "Política de privacidad de Arkanium.",
+  "description": "Cómo Arkanium Consulting trata los datos personales cuando usas este sitio o nos escribes.",
   "sections": [
-    "Respetamos tu privacidad y tratamos la información personal únicamente para prestar nuestros servicios de consultoría y comunicación empresarial.",
-    "No vendemos datos personales. La información puede utilizarse para gestionar consultas, propuestas y obligaciones contractuales o administrativas.",
-    "Los datos se conservan solo durante el tiempo necesario para cumplir la finalidad para la que fueron recabados o por exigencia legal."
+    "Esta política explica qué datos personales tratamos cuando visitas este sitio o envías el formulario de contacto, para qué los usamos y qué derechos tienes sobre ellos.",
+    "## Responsable del tratamiento",
+    "Responsable: Arkanium Consulting LLC, [dirección postal], Nuevo México, Estados Unidos. Para cualquier asunto de privacidad, escribe a hello@arkanium.consulting.",
+    "## Qué datos recogemos",
+    "Navegar por el sitio: no te pedimos datos para navegar. Los servidores que alojan el sitio registran de forma técnica datos mínimos, como la dirección IP, la fecha y hora de la visita y la página solicitada, para garantizar la seguridad y la disponibilidad del servicio. La política de cookies explica qué se guarda en tu navegador.",
+    "Formulario de contacto: nombre, correo electrónico, área de interés que eliges, descripción opcional del problema, fecha y hora del envío e idioma de la página. No pedimos datos sensibles; te pedimos que no los incluyas en el texto libre.",
+    "## Para qué usamos los datos",
+    "Responder a tu solicitud y, si procede, agendar una primera conversación. Para ello, tu solicitud llega a nuestro equipo por correo electrónico y se avisa internamente en nuestro canal de Slack. También usamos los datos para proteger el sitio frente a abusos, incluido el envío automatizado de formularios. No usamos tus datos para publicidad ni para decisiones automatizadas que te afecten.",
+    "## Base legal",
+    "Tu consentimiento, que das al marcar la casilla del formulario. Puedes retirarlo en cualquier momento escribiéndonos, sin que ello afecte a los tratamientos realizados antes. También tratamos datos técnicos por nuestro interés legítimo en proteger el sitio.",
+    "## Con quién compartimos los datos",
+    "No vendemos ni cedemos datos personales. Trabajamos con proveedores que nos ayudan a operar el sitio: Cloudflare (alojamiento y funciones del servidor), Resend (envío de correos) y Slack (aviso interno al equipo). Algunos están en Estados Unidos, así que los datos pueden tratarse fuera de tu país. Cuando la normativa lo exige, usamos cláusulas contractuales tipo u otros mecanismos equivalentes.",
+    "## Cuánto tiempo los conservamos",
+    "Las solicitudes de contacto se conservan [plazo por definir] desde su recepción, salvo que den lugar a una relación comercial, en cuyo caso se aplican las condiciones de esa relación. Los registros técnicos de seguridad se conservan durante el tiempo que establezca nuestro proveedor de alojamiento.",
+    "## Tus derechos",
+    "Puedes pedirnos acceder a tus datos, corregirlos, suprimirlos, limitar u oponerte a su tratamiento y recibirlos en un formato portable. Escribe a hello@arkanium.consulting con el asunto «Derechos de datos». Si no quedas conforme con nuestra respuesta, puedes reclamar ante la autoridad de protección de datos de tu país. Si vives en la Unión Europea, el Reino Unido, Brasil u otro lugar con normas específicas, esos derechos se aplican en los términos de tu normativa local.",
+    "## Cambios en esta política",
+    "Podemos actualizar esta política. La versión vigente es la que aparece en esta página, con su fecha de última revisión: [fecha de revisión]."
   ]
 }

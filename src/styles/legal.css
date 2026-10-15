@@ -1,0 +1,24 @@
+/* ═══════════════════════════════════════════════
+   PÁGINAS LEGALES — texto corrido con subtítulos (legal/[page].astro)
+═══════════════════════════════════════════════ */
+.legal-page {
+  max-width: 760px;
+  padding-top: 56px;
+  padding-bottom: 80px;
+}
+
+.legal-page h1 {
+  margin-bottom: 24px;
+}
+
+.legal-page h2 {
+  font-size: 1.05rem;
+  margin: 36px 0 12px;
+  color: var(--color-gold-2);
+}
+
+.legal-page p {
+  margin: 0 0 14px;
+  color: var(--color-muted);
+  line-height: 1.7;
+}

@@ -2,10 +2,18 @@
   "id": "disclaimer",
   "value": "disclaimer",
   "title": "Aviso legal",
-  "description": "Aviso legal da Arkanium.",
+  "description": "Alcance da informação deste site, casos representativos e limitações.",
   "sections": [
-    "A informação neste site é fornecida apenas para fins informativos e pode ser alterada sem aviso prévio.",
-    "Nada neste site deve ser interpretado como garantia de resultados, disponibilidade ou consequências legais ou financeiras para um projeto específico.",
-    "O site pode incluir links para recursos externos; a Arkanium não assume responsabilidade pelo seu conteúdo, disponibilidade ou políticas."
+    "A informação deste site é de carácter geral. Não constitui aconselhamento profissional, jurídico, fiscal, financeiro nem de investimento.",
+    "## Casos e resultados representativos",
+    "Os casos de estudo e os artigos do blog são cenários representativos que ilustram como abordamos problemas comuns. Não descrevem trabalhos com clientes concretos. Os resultados que mencionam são esperados, e não obtidos, e não garantem resultados semelhantes na sua organização.",
+    "## Sem relação profissional pela utilização do site",
+    "Ler este site ou enviar o formulário de contacto não cria uma relação cliente-consultor. Essa relação começa apenas com um acordo assinado.",
+    "## Exatidão e atualização",
+    "Revemos o conteúdo com cuidado, mas ele pode conter erros ou omissões ou ficar desatualizado. Não nos responsabilizamos por decisões tomadas apenas com base nele.",
+    "## Marcas de terceiros",
+    "Os nomes de outras empresas, produtos ou tecnologias que aparecem no site são mencionados a título informativo. Não implicam apoio nem qualquer relação com a Arkanium Consulting LLC, salvo indicação expressa.",
+    "## Contacto",
+    "Para qualquer dúvida sobre este aviso, escreva para hello@arkanium.consulting."
   ]
 }

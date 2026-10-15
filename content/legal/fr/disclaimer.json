@@ -2,10 +2,18 @@
   "id": "disclaimer",
   "value": "disclaimer",
   "title": "Mentions légales",
-  "description": "Mentions légales de Arkanium.",
+  "description": "Portée des informations de ce site, cas représentatifs et limites.",
   "sections": [
-    "Les informations de ce site sont fournies à titre informatif général et peuvent être modifiées sans préavis.",
-    "Rien sur ce site ne doit être interprété comme une garantie de résultats, de disponibilité ou de conséquences juridiques ou financières pour un projet spécifique.",
-    "Le site peut inclure des liens vers des ressources externes ; Arkanium n’assume aucune responsabilité pour leur contenu, leur disponibilité ou leurs politiques."
+    "Les informations de ce site sont de nature générale. Elles ne constituent pas un conseil professionnel, juridique, fiscal, financier ni en investissement.",
+    "## Cas et résultats représentatifs",
+    "Les études de cas et les articles du blog sont des scénarios représentatifs qui illustrent notre manière d’aborder des problèmes courants. Ils ne décrivent pas de missions auprès de clients identifiés. Les résultats mentionnés sont attendus, et non obtenus ; ils ne garantissent pas des résultats similaires dans votre organisation.",
+    "## Aucune relation professionnelle par la simple consultation",
+    "La lecture de ce site ou l’envoi du formulaire de contact ne crée aucune relation client-consultant. Cette relation ne naît qu’avec un accord signé.",
+    "## Exactitude et mises à jour",
+    "Nous relisons le contenu avec soin, mais il peut comporter des erreurs ou des omissions, ou devenir obsolète. Nous ne sommes pas responsables des décisions prises uniquement sur sa base.",
+    "## Marques de tiers",
+    "Les noms d’autres entreprises, produits ou technologies cités sur le site le sont à titre informatif. Ils n’impliquent ni soutien ni lien avec Arkanium Consulting LLC, sauf mention expresse.",
+    "## Contact",
+    "Pour toute question sur ces mentions, écrivez à hello@arkanium.consulting."
   ]
 }

@@ -2,10 +2,19 @@
   "id": "cookies",
   "value": "cookies",
   "title": "Política de cookies",
-  "description": "Política de cookies de Arkanium.",
+  "description": "Qué cookies usa este sitio, para qué sirven y cómo puedes cambiar tu elección.",
   "sections": [
-    "Este sitio puede utilizar cookies o tecnologías similares para mejorar la navegación, la analítica y el rendimiento del servicio.",
-    "Las cookies nos ayudan a entender qué secciones son relevantes, medir el tráfico y mejorar la experiencia de usuario sin identificarte personalmente salvo que tú proporciones datos voluntariamente.",
-    "Puedes configurar tu navegador para rechazar o eliminar cookies, aunque algunas funciones del sitio pueden verse afectadas."
+    "Esta política explica qué cookies y tecnologías similares usa este sitio, para qué sirven y cómo puedes gestionarlas. Puedes cambiar tu elección en cualquier momento desde el enlace «Preferencias de cookies» del pie de página.",
+    "## Qué es una cookie",
+    "Una cookie es un pequeño archivo que un sitio guarda en tu navegador. Algunas son necesarias para que el sitio funcione; otras sirven para medir o personalizar. Las cookies de analítica y de marketing necesitan tu consentimiento. Las necesarias no.",
+    "## Cookies que usamos",
+    "arkanium_consent (necesaria). Guarda tu elección sobre cookies durante 6 meses, para no preguntarte en cada visita. No contiene datos personales: solo tus preferencias y la fecha en que las guardaste.",
+    "Cloudflare, nuestro proveedor de alojamiento, puede establecer cookies técnicas de seguridad y rendimiento, como __cf_bm, que ayudan a distinguir el tráfico legítimo del automatizado. Son necesarias para proteger el sitio.",
+    "## Cookies que no usamos",
+    "Hoy este sitio no usa cookies de analítica ni de marketing, ni carga herramientas de terceros que las instalen. Si en el futuro incorporamos alguna, actualizaremos esta página y te pediremos permiso antes de activarla. Esas categorías aparecen en el panel de preferencias, desactivadas.",
+    "## Cómo cambiar tu elección",
+    "Desde el enlace «Preferencias de cookies» del pie de página puedes modificar tu elección en cualquier momento. También puedes configurar tu navegador para bloquear o borrar cookies; ten en cuenta que bloquear las necesarias puede afectar al funcionamiento del sitio. Los pasos dependen del navegador: consulta su ayuda.",
+    "## Cambios",
+    "Si cambian las cookies que usamos, actualizaremos esta política y su fecha de revisión."
   ]
 }

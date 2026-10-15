@@ -1,0 +1,180 @@
+/* ═══════════════════════════════════════════════
+   COOKIES — banner y panel de preferencias (CookieConsent.astro)
+═══════════════════════════════════════════════ */
+.cookie-banner[hidden],
+.cookie-dialog[hidden] {
+  display: none;
+}
+
+.cookie-banner {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 1100;
+  padding: 16px;
+  background: var(--color-graphite);
+  border-top: 1px solid var(--color-line-strong);
+  color: var(--color-paper);
+  box-shadow: var(--shadow-sm);
+}
+
+.cookie-banner-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .cookie-banner-inner {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+
+.cookie-banner h2 {
+  font-size: 1rem;
+  margin: 0 0 6px;
+}
+
+.cookie-banner p {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.cookie-banner a,
+.cookie-dialog a {
+  color: var(--color-gold-2);
+}
+
+.cookie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cookie-actions .button {
+  min-height: 44px;
+}
+
+/* En móvil el banner ocupa menos pantalla: dos botones en fila y el principal a todo el ancho */
+@media (max-width: 899px) {
+  .cookie-banner {
+    padding: 14px 16px;
+  }
+
+  .cookie-banner .cookie-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cookie-banner .cookie-actions .button-primary {
+    grid-column: 1 / -1;
+  }
+}
+
+.cookie-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(5, 8, 14, 0.72);
+}
+
+.cookie-dialog-panel {
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 24px;
+  background: var(--color-ink-2);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-paper);
+}
+
+.cookie-dialog-panel:focus {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.cookie-dialog-panel h2 {
+  font-size: 1.1rem;
+  margin: 0 0 8px;
+}
+
+.cookie-dialog-panel > p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.cookie-categories {
+  list-style: none;
+  margin: 18px 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.cookie-category {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  background: var(--color-graphite);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+}
+
+.cookie-category-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.cookie-category-text {
+  margin: 2px 0 0;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.cookie-always-on {
+  color: var(--color-gold-2);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.cookie-toggle {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-gold);
+}
+
+.cookie-policy-link {
+  margin: 16px 0 0;
+  font-size: 0.9rem;
+}
+
+/* Botón del footer con el aspecto de los enlaces vecinos */
+.footer-action {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  cursor: pointer;
+  transition: color 160ms ease;
+  width: fit-content;
+}
+
+.footer-action:hover,
+.footer-action:focus-visible {
+  color: var(--color-paper);
+}

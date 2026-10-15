@@ -73,6 +73,8 @@ const columns = [
       { label: content.legal.terms, href: to('/legal/terms/') },
       { label: content.legal.cookies, href: to('/legal/cookies/') },
       { label: content.legal.disclaimer, href: to('/legal/disclaimer/') },
+      // Botón, no enlace: reabre el panel de preferencias de cookies (CookieConsent).
+      { label: content.legal.cookieSettings, action: 'cookie-settings' as const },
     ],
   },
 ];
@@ -92,7 +94,9 @@ const columns = [
         <div class="footer-col">
           <p class="footer-col-label">{column.label}</p>
           {column.links.map((link) =>
-            'external' in link ? (
+            'action' in link ? (
+              <button type="button" class="footer-action" data-cookie-settings>{link.label}</button>
+            ) : 'external' in link ? (
               <a
                 href={link.href}
                 target="_blank"

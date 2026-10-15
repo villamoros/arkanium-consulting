@@ -18,7 +18,7 @@ const menu = toMenu(await getCatalog(locale), locale);
 
 <BaseLayout {...Astro.props} locale={locale}>
   <Header locale={locale} navigation={t.navigation} ui={t.ui} menu={menu} localePaths={localePaths} />
-  <main id="main">
+  <main id="main" tabindex="-1">
     <slot />
   </main>
   <Footer locale={locale} content={t.footer} ui={t.ui} families={menu} allSolutionsLabel={t.navigation.allSolutions} insights={{ label: t.insights.eyebrow, href: insightsPath(locale) }} />
