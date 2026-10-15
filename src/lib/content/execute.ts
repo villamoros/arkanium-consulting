@@ -27,6 +27,7 @@ export async function runContentQuery<T>(
     },
     serviceFamilies: async ({ locale }: { locale: string }) => groupServices(await readCollection(contentRoot, 'services', locale)),
     legalPages: ({ locale }: { locale: string }) => readCollection(contentRoot, 'legal', locale),
+    caseStudies: ({ locale }: { locale: string }) => readCollection(contentRoot, 'case-studies', locale),
     homePage: async ({ locale }: { locale: string }) => {
       const items = await readCollection(contentRoot, 'pages', locale);
       return items.find((item) => item.id === 'home') ?? null;

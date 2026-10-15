@@ -254,11 +254,94 @@ export const CONTENT_SDL = /* GraphQL */ `
     cta: HomeCta
   }
 
+
+  type CaseIndustry {
+    slug: String
+    name: String
+  }
+
+  type ApproachStep {
+    phase: String
+    body: String
+  }
+
+  type CaseMetric {
+    label: String
+    value: String
+    unit: String
+    context: String
+    verified: Boolean
+    source: String
+  }
+
+  type CaseTechnology {
+    slug: String
+    name: String
+    category: String
+  }
+
+  type CaseOfferingRef {
+    slug: String
+    service: ServiceRef
+  }
+
+  type CaseRelated {
+    slug: String
+  }
+
+  type CaseAuthorization {
+    status: String
+  }
+
+  type CaseSeo {
+    title: String
+    description: String
+    canonical: String
+    noIndex: Boolean
+    ogImage: Asset
+  }
+
+  type CaseStudy {
+    slug: String
+    type: String
+    status: String
+    visibility: String
+    featured: Boolean
+    publishedAt: String
+    title: String
+    summary: String
+    industry: CaseIndustry
+    clientName: String
+    clientVisibility: String
+    clientWebsite: String
+    clientLogo: Asset
+    clientDescriptor: String
+    challengeSummary: String
+    challengeDetails: String
+    approach: String
+    approachSteps: [ApproachStep]
+    solution: String
+    outcomes: [String]
+    deliverables: [String]
+    timeline: String
+    metrics: [CaseMetric]
+    technologies: [CaseTechnology]
+    services: [ServiceRef]
+    offerings: [CaseOfferingRef]
+    relatedCaseStudies: [CaseRelated]
+    featuredImage: Asset
+    engagementReference: String
+    evidenceStatus: String
+    publicationAuthorization: CaseAuthorization
+    seo: CaseSeo
+  }
+
   type Query {
     articles(locale: Locale!): [Article!]!
     article(locale: Locale!, slug: String!): Article
     serviceFamilies(locale: Locale!): [ServiceFamily!]!
     legalPages(locale: Locale!): [LegalPage!]!
     homePage(locale: Locale!): HomePage
+    caseStudies(locale: Locale!): [CaseStudy!]!
   }
 `;

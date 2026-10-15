@@ -1,19 +1,19 @@
 /**
- * Acceso a Case Studies. Fuente de contenido: CMS pendiente (Storyblok). Hasta integrarlo, no hay casos.
+ * Acceso a Case Studies. Fuente de contenido: GraphQL local (content/case-studies/<idioma>/*.json).
  * Reglas de integridad: ver normalize.ts.
  */
 import { type Locale } from '../../i18n/config';
 import { getLocalizedPath } from '../../i18n/utils';
-import { warnCmsPending } from '../cms/pending';
+import { runContentQuery } from '../content/execute.ts';
+import { CASE_STUDIES_QUERY } from './queries.ts';
 import { normalizeCaseStudies } from './normalize';
 import type { RawCaseStudies } from './raw';
 import type { CaseStudy, CaseType } from './types';
 
 export type * from './types';
 
-async function loadRaw(_locale: Locale): Promise<RawCaseStudies> {
-  warnCmsPending('case-studies');
-  return { caseStudies: [] };
+async function loadRaw(locale: Locale): Promise<RawCaseStudies> {
+  return runContentQuery<RawCaseStudies>(CASE_STUDIES_QUERY, { locale });
 }
 
 const cache = new Map<Locale, Promise<CaseStudy[]>>();

@@ -19,6 +19,7 @@ import { ctaPath, findService, getCatalog, hasServicePage, type Service } from '
 import { getCaseStudies, listed } from '../../../../lib/case-studies';
 import { articlePath, getArticle, getArticleLocaleSlugs, getArticleSummaries, insightsPath, resolveRelatedArticles } from '../../../../lib/insights';
 import { absoluteSeoUrl, articleSchema } from '../../../../lib/seo';
+import { assertCaseLinks } from '../../../../lib/insights/links.ts';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -47,7 +48,9 @@ const addService = (family: string, slug: string) => {
 };
 article.services.forEach((r) => addService(r.family, r.slug));
 article.offerings.forEach((r) => addService(r.family, r.service));
-const cases = listed(await getCaseStudies(locale)).filter((cs) => article.caseStudies.includes(cs.slug));
+const allCases = await getCaseStudies(locale);
+assertCaseLinks(article, locale, new Set(allCases.map((cs) => cs.slug)));
+const cases = listed(allCases).filter((cs) => article.caseStudies.includes(cs.slug));
 const related = resolveRelatedArticles(await getArticleSummaries(locale), article.relatedArticleIds, article.id);
 
 const firstOffering = article.offerings[0];

@@ -12,6 +12,7 @@ import { withAuthors } from '../src/lib/content/authors.ts';
 import { normalizeSummaries, normalizeArticle } from '../src/lib/insights/normalize.ts';
 import { ARTICLE_DETAIL_QUERY, ARTICLE_SUMMARIES_QUERY } from '../src/lib/insights/queries.ts';
 import { sanitizeRichText } from '../src/lib/insights/richtext.ts';
+import { assertCaseLinks } from '../src/lib/insights/links.ts';
 import { PAGE_SIZE, pageCount, pageOf, splitListing, showToc, tableOfContents, withHeadingIds } from '../src/lib/insights/listing.ts';
 
 const NOW = Date.parse('2026-10-14T00:00:00Z');
@@ -122,6 +123,13 @@ test('GraphQL: artículo sin autor: byline ausente, sin error', async () => {
   } finally {
     await rm(root, { recursive: true, force: true });
   }
+});
+
+test('todo artículo debe estar ligado a un caso publicado en su idioma', () => {
+  const ok = new Set(['caso-a']);
+  assert.throws(() => assertCaseLinks({ slug: 'x', caseStudies: [] }, 'es', ok), /al menos un caso/);
+  assert.throws(() => assertCaseLinks({ slug: 'x', caseStudies: ['caso-b'] }, 'es', ok), /caso-b/);
+  assert.doesNotThrow(() => assertCaseLinks({ slug: 'x', caseStudies: ['caso-a'] }, 'es', ok));
 });
 
 let passed = 0;
