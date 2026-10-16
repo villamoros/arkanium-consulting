@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Equipos por proyecto</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Proyecto sin equipo</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Registro</div>
+    <ul>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html" aria-current="page">Equipos por proyecto</a></li>
+    </ul>
+    <div class="side-group">Framework</div>
+    <ul>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Equipos por proyecto</h1>
+        <p>Qué agentes trabajan en cada proyecto y con qué permisos. Cada permiso se acota al proyecto: un agente no ve otros proyectos ni datos de otros clientes.</p>
+      </div>
+    </div>
+
+    <div class="project-pick" role="group" aria-label="Elegir proyecto" id="projects"></div>
+
+    <div id="view-normal">
+      <div class="layout" style="margin-top:16px">
+        <section class="panel" style="padding:18px" aria-label="Miembros del equipo">
+          <div class="head" style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap">
+            <h2 style="font-size:1rem" id="team-title">Equipo</h2>
+            <button type="button" class="secondary" id="btn-add">Asignar agente</button>
+          </div>
+          <div class="table-wrap" style="margin-top:12px">
+            <table>
+              <thead><tr><th scope="col">Agente</th><th scope="col">Fases permitidas</th><th scope="col" class="hide-sm">Herramientas</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Permisos del agente"></aside>
+      </div>
+
+      <div class="scope-box" style="margin-top:16px" role="note">
+        <b>Alcance del proyecto.</b> Cada agente recibe una credencial de corta vida, acotada a la organización y al proyecto. No lee tablas de negocio: usa la API, como cualquier otra app. Las salidas externas siempre pasan por Aprobaciones.
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Confirmar</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Los proyectos son los de core y app.
+  const PROJECTS = [
+    { id: 'erp', name: 'Modernización ERP', client: 'Distribuidora Norte (ejemplo)', phase: 'Evaluar', members: [
+      { agent: 'Agente de evaluación de arquitectura', phases: ['Evaluar'], tools: ['Lector de documentos', 'Hoja de riesgos'], state: 'activo' },
+      { agent: 'Agente de riesgo técnico', phases: ['Evaluar'], tools: ['Hoja de riesgos'], state: 'pendiente' },
+    ] },
+    { id: 'diag', name: 'Diagnóstico de arquitectura', client: 'Empresa Demo (ejemplo)', phase: 'Evaluar', members: [
+      { agent: 'Agente de evaluación de arquitectura', phases: ['Evaluar'], tools: ['Lector de documentos'], state: 'pendiente' },
+    ] },
+    { id: 'hoja', name: 'Hoja de ruta de TI', client: 'Gerente de TI, logística (ejemplo)', phase: 'Evaluar', members: [] },
+    { id: 'interno', name: 'Interno (sin facturar)', client: 'Arkanium', phase: '—', members: [
+      { agent: 'Agente administrativo', phases: ['—'], tools: ['Calendario interno'], state: 'activo' },
+    ] },
+  ];
+  const AVAILABLE = ['Agente de captación', 'Agente de hoja de ruta de TI', 'Agente de facturación', 'Agente de propuestas'];
+  let current = 'erp';
+  let selectedMember = 0;
+  let pending = null;
+
+  const stateTag = s => s === 'activo' ? ['Activo', 'b-activo'] : s === 'pausado' ? ['En pausa', 'b-pausado'] : ['Pendiente de tu autorización', 'b-pausado'];
+
+  function proj() { return PROJECTS.find(p => p.id === current); }
+
+  function renderProjects() {
+    document.getElementById('projects').innerHTML = PROJECTS.map(p => `
+      <button type="button" class="project-card" data-id="${p.id}" aria-pressed="${p.id === current}" style="${p.id === current ? 'border-color:var(--gold)' : ''}">
+        <h3>${p.name}</h3>
+        <p>${p.client}</p>
+        <span class="pending-count">${p.members.length} agente${p.members.length === 1 ? '' : 's'} asignado${p.members.length === 1 ? '' : 's'}</span>
+      </button>`).join('');
+  }
+
+  function renderRows() {
+    const p = proj();
+    document.getElementById('team-title').textContent = `Equipo de ${p.name}`;
+    document.getElementById('rows').innerHTML = p.members.length ? p.members.map((m, i) => {
+      const [label, cls] = stateTag(m.state);
+      return `<tr tabindex="0" data-i="${i}" aria-selected="${i === selectedMember}">
+        <td><div class="lead-name">${m.agent}</div></td>
+        <td class="sub">${m.phases.join(', ')}</td>
+        <td class="hide-sm sub">${m.tools.join(', ')}</td>
+        <td><span class="badge ${cls}">${label}</span></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="4" class="muted">Este proyecto todavía no tiene agentes asignados.</td></tr>';
+    renderDetail();
+  }
+
+  function renderDetail() {
+    const p = proj();
+    const m = p.members[selectedMember];
+    if (!m) { document.getElementById('detail').innerHTML = '<p class="muted">Asigna un agente para ver sus permisos aquí.</p>'; return; }
+    const [label, cls] = stateTag(m.state);
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${m.agent}</h2><div class="sub">${p.name}</div></div><span class="badge ${cls}">${label}</span></div>
+
+      <div class="section"><h3>Fases permitidas</h3>
+        <div class="chips">${['Evaluar', 'Arquitectar', 'Modernizar', 'Escalar'].map(f => `<span class="chip ${m.phases.includes(f) ? 'on' : ''}">${f}</span>`).join('')}</div>
+        <p class="sub" style="margin:8px 0 0">Un agente no actúa fuera de sus fases (ARK-FW-001, §8).</p>
+      </div>
+
+      <div class="section"><h3>Herramientas permitidas</h3>
+        <div class="chips">${m.tools.map(t => `<span class="chip ok">${t}</span>`).join('')}</div>
+      </div>
+
+      <div class="section"><h3>Salidas</h3>
+        <p style="margin:0">Toda salida hacia fuera va a Aprobaciones. Este agente no puede enviar nada por su cuenta.</p>
+      </div>
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          ${m.state === 'pendiente' ? '<button type="button" class="primary" data-act="authorize">Autorizar en este proyecto</button>' : ''}
+          ${m.state === 'activo' ? '<button type="button" class="secondary" data-act="pause">Pausar en este proyecto</button>' : ''}
+          ${m.state === 'pausado' ? '<button type="button" class="secondary" data-act="resume">Reanudar en este proyecto</button>' : ''}
+          <button type="button" class="danger" data-act="remove">Quitar del equipo</button>
+        </div>
+        <p class="sub" style="margin:0">Quitar un agente cierra su acceso al proyecto. Su bitácora se conserva.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function ask(title, body, ok, action) {
+    pending = action;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-body').textContent = body;
+    document.getElementById('confirm-ok').textContent = ok;
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  }
+
+  document.getElementById('projects').addEventListener('click', e => {
+    const b = e.target.closest('[data-id]'); if (!b) return;
+    current = b.dataset.id; selectedMember = 0; renderProjects(); renderRows();
+  });
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-i]'); if (!row) return;
+    selectedMember = Number(row.dataset.i); renderRows();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-i]')) { e.preventDefault(); e.target.click(); }
+  });
+
+  document.getElementById('btn-add').addEventListener('click', () => {
+    const p = proj();
+    const free = AVAILABLE.filter(a => !p.members.some(m => m.agent === a));
+    if (!free.length) { toast('No quedan agentes disponibles para asignar.'); return; }
+    pending = { type: 'add', agent: free[0] };
+    ask('Asignar agente', `${free[0]} quedará pendiente hasta que lo autorices en este proyecto. No trabaja antes de eso.`, 'Asignar', pending);
+  });
+
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const p = proj(); const m = p.members[selectedMember];
+    if (b.dataset.act === 'authorize') ask('Autorizar agente', `${m.agent} trabajará en ${p.name} con las fases y herramientas indicadas.`, 'Autorizar', { type: 'authorize', m });
+    if (b.dataset.act === 'pause') ask('Pausar en este proyecto', `${m.agent} se detiene en su siguiente paso seguro. Sus otros proyectos no cambian.`, 'Pausar', { type: 'pause', m });
+    if (b.dataset.act === 'resume') { m.state = 'activo'; renderRows(); toast('Reanudado en este proyecto. Queda en la bitácora.'); }
+    if (b.dataset.act === 'remove') ask('Quitar del equipo', `${m.agent} pierde acceso a ${p.name}. La bitácora de este proyecto se conserva.`, 'Quitar', { type: 'remove', m });
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      const p = proj(); const a = pending;
+      document.getElementById('confirm-dialog').classList.remove('open');
+      if (a.type === 'add') { p.members.push({ agent: a.agent, phases: ['Evaluar'], tools: [], state: 'pendiente' }); selectedMember = p.members.length - 1; toast('Asignado. Pendiente de tu autorización.'); }
+      if (a.type === 'authorize') { a.m.state = 'activo'; toast('Autorizado. Queda en la bitácora.'); }
+      if (a.type === 'pause') { a.m.state = 'pausado'; toast('En pausa en este proyecto. Queda en la bitácora.'); }
+      if (a.type === 'remove') { p.members = p.members.filter(m => m !== a.m); selectedMember = 0; toast('Quitado del equipo. La bitácora se conserva.'); }
+      pending = null; renderRows();
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') { current = 'hoja'; normal.hidden = false; v.hidden = true; renderProjects(); renderRows(); toast('Vista previa: proyecto sin equipo.'); }
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar los equipos</h2><p>Revisa tu conexión e intenta de nuevo. Ningún permiso cambió.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderProjects(); renderRows();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

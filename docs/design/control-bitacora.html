@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Bitácora</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin ejecuciones</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Registro</div>
+    <ul>
+      <li><a href="control-bitacora.html" aria-current="page">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+    </ul>
+    <div class="side-group">Framework</div>
+    <ul>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Bitácora</h1>
+        <p>Cada acción de cada agente: qué recibió, qué herramientas usó, quién aprobó y qué salió. Es privada. Nada de esto llega al cliente.</p>
+      </div>
+      <button type="button" class="secondary" id="btn-export">Exportar bitácora</button>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Las entradas no se editan.</strong> Si una entrada está mal, se registra una corrección nueva que apunta a la anterior.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b>128</b><span>acciones hoy (ejemplo)</span></div>
+        <div class="kpi"><b id="k-pending">1</b><span>esperando tu aprobación</span></div>
+        <div class="kpi"><b>3</b><span>excepciones abiertas</span></div>
+        <div class="kpi"><b>1</b><span>errores esta semana</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="f-agent">Agente</label>
+        <select id="f-agent">
+          <option value="">Todos los agentes</option>
+          <option>Agente de evaluación de arquitectura</option>
+          <option>Agente de captación</option>
+          <option>Agente administrativo</option>
+          <option>Agente de hoja de ruta de TI</option>
+        </select>
+        <label class="sr" for="f-project">Proyecto</label>
+        <select id="f-project">
+          <option value="">Todos los proyectos</option>
+          <option>Modernización ERP (ejemplo)</option>
+          <option>Diagnóstico de arquitectura (ejemplo)</option>
+          <option>Hoja de ruta de TI (ejemplo)</option>
+          <option>Interno</option>
+        </select>
+        <label class="sr" for="f-type">Tipo de entrada</label>
+        <select id="f-type">
+          <option value="">Todos los tipos</option>
+          <option>Entrada</option><option>Herramienta</option><option>Aprobación</option><option>Salida</option><option>Excepción</option><option>Error</option>
+        </select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Entradas de la bitácora">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Hora</th><th scope="col">Agente y proyecto</th><th scope="col">Acción</th><th scope="col">Resultado</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la entrada"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Las entradas muestran el formato que escribirán los agentes.
+  const LOG = [
+    { id: 'L-0531', time: '14:52', agent: 'Agente de evaluación de arquitectura', project: 'Modernización ERP (ejemplo)', phase: 'Evaluar', action: 'Redactó el informe de hallazgos (PL-01), versión 2', type: 'Salida', result: 'Enviado a aprobación', tone: 'b-convertido',
+      steps: [['ok', 'Entrada: entrevistas del 9 y 10 oct, inventario de sistemas'], ['ok', 'Herramienta: lector de documentos (lectura del proyecto)'], ['ok', 'Consultó caso FC-0012 en modo lectura y lo citó'], ['pending', 'Aprobación del owner: pendiente (A-0148)'], ['ok', 'Salida: borrador de 7 hallazgos, con evidencia por cada uno']],
+      exception: null },
+    { id: 'L-0530', time: '14:20', agent: 'Agente de captación', project: 'Interno', phase: '—', action: 'Propuso respuesta a un lead (correo inicial)', type: 'Aprobación', result: 'Esperando tu decisión', tone: 'b-pospuesto',
+      steps: [['ok', 'Entrada: formulario de lead de la landing de ERP'], ['ok', 'Herramienta: plantilla aprobada PL-10 (respuesta inicial)'], ['pending', 'Aprobación del owner: pendiente (A-0147)']], exception: null },
+    { id: 'L-0528', time: '12:05', agent: 'Agente de hoja de ruta de TI', project: 'Hoja de ruta de TI (ejemplo)', phase: 'Arquitectar', action: 'Propuso una alternativa de hoja de ruta descartada', type: 'Excepción', result: 'Registrada para la PMO', tone: 'b-exception',
+      steps: [['ok', 'Entrada: diseño de arquitectura v1'], ['bad', 'El diseño no cubre el riesgo alto R-02 de G1'], ['ok', 'Registró la excepción y se detuvo antes de la salida']],
+      exception: 'EXC-0007: el diseño no cubre R-02. La PMO decide si se reabre G1 o se acepta el riesgo.' },
+    { id: 'L-0525', time: '09:41', agent: 'Agente administrativo', project: 'Modernización ERP (ejemplo)', phase: 'Evaluar', action: 'Intentó enviar acta sin responsables', type: 'Error', result: 'Bloqueado por la compuerta de salida', tone: 'b-error',
+      steps: [['ok', 'Entrada: notas de la reunión de avance'], ['bad', 'Acta sin responsables ni fechas (PL-06 incompleto)'], ['ok', 'Salida bloqueada. No se envió nada']], exception: null },
+    { id: 'L-0522', time: '08:30', agent: 'Agente de evaluación de arquitectura', project: 'Diagnóstico de arquitectura (ejemplo)', phase: 'Evaluar', action: 'Inició la revisión de hallazgos', type: 'Herramienta', result: 'Completado', tone: 'b-convertido',
+      steps: [['ok', 'Entrada: inventario de sistemas del cliente'], ['ok', 'Herramienta: lector de documentos y hoja de riesgos']], exception: null },
+  ];
+  let selected = 'L-0531';
+
+  function visible() {
+    const a = document.getElementById('f-agent').value;
+    const p = document.getElementById('f-project').value;
+    const t = document.getElementById('f-type').value;
+    return LOG.filter(e => (!a || e.agent === a) && (!p || e.project === p) && (!t || e.type === t));
+  }
+
+  function renderRows() {
+    const rows = visible();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(e => `
+      <tr tabindex="0" data-id="${e.id}" aria-selected="${e.id === selected}">
+        <td class="mono">${e.time}<div>${e.id}</div></td>
+        <td><div class="lead-name">${e.agent}</div><div class="sub">${e.project} · ${e.phase}</div></td>
+        <td><div>${e.action}</div><div class="log-type" style="margin-top:4px">${e.type}</div></td>
+        <td><span class="badge ${e.tone}">${e.result}</span></td>
+      </tr>`).join('') : '<tr><td colspan="4" class="muted">No hay entradas con esos filtros.</td></tr>';
+    document.getElementById('k-pending').textContent = LOG.filter(e => e.type === 'Aprobación').length;
+  }
+
+  function renderDetail() {
+    const e = LOG.find(x => x.id === selected);
+    if (!e) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una entrada para ver sus pasos.</p>'; return; }
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${e.id}</h2><div class="sub">${e.time} · ${e.type}</div></div><span class="badge ${e.tone}">${e.result}</span></div>
+
+      <div class="section"><h3>Quién y dónde</h3>
+        <dl class="kv"><dt>Agente</dt><dd>${e.agent}</dd><dt>Proyecto</dt><dd>${e.project}</dd><dt>Fase</dt><dd>${e.phase}</dd></dl>
+      </div>
+
+      <div class="section"><h3>Pasos</h3>
+        ${e.steps.map(([s, t]) => `<div class="step ${s}"><i aria-hidden="true">${s === 'ok' ? '✓' : s === 'pending' ? '◷' : '✕'}</i><span>${t}</span></div>`).join('')}
+      </div>
+
+      ${e.exception ? `<div class="section"><h3>Excepción</h3><p style="margin:0">${e.exception}</p></div>` : ''}
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="correct">Registrar corrección</button>
+          <button type="button" class="secondary" data-act="copy">Copiar identificador</button>
+        </div>
+        <p class="sub" style="margin:0">Una corrección es una entrada nueva que apunta a ${e.id}. La original queda igual.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    if (b.dataset.act === 'correct') toast('Abre una entrada nueva de corrección. La original no cambia.');
+    if (b.dataset.act === 'copy') toast('Identificador copiado.');
+  });
+  document.getElementById('btn-export').addEventListener('click', () => toast('Preparando la exportación. Queda registrado en la bitácora.'));
+  ['f-agent', 'f-project', 'f-type'].forEach(id => document.getElementById(id).addEventListener('input', renderRows));
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    document.getElementById('view-normal').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>Todavía no hay ejecuciones</h2><p>Los agentes no operan. Cuando empiecen, cada acción aparecerá aquí en el momento en que ocurra.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar la bitácora</h2><p>Revisa tu conexión e intenta de nuevo. Ninguna entrada se ha modificado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

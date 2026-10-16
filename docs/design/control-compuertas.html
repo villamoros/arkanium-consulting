@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Compuertas del framework</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="ready" aria-pressed="false">Compuerta lista</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin proyecto</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Registro</div>
+    <ul>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+    </ul>
+    <div class="side-group">Framework</div>
+    <ul>
+      <li><a href="control-compuertas.html" aria-current="page">Compuertas</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Compuertas del framework</h1>
+        <p>Cada proyecto avanza de fase solo cuando cumple los criterios de la compuerta. Las compuertas las revisas tú; los agentes no las cierran.</p>
+      </div>
+    </div>
+
+    <div class="project-pick" role="group" aria-label="Elegir proyecto" id="projects"></div>
+
+    <div id="view-normal">
+      <div class="approval" role="note" style="margin-top:16px">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Versión del framework:</strong> ARK-FW-001, la vigente al iniciar este proyecto. No cambia a mitad de camino.</div>
+      </div>
+
+      <section class="panel" style="padding:18px;margin-bottom:16px" aria-label="Fase actual">
+        <h2 style="font-size:1rem">Fase actual: <span id="phase-name"></span></h2>
+        <div class="phase-track" id="track" style="margin-top:12px"></div>
+      </section>
+
+      <div class="gates-row" id="gates" role="group" aria-label="Compuertas"></div>
+
+      <div class="layout" style="margin-top:16px">
+        <section class="panel" style="padding:18px" aria-label="Plantillas del proyecto">
+          <h2 style="font-size:1rem">Plantillas (PL-01 a PL-10)</h2>
+          <p class="sub" style="margin:4px 0 12px">Cada entregable sale con su plantilla llena. Un borrador sin plantilla no pasa la compuerta.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Plantilla</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="templates"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Criterios de la compuerta"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Aprobar compuerta</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="confirm-ok">Aprobar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Criterios de ARK-FW-001, §3 a §6.
+  const PHASES = ['Evaluar', 'Arquitectar', 'Modernizar', 'Escalar'];
+  const TEMPLATE_NAMES = ['Informe de hallazgos', 'Registro de riesgos', 'Diseño de arquitectura', 'Registro de decisiones', 'Hoja de ruta por etapas', 'Avance por etapa', 'Registro de cambios', 'Informe final', 'Guía de operación', 'Ficha de caso'];
+
+  const PROJECTS = [
+    { id: 'erp', name: 'Modernización ERP', client: 'Distribuidora Norte (ejemplo)', current: 0,
+      templates: ['Aprobado', 'Aprobado', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente'],
+      gates: [
+        { name: 'G1', phase: 'Evaluar', state: 'review', criteria: [
+          ['Cada hallazgo tiene evidencia que lo respalda', true, 'Sistema: 7 de 7 enlazados'],
+          ['Cada riesgo alto tiene responsable y mitigación', true, 'Sistema: 2 de 2'],
+          ['El cliente validó el alcance (confirmación registrada)', true, 'Registrado el 13 oct'],
+          ['El owner aprobó el informe para publicarlo', false, 'Pendiente de tu decisión (A-0148)'],
+        ] },
+        { name: 'G2', phase: 'Arquitectar', state: 'locked', criteria: [
+          ['Hay una alternativa descartada con razón documentada', false, 'Pendiente'],
+          ['Cada decisión tiene aprobación registrada', false, 'Pendiente'],
+          ['El diseño cubre los riesgos altos de G1', false, 'Pendiente'],
+          ['El owner aprobó la hoja de ruta para publicarla', false, 'Pendiente'],
+        ] },
+        { name: 'G3', phase: 'Modernizar', state: 'locked', criteria: [] },
+        { name: 'G4', phase: 'Escalar', state: 'locked', criteria: [] },
+      ] },
+    { id: 'diag', name: 'Diagnóstico de arquitectura', client: 'Empresa Demo (ejemplo)', current: 0,
+      templates: ['En borrador', 'En borrador', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente'],
+      gates: [
+        { name: 'G1', phase: 'Evaluar', state: 'open', criteria: [
+          ['Cada hallazgo tiene evidencia que lo respalda', false, 'En curso'],
+          ['Cada riesgo alto tiene responsable y mitigación', false, 'En curso'],
+          ['El cliente validó el alcance (confirmación registrada)', false, 'Pendiente'],
+          ['El owner aprobó el informe para publicarlo', false, 'Pendiente'],
+        ] },
+        { name: 'G2', phase: 'Arquitectar', state: 'locked', criteria: [] },
+        { name: 'G3', phase: 'Modernizar', state: 'locked', criteria: [] },
+        { name: 'G4', phase: 'Escalar', state: 'locked', criteria: [] },
+      ] },
+    { id: 'hoja', name: 'Hoja de ruta de TI', client: 'Gerente de TI, logística (ejemplo)', current: 1,
+      templates: ['Aprobado', 'Aprobado', 'Aprobado', 'En borrador', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente', 'Pendiente'],
+      gates: [
+        { name: 'G1', phase: 'Evaluar', state: 'passed', criteria: [
+          ['Cada hallazgo tiene evidencia que lo respalda', true, 'Sistema: completo'],
+          ['Cada riesgo alto tiene responsable y mitigación', true, 'Sistema: completo'],
+          ['El cliente validó el alcance (confirmación registrada)', true, 'Registrado'],
+          ['El owner aprobó el informe para publicarlo', true, 'Aprobado el 3 oct'],
+        ] },
+        { name: 'G2', phase: 'Arquitectar', state: 'open', exception: 'EXC-0007: el diseño no cubre el riesgo R-02 de G1. La PMO decide si se reabre G1 o se acepta el riesgo.', criteria: [
+          ['Hay una alternativa descartada con razón documentada', true, 'Sistema: 1 de 1'],
+          ['Cada decisión tiene aprobación registrada', false, 'Pendiente de tu decisión'],
+          ['El diseño cubre los riesgos altos de G1', false, 'Bloqueado por EXC-0007'],
+          ['El owner aprobó la hoja de ruta para publicarla', false, 'Pendiente'],
+        ] },
+        { name: 'G3', phase: 'Modernizar', state: 'locked', criteria: [] },
+        { name: 'G4', phase: 'Escalar', state: 'locked', criteria: [] },
+      ] },
+    { id: 'interno', name: 'Interno (sin facturar)', client: 'Arkanium', current: -1, templates: [], gates: [] },
+  ];
+
+  let current = 'erp';
+  let selectedGate = 0;
+  let pending = null;
+
+  const proj = () => PROJECTS.find(p => p.id === current);
+  const GATE_TAG = { passed: ['Aprobada', 'b-activo'], review: ['En revisión', 'b-pausado'], open: ['En curso', 'b-definido'], locked: ['Bloqueada', 'b-definido'] };
+  const TPL_CLS = { 'Aprobado': 'b-activo', 'En borrador': 'b-pausado', 'Pendiente': 'b-definido' };
+
+  function renderProjects() {
+    document.getElementById('projects').innerHTML = PROJECTS.map(p => `
+      <button type="button" class="project-card" data-id="${p.id}" aria-pressed="${p.id === current}" style="${p.id === current ? 'border-color:var(--gold)' : ''}">
+        <h3>${p.name}</h3><p>${p.client}</p>
+        <span class="pending-count">${p.gates.length ? p.gates.filter(g => g.state === 'passed').length + ' de 4 compuertas aprobadas' : 'Sin framework: proyecto interno'}</span>
+      </button>`).join('');
+  }
+
+  function renderPhase() {
+    const p = proj();
+    document.getElementById('phase-name').textContent = p.current >= 0 ? PHASES[p.current] : 'No aplica';
+    document.getElementById('track').innerHTML = PHASES.map((f, i) => {
+      const cls = p.current < 0 ? '' : i < p.current ? 'done' : i === p.current ? 'current' : '';
+      return `<div class="${cls}">${i + 1}. ${f}</div>`;
+    }).join('');
+  }
+
+  function renderGates() {
+    const p = proj();
+    document.getElementById('gates').innerHTML = p.gates.length ? p.gates.map((g, i) => {
+      const [label, cls] = GATE_TAG[g.state];
+      return `<button type="button" class="gate-card" data-i="${i}" aria-pressed="${i === selectedGate}">
+        <h3>${g.name} · ${g.phase}</h3>
+        <p><span class="badge ${cls}">${label}</span></p>
+        <p style="margin-top:6px">${g.criteria.length ? g.criteria.filter(c => c[1]).length + ' de ' + g.criteria.length + ' criterios' : 'Se abre al cerrar la fase anterior'}</p>
+      </button>`;
+    }).join('') : '<p class="muted" style="grid-column:1/-1">Este proyecto no sigue el framework. Sus compuertas no aplican.</p>';
+  }
+
+  function renderTemplates() {
+    const p = proj();
+    document.getElementById('templates').innerHTML = p.templates.length ? p.templates.map((s, i) => `
+      <tr><td><b>PL-${String(i + 1).padStart(2, '0')}</b> <span class="sub">${TEMPLATE_NAMES[i]}</span></td><td><span class="badge ${TPL_CLS[s]}">${s}</span></td></tr>`).join('')
+      : '<tr><td colspan="2" class="muted">Sin plantillas: el proyecto interno no pasa por el framework.</td></tr>';
+  }
+
+  function renderDetail() {
+    const p = proj();
+    const g = p.gates[selectedGate];
+    if (!g) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una compuerta para ver sus criterios.</p>'; return; }
+    const [label, cls] = GATE_TAG[g.state];
+    const allOk = g.criteria.length && g.criteria.every(c => c[1]);
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${g.name} · ${g.phase}</h2><div class="sub">${p.name}</div></div><span class="badge ${cls}">${label}</span></div>
+
+      ${g.exception ? `<div class="section"><h3>Excepción abierta</h3><p style="margin:0">${g.exception}</p></div>` : ''}
+
+      <div class="section"><h3>Criterios de salida</h3>
+        ${g.criteria.length ? `<ul class="checks">${g.criteria.map(([t, ok, who]) => `<li><span class="${ok ? 'ok' : 'pending'}" aria-hidden="true">${ok ? '✓' : '◷'}</span><span>${t}<br><span class="sub">${who}</span></span></li>`).join('')}</ul>` : '<p class="sub" style="margin:0">Los criterios se fijan al abrir esta compuerta.</p>'}
+      </div>
+
+      <div class="section decision"><h3>Decisión</h3>
+        <p class="sub" style="margin:0">${g.state === 'passed' ? 'Compuerta aprobada. Queda registrada con tu nombre y la fecha.' : allOk ? 'Todos los criterios están cumplidos. Solo falta tu aprobación.' : 'Ningún criterio se cumple por decreto. Una compuerta se aprueba solo cuando todos sus criterios están cumplidos.'}</p>
+        <div class="actions">
+          <button type="button" class="primary" data-act="approve" ${allOk && g.state !== 'passed' ? '' : 'disabled'}>Aprobar compuerta</button>
+          <button type="button" class="secondary" data-act="return" ${g.state === 'passed' ? 'disabled' : ''}>Devolver a la fase</button>
+        </div>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('projects').addEventListener('click', e => {
+    const b = e.target.closest('[data-id]'); if (!b) return;
+    current = b.dataset.id; selectedGate = 0; renderAll();
+  });
+  document.getElementById('gates').addEventListener('click', e => {
+    const b = e.target.closest('[data-i]'); if (!b) return;
+    selectedGate = Number(b.dataset.i); renderGates(); renderDetail();
+  });
+
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const p = proj(); const g = p.gates[selectedGate];
+    if (b.dataset.act === 'approve') {
+      pending = { p, g };
+      document.getElementById('confirm-body').textContent = `Apruebas ${g.name} de ${p.name}. Queda registrado y la fase avanza. Publicar algo al cliente sigue pasando por Aprobaciones.`;
+      document.getElementById('confirm-dialog').classList.add('open');
+      document.getElementById('confirm-ok').focus();
+    }
+    if (b.dataset.act === 'return') toast('La fase vuelve a abierta. Queda registrado con el motivo.');
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      const { p, g } = pending;
+      g.state = 'passed';
+      const next = p.gates[p.gates.indexOf(g) + 1];
+      if (next) next.state = 'open';
+      if (p.current < PHASES.length - 1 && p.gates.indexOf(g) === p.current) p.current += 1;
+      document.getElementById('confirm-dialog').classList.remove('open');
+      pending = null;
+      toast(`${g.name} aprobada. Queda en la bitácora.`);
+      renderAll();
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function renderAll() { renderProjects(); renderPhase(); renderGates(); renderTemplates(); renderDetail(); }
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'ready') { current = 'erp'; selectedGate = 0; const g = PROJECTS[0].gates[0]; g.criteria[3][1] = true; g.criteria[3][2] = 'Aprobado (vista previa)'; normal.hidden = false; v.hidden = true; renderAll(); toast('Vista previa: G1 lista para aprobar.'); }
+    if (state === 'empty') { current = 'interno'; selectedGate = 0; normal.hidden = false; v.hidden = true; renderAll(); toast('Vista previa: proyecto interno sin framework.'); }
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar las compuertas</h2><p>Revisa tu conexión e intenta de nuevo. Ninguna compuerta cambió de estado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderAll();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

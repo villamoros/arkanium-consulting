@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Fichas de agente</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="ready" aria-pressed="false">Lista para autorizar</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Registro</div>
+    <ul>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html" aria-current="page">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+    </ul>
+    <div class="side-group">Framework</div>
+    <ul>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Fichas de agente</h1>
+        <p>Los 42 agentes definidos según ARK-AGT-001. Ninguno opera hoy. Un agente se activa solo cuando lo autorizas para un proyecto concreto.</p>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><b>42</b><span>agentes definidos</span></div>
+      <div class="kpi"><b>0</b><span>operando</span></div>
+      <div class="kpi"><b id="k-ready">0</b><span>con ficha completa</span></div>
+      <div class="kpi"><b>0</b><span>activados para un proyecto</span></div>
+    </div>
+
+    <div class="layout">
+      <section class="panel" style="padding:14px" aria-label="Lista de agentes">
+        <label class="sr" for="q">Buscar agente</label>
+        <input id="q" type="search" placeholder="Buscar por nombre o departamento" style="width:100%;background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 10px;margin-bottom:12px" />
+        <div id="list"></div>
+      </section>
+
+      <aside class="panel detail" id="detail" aria-live="polite" aria-label="Ficha del agente"></aside>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Autorizar agente</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="filters" style="margin:0 0 12px">
+      <label class="sub" style="display:grid;gap:4px;width:100%">Proyecto
+        <select id="confirm-project">
+          <option>Modernización ERP (ejemplo)</option>
+          <option>Diagnóstico de arquitectura (ejemplo)</option>
+          <option>Hoja de ruta de TI (ejemplo)</option>
+        </select>
+      </label>
+    </div>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="confirm-ok">Autorizar para este proyecto</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo. Nombres y departamentos tomados de packages/agents/src/registry.json.
+  const DEPTS = [
+    { key: 'architecture', label: 'Arquitectura', phases: ['Evaluar', 'Arquitectar', 'Modernizar', 'Escalar'],
+      names: ['Agente de evaluación de arquitectura', 'Agente de hoja de ruta de modernización', 'Agente de diseño de arquitectura de solución', 'Agente de due diligence técnica', 'Agente de arquitecto fraccional', 'Agente de comité de arquitectura', 'Agente de marco de gobierno', 'Agente de retainer de gobierno', 'Agente de riesgo técnico', 'Agente de asesoría de CTO ligera', 'Agente de liderazgo técnico integrado', 'Agente de CTO fraccional, nivel crecimiento', 'Agente de CTO fraccional, nivel startup'] },
+    { key: 'strategy', label: 'Estrategia', phases: ['Evaluar', 'Arquitectar'],
+      names: ['Agente de diagnóstico tecnológico completo', 'Agente de sprint de descubrimiento pagado', 'Agente de chequeo técnico', 'Agente de portafolio de iniciativas', 'Agente de madurez digital', 'Agente de taller de oportunidades', 'Agente de blueprint de estrategia digital', 'Agente de construir vs. comprar', 'Agente de caso de inversión en deuda técnica', 'Agente de blueprint de estrategia tecnológica', 'Agente de sprint de estrategia tecnológica', 'Agente de hoja de ruta de TI', 'Agente de sprint de hoja de ruta', 'Agente de actualización trimestral'] },
+    { key: 'product', label: 'Producto', phases: ['Evaluar', 'Arquitectar'],
+      names: ['Agente de taller de descubrimiento', 'Agente de evaluación de oportunidad', 'Agente de sprint de descubrimiento', 'Agente de experimentos de validación', 'Agente de paquete de definición', 'Agente de requisitos y backlog', 'Agente de visión y alcance', 'Agente de especificación técnica', 'Agente de taller de alcance de MVP', 'Agente de estrategia y hoja de ruta de MVP', 'Agente de revisión de preparación', 'Agente de director de producto fraccional', 'Agente de product manager fraccional', 'Agente de asesoría de producto ligera', 'Agente de modelo operativo de producto'] },
+  ];
+
+  // Checklist de ARK-AGT-001, sección 3. Las fichas nuevas empiezan sin nada completo.
+  const CHECK = ['Entradas esperadas', 'Salidas y plantilla', 'Herramientas', 'Criterios de salida propios', 'Límites', 'Casos de referencia'];
+  const AGENTS = [];
+  DEPTS.forEach(d => d.names.forEach((name, i) => AGENTS.push({
+    id: `${d.key}.${i + 1}`, name, dept: d.label, phases: d.phases,
+    deliverable: 'Según el servicio del catálogo (ejemplo)',
+    tools: [], status: 'definido', operation: 'sin_operacion',
+    checks: [false, false, false, false, false, false], authorized: [],
+  })));
+  // Ficha de ejemplo con avance parcial.
+  AGENTS[0].deliverable = 'Informe de hallazgos y riesgos (PL-01 y PL-02)';
+  AGENTS[0].checks = [true, true, false, true, false, true];
+  AGENTS[0].tools = ['Lector de documentos del proyecto', 'Hoja de riesgos (PL-02)'];
+
+  let selected = AGENTS[0].id;
+  let pendingAuthorize = null;
+
+  const statusTag = a => a.status === 'activo' ? ['Activo', 'b-activo'] : a.status === 'pausado' ? ['Pausado', 'b-pausado'] : ['Definido', 'b-definido'];
+  const done = a => a.checks.filter(Boolean).length;
+
+  function renderList() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const list = document.getElementById('list');
+    list.innerHTML = DEPTS.map(d => {
+      const items = AGENTS.filter(a => a.dept === d.label && (!q || (a.name + ' ' + a.dept).toLowerCase().includes(q)));
+      if (!items.length) return '';
+      return `<div class="group-title">${d.label} · ${items.length}</div><div class="agent-list">${items.map(a => {
+        const [label] = statusTag(a);
+        return `<button type="button" class="agent-item" data-id="${a.id}" aria-pressed="${a.id === selected}">
+          <span>${a.name}<small>${done(a)} de 6 pasos de la ficha</small></span><span class="idle-tag">${label}</span></button>`;
+      }).join('')}</div>`;
+    }).join('') || '<p class="muted">No hay agentes con ese nombre.</p>';
+    document.getElementById('k-ready').textContent = AGENTS.filter(a => done(a) === 6).length;
+  }
+
+  function renderDetail() {
+    const a = AGENTS.find(x => x.id === selected);
+    const [label, cls] = statusTag(a);
+    const ready = done(a) === 6;
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${a.name}</h2><div class="sub mono">${a.id}</div></div><span class="badge ${cls}">${label}</span></div>
+
+      <div class="section"><h3>Ficha (ARK-AGT-001, sección 2)</h3>
+        <dl class="kv">
+          <dt>Departamento</dt><dd>${a.dept}</dd>
+          <dt>Entregable principal</dt><dd>${a.deliverable}</dd>
+          <dt>Fases</dt><dd><div class="chips">${a.phases.map(p => `<span class="chip on">${p}</span>`).join('')}</div></dd>
+          <dt>Operación</dt><dd>${a.operation === 'sin_operacion' ? 'Sin operación' : 'Operando'}</dd>
+          <dt>Modelo</dt><dd>claude</dd>
+          <dt>Aprobación</dt><dd>Owner, toda salida externa</dd>
+          <dt>Espacio</dt><dd>Proyecto</dd>
+        </dl>
+      </div>
+
+      <div class="section"><h3>Herramientas</h3>
+        ${a.tools.length ? `<div class="chips">${a.tools.map(t => `<span class="chip ok">${t}</span>`).join('')}</div>` : '<p class="sub" style="margin:0">Vacío. Sin herramienta no hay acción posible; se definen antes de activar.</p>'}
+      </div>
+
+      <div class="section"><h3>Antes de activar: ${done(a)} de 6</h3>
+        <ul class="checks">${CHECK.map((c, i) => `<li><span class="${a.checks[i] ? 'ok' : 'pending'}" aria-hidden="true">${a.checks[i] ? '✓' : '◷'}</span><span>${c}</span></li>`).join('')}</ul>
+      </div>
+
+      <div class="section decision"><h3>Activación</h3>
+        <p class="sub" style="margin:0">${ready
+          ? 'La ficha está completa. Antes de autorizar, revísala con el agente de calidad y la PMO (ARK-AGT-001, §5).'
+          : 'Completa los 6 pasos para poder autorizarlo. Sin ficha completa, no se activa.'}</p>
+        <div class="actions">
+          <button type="button" class="primary" data-act="authorize" ${ready && a.status === 'definido' ? '' : 'disabled'}>Autorizar para un proyecto</button>
+          ${a.status === 'activo' ? '<button type="button" class="danger" data-act="pause">Pausar agente</button>' : ''}
+        </div>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('list').addEventListener('click', e => {
+    const b = e.target.closest('[data-id]'); if (!b) return;
+    selected = b.dataset.id; renderList(); renderDetail();
+  });
+  document.getElementById('q').addEventListener('input', renderList);
+
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const a = AGENTS.find(x => x.id === selected);
+    if (b.dataset.act === 'authorize') {
+      pendingAuthorize = a;
+      document.getElementById('confirm-body').textContent = `${a.name} trabajará solo en el proyecto que elijas, con permisos acotados. Sus salidas externas siguen pasando por Aprobaciones.`;
+      document.getElementById('confirm-dialog').classList.add('open');
+      document.getElementById('confirm-ok').focus();
+    }
+    if (b.dataset.act === 'pause') { a.status = 'pausado'; renderList(); renderDetail(); toast('Agente pausado. Queda en la bitácora.'); }
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pendingAuthorize) {
+      const project = document.getElementById('confirm-project').value;
+      pendingAuthorize.authorized.push(project);
+      pendingAuthorize.status = 'activo'; pendingAuthorize.operation = 'operando';
+      document.getElementById('confirm-dialog').classList.remove('open');
+      toast(`Autorizado para ${project}. Queda en la bitácora.`);
+      pendingAuthorize = null; renderList(); renderDetail();
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    document.getElementById('view-state').hidden = true;
+    if (state === 'ready') {
+      AGENTS.forEach(a => { a.checks = [true, true, true, true, true, true]; a.tools = a.tools.length ? a.tools : ['Lector de documentos del proyecto']; });
+      renderList(); renderDetail();
+      toast('Vista previa: ficha completa. Ahora se puede autorizar.');
+    }
+    if (state === 'error') {
+      document.querySelectorAll('.kpis, .layout').forEach(el => { el.hidden = true; });
+      document.getElementById('view-state').hidden = false;
+      document.getElementById('view-state').innerHTML = '<h2>No pudimos cargar las fichas</h2><p>Revisa tu conexión e intenta de nuevo. Ningún agente cambió de estado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+    }
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderList(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>
