@@ -1,0 +1,952 @@
+[
+  {
+    "id": "architecture.architecture-assessment",
+    "name": "Agente de evaluación de arquitectura",
+    "department": "architecture",
+    "category": "Consultoría de arquitectura",
+    "service": {
+      "slug": "architecture-assessment",
+      "label": "Evaluación de arquitectura",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Informe de hallazgos y riesgos",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.architecture-modernization-roadmap",
+    "name": "Agente de hoja de ruta de modernización",
+    "department": "architecture",
+    "category": "Consultoría de arquitectura",
+    "service": {
+      "slug": "architecture-modernization-roadmap",
+      "label": "Hoja de ruta de modernización de arquitectura",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Roadmap por fases con criterios de avance",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.solution-architecture-design",
+    "name": "Agente de diseño de arquitectura de solución",
+    "department": "architecture",
+    "category": "Consultoría de arquitectura",
+    "service": {
+      "slug": "solution-architecture-design",
+      "label": "Diseño de arquitectura de solución",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Componentes, flujos e integraciones",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.technical-due-diligence",
+    "name": "Agente de due diligence técnica",
+    "department": "architecture",
+    "category": "Consultoría de arquitectura",
+    "service": {
+      "slug": "technical-due-diligence",
+      "label": "Due diligence técnica",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Informe de riesgo técnico para inversión o compra",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.fractional-architect",
+    "name": "Agente de arquitecto fraccional",
+    "department": "architecture",
+    "category": "Consultoría de arquitectura",
+    "service": {
+      "slug": "fractional-architect",
+      "label": "Arquitecto fraccional",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Revisiones periódicas y decisiones documentadas",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.architecture-review-board-as-a-service",
+    "name": "Agente de comité de arquitectura",
+    "department": "architecture",
+    "category": "Gobierno tecnológico",
+    "service": {
+      "slug": "architecture-review-board-as-a-service",
+      "label": "Comité de revisión de arquitectura (como servicio)",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Actas de decisiones de arquitectura",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.governance-framework-design",
+    "name": "Agente de marco de gobierno",
+    "department": "architecture",
+    "category": "Gobierno tecnológico",
+    "service": {
+      "slug": "governance-framework-design",
+      "label": "Diseño del marco de gobierno",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Marco de decisiones, roles y criterios",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.governance-retainer",
+    "name": "Agente de retainer de gobierno",
+    "department": "architecture",
+    "category": "Gobierno tecnológico",
+    "service": {
+      "slug": "governance-retainer",
+      "label": "Retainer de gobierno",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Revisión mensual de decisiones y riesgos",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.technical-risk-monitoring",
+    "name": "Agente de riesgo técnico",
+    "department": "architecture",
+    "category": "Gobierno tecnológico",
+    "service": {
+      "slug": "technical-risk-monitoring",
+      "label": "Monitoreo de riesgo técnico",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Registro de riesgos con responsables",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.cto-advisory-light",
+    "name": "Agente de asesoría de CTO ligera",
+    "department": "architecture",
+    "category": "Liderazgo tecnológico",
+    "service": {
+      "slug": "cto-advisory-light",
+      "label": "Asesoría de CTO (ligera)",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Recomendaciones trimestrales",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.embedded-technical-leadership",
+    "name": "Agente de liderazgo técnico integrado",
+    "department": "architecture",
+    "category": "Liderazgo tecnológico",
+    "service": {
+      "slug": "embedded-technical-leadership",
+      "label": "Liderazgo técnico integrado",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Plan de liderazgo y decisiones por sprint",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.fractional-cto-growth-tier",
+    "name": "Agente de CTO fraccional, nivel crecimiento",
+    "department": "architecture",
+    "category": "Liderazgo tecnológico",
+    "service": {
+      "slug": "fractional-cto-growth-tier",
+      "label": "CTO fraccional — nivel crecimiento",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Plan técnico anual y revisiones mensuales",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "architecture.fractional-cto-startup-tier",
+    "name": "Agente de CTO fraccional, nivel startup",
+    "department": "architecture",
+    "category": "Liderazgo tecnológico",
+    "service": {
+      "slug": "fractional-cto-startup-tier",
+      "label": "CTO fraccional — nivel startup",
+      "family": "architecture"
+    },
+    "principalDeliverable": "Plan técnico inicial y revisiones quincenales",
+    "phases": [
+      "evaluar",
+      "arquitectar",
+      "modernizar",
+      "escalar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.full-technology-diagnosis",
+    "name": "Agente de diagnóstico tecnológico completo",
+    "department": "strategy",
+    "category": "Diagnóstico tecnológico",
+    "service": {
+      "slug": "full-technology-diagnosis",
+      "label": "Diagnóstico tecnológico completo",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Diagnóstico integral con prioridades",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.paid-discovery-sprint",
+    "name": "Agente de sprint de descubrimiento pagado",
+    "department": "strategy",
+    "category": "Diagnóstico tecnológico",
+    "service": {
+      "slug": "paid-discovery-sprint",
+      "label": "Sprint de descubrimiento pagado",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Hallazgos y recomendación de siguiente paso",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.technical-health-check",
+    "name": "Agente de chequeo técnico",
+    "department": "strategy",
+    "category": "Diagnóstico tecnológico",
+    "service": {
+      "slug": "technical-health-check",
+      "label": "Chequeo técnico",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Resumen de salud técnica y riesgos principales",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.digital-initiative-portfolio",
+    "name": "Agente de portafolio de iniciativas",
+    "department": "strategy",
+    "category": "Estrategia digital",
+    "service": {
+      "slug": "digital-initiative-portfolio",
+      "label": "Portafolio de iniciativas digitales",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Portafolio priorizado de iniciativas",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.digital-maturity-assessment",
+    "name": "Agente de madurez digital",
+    "department": "strategy",
+    "category": "Estrategia digital",
+    "service": {
+      "slug": "digital-maturity-assessment",
+      "label": "Evaluación de madurez digital",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Evaluación por dimensiones y brechas",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.digital-opportunity-workshop",
+    "name": "Agente de taller de oportunidades",
+    "department": "strategy",
+    "category": "Estrategia digital",
+    "service": {
+      "slug": "digital-opportunity-workshop",
+      "label": "Taller de oportunidades digitales",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Lista de oportunidades evaluadas",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.digital-strategy-blueprint",
+    "name": "Agente de blueprint de estrategia digital",
+    "department": "strategy",
+    "category": "Estrategia digital",
+    "service": {
+      "slug": "digital-strategy-blueprint",
+      "label": "Blueprint de estrategia digital",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Estrategia digital con hitos",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.build-vs-buy-analysis",
+    "name": "Agente de construir vs. comprar",
+    "department": "strategy",
+    "category": "Estrategia tecnológica",
+    "service": {
+      "slug": "build-vs-buy-analysis",
+      "label": "Análisis de construir vs. comprar",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Recomendación con costo total y riesgos",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.technical-debt-investment-case",
+    "name": "Agente de caso de inversión en deuda técnica",
+    "department": "strategy",
+    "category": "Estrategia tecnológica",
+    "service": {
+      "slug": "technical-debt-investment-case",
+      "label": "Caso de inversión en deuda técnica",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Caso financiero y priorización de deuda",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.technology-strategy-blueprint",
+    "name": "Agente de blueprint de estrategia tecnológica",
+    "department": "strategy",
+    "category": "Estrategia tecnológica",
+    "service": {
+      "slug": "technology-strategy-blueprint",
+      "label": "Blueprint de estrategia tecnológica",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Estrategia tecnológica con hitos",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.technology-strategy-sprint",
+    "name": "Agente de sprint de estrategia tecnológica",
+    "department": "strategy",
+    "category": "Estrategia tecnológica",
+    "service": {
+      "slug": "technology-strategy-sprint",
+      "label": "Sprint de estrategia tecnológica",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Estrategia tecnológica acotada a un sprint",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.it-roadmap-12-24-months",
+    "name": "Agente de hoja de ruta de TI",
+    "department": "strategy",
+    "category": "Hoja de ruta de TI",
+    "service": {
+      "slug": "it-roadmap-12-24-months",
+      "label": "Hoja de ruta de TI (12-24 meses)",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Hoja de ruta por trimestres",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.it-roadmap-sprint",
+    "name": "Agente de sprint de hoja de ruta",
+    "department": "strategy",
+    "category": "Hoja de ruta de TI",
+    "service": {
+      "slug": "it-roadmap-sprint",
+      "label": "Sprint de hoja de ruta de TI",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Hoja de ruta acotada a un sprint",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "strategy.roadmap-refresh-quarterly",
+    "name": "Agente de actualización trimestral",
+    "department": "strategy",
+    "category": "Hoja de ruta de TI",
+    "service": {
+      "slug": "roadmap-refresh-quarterly",
+      "label": "Actualización trimestral de la hoja de ruta",
+      "family": "strategy"
+    },
+    "principalDeliverable": "Hoja de ruta actualizada y cambios justificados",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.discovery-workshop",
+    "name": "Agente de taller de descubrimiento",
+    "department": "product",
+    "category": "Descubrimiento de producto",
+    "service": {
+      "slug": "discovery-workshop",
+      "label": "Taller de descubrimiento",
+      "family": "product"
+    },
+    "principalDeliverable": "Hallazgos del taller y preguntas abiertas",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.opportunity-feasibility-assessment",
+    "name": "Agente de evaluación de oportunidad",
+    "department": "product",
+    "category": "Descubrimiento de producto",
+    "service": {
+      "slug": "opportunity-feasibility-assessment",
+      "label": "Evaluación de oportunidad y viabilidad",
+      "family": "product"
+    },
+    "principalDeliverable": "Análisis de viabilidad con criterios de decisión",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.product-discovery-sprint",
+    "name": "Agente de sprint de descubrimiento",
+    "department": "product",
+    "category": "Descubrimiento de producto",
+    "service": {
+      "slug": "product-discovery-sprint",
+      "label": "Sprint de descubrimiento de producto",
+      "family": "product"
+    },
+    "principalDeliverable": "Hallazgos y recomendación de siguiente paso",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.product-validation-experiments",
+    "name": "Agente de experimentos de validación",
+    "department": "product",
+    "category": "Descubrimiento de producto",
+    "service": {
+      "slug": "product-validation-experiments",
+      "label": "Experimentos de validación de producto",
+      "family": "product"
+    },
+    "principalDeliverable": "Diseño y resultados de experimentos",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.product-definition-package",
+    "name": "Agente de paquete de definición",
+    "department": "product",
+    "category": "Definición de producto",
+    "service": {
+      "slug": "product-definition-package",
+      "label": "Paquete de definición de producto",
+      "family": "product"
+    },
+    "principalDeliverable": "Definición de producto aprobable",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.product-requirements-backlog",
+    "name": "Agente de requisitos y backlog",
+    "department": "product",
+    "category": "Definición de producto",
+    "service": {
+      "slug": "product-requirements-backlog",
+      "label": "Requisitos de producto y backlog",
+      "family": "product"
+    },
+    "principalDeliverable": "Requisitos priorizados y backlog",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.product-vision-scope-workshop",
+    "name": "Agente de visión y alcance",
+    "department": "product",
+    "category": "Definición de producto",
+    "service": {
+      "slug": "product-vision-scope-workshop",
+      "label": "Taller de visión y alcance de producto",
+      "family": "product"
+    },
+    "principalDeliverable": "Visión y alcance firmados por el cliente",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.technical-product-specification",
+    "name": "Agente de especificación técnica",
+    "department": "product",
+    "category": "Definición de producto",
+    "service": {
+      "slug": "technical-product-specification",
+      "label": "Especificación técnica de producto",
+      "family": "product"
+    },
+    "principalDeliverable": "Especificación lista para construcción",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.mvp-scoping-workshop",
+    "name": "Agente de taller de alcance de MVP",
+    "department": "product",
+    "category": "Estrategia de MVP",
+    "service": {
+      "slug": "mvp-scoping-workshop",
+      "label": "Taller de definición de alcance del MVP",
+      "family": "product"
+    },
+    "principalDeliverable": "Alcance del MVP con exclusiones",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.mvp-strategy-roadmap",
+    "name": "Agente de estrategia y hoja de ruta de MVP",
+    "department": "product",
+    "category": "Estrategia de MVP",
+    "service": {
+      "slug": "mvp-strategy-roadmap",
+      "label": "Estrategia y hoja de ruta del MVP",
+      "family": "product"
+    },
+    "principalDeliverable": "Hoja de ruta del MVP por etapas",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.mvp-build-readiness-review",
+    "name": "Agente de revisión de preparación",
+    "department": "product",
+    "category": "Estrategia de MVP",
+    "service": {
+      "slug": "mvp-build-readiness-review",
+      "label": "Revisión de preparación para construir el MVP",
+      "family": "product"
+    },
+    "principalDeliverable": "Informe de preparación con condiciones",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.fractional-head-of-product",
+    "name": "Agente de director de producto fraccional",
+    "department": "product",
+    "category": "Gestión de producto",
+    "service": {
+      "slug": "fractional-head-of-product",
+      "label": "Director de producto fraccional",
+      "family": "product"
+    },
+    "principalDeliverable": "Plan de producto y revisiones periódicas",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.fractional-product-manager",
+    "name": "Agente de product manager fraccional",
+    "department": "product",
+    "category": "Gestión de producto",
+    "service": {
+      "slug": "fractional-product-manager",
+      "label": "Product Manager fraccional",
+      "family": "product"
+    },
+    "principalDeliverable": "Backlog gestionado y revisiones de sprint",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.product-advisory-light",
+    "name": "Agente de asesoría de producto ligera",
+    "department": "product",
+    "category": "Gestión de producto",
+    "service": {
+      "slug": "product-advisory-light",
+      "label": "Asesoría de producto (ligera)",
+      "family": "product"
+    },
+    "principalDeliverable": "Recomendaciones periódicas",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  },
+  {
+    "id": "product.product-operating-model-design",
+    "name": "Agente de modelo operativo de producto",
+    "department": "product",
+    "category": "Gestión de producto",
+    "service": {
+      "slug": "product-operating-model-design",
+      "label": "Diseño del modelo operativo de producto",
+      "family": "product"
+    },
+    "principalDeliverable": "Modelo operativo y roles de producto",
+    "phases": [
+      "evaluar",
+      "arquitectar"
+    ],
+    "status": "definido",
+    "operation": "sin_operacion",
+    "model": "claude",
+    "tools": [],
+    "approval": "owner",
+    "workspace": "proyecto"
+  }
+]
