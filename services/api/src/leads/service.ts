@@ -108,7 +108,7 @@ export async function convertLead(db: Db, leadId: string, ownerId: string, ident
   });
 }
 
-async function findLead(db: Db, leadId: string): Promise<Lead> {
+export async function findLead(db: Db, leadId: string): Promise<Lead> {
   const [lead] = await db.select().from(leads).where(eq(leads.id, leadId));
   if (!lead) throw new LeadError('not_found', 'Lead no encontrado.');
   return lead;

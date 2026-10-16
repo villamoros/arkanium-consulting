@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Equipo</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-role="org:admin" aria-pressed="true">Administrador</button>
+  <button type="button" data-role="org:member" aria-pressed="false">Miembro</button>
+  <button type="button" data-state="last" aria-pressed="false">Último administrador</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<header class="topbar">
+  <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span id="role" class="role">Administrador</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta" style="text-decoration:none;color:inherit">LR</a>
+    <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
+    <ul>
+      <li><a href="app-projects.html">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html">Entregables</a></li>
+      <li><a href="app-meetings.html">Reuniones</a></li>
+      <li><a href="app-invoices.html">Facturas</a></li>
+      <li><a href="app-decisions.html">Decisiones</a></li>
+      <li><a href="app-team.html" aria-current="page">Equipo</a></li>
+      <li><a href="app-organization.html">Organización</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Equipo</h1>
+        <p id="intro">Quién de tu organización ve los proyectos, aprueba entregables y paga facturas. Solo un administrador cambia roles o retira personas.</p>
+      </div>
+    </div>
+
+    <div id="view-main">
+      <div class="approval" role="note" id="owner-note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Las invitaciones las envía Arkanium.</strong> Escríbenos y la enviamos nosotros, con el rol que indiques.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-total">3</b><span>personas en la organización</span></div>
+        <div class="kpi"><b id="k-admins">1</b><span>administradores</span></div>
+        <div class="kpi"><b>2</b><span>miembros</span></div>
+      </div>
+
+      <section class="panel" style="padding:18px" aria-label="Personas">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Persona</th><th scope="col">Rol</th><th scope="col" class="hide-sm">Puede</th><th scope="col"></th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="actions" id="invite-actions">
+          <button type="button" class="secondary" id="btn-request-invite">Pedir una invitación a Arkanium</button>
+        </div>
+      </section>
+
+      <p id="last-admin" class="urgent" hidden style="margin:12px 0 0">No puedes quitar el último administrador. Antes asigna el rol de administrador a otra persona.</p>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Confirmar</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Mismos roles que Clerk: org:admin y org:member.
+  let PEOPLE = [
+    { id: 'user_client', name: 'Lucía Romero (ejemplo)', email: 'lucia@ejemplo.test', role: 'org:admin', you: true },
+    { id: 'user_client_2', name: 'Marco Díaz (ejemplo)', email: 'marco@ejemplo.test', role: 'org:member' },
+    { id: 'user_client_3', name: 'Ana Paredes (ejemplo)', email: 'ana@ejemplo.test', role: 'org:member' },
+  ];
+  let myRole = 'org:admin';
+  let pending = null;
+
+  const LABEL = { 'org:admin': 'Administrador', 'org:member': 'Miembro' };
+  const CAN = {
+    'org:admin': 'Todo: aprueba, paga, gestiona el equipo',
+    'org:member': 'Ve proyectos, descarga, deja correcciones, pide reuniones',
+  };
+
+  const admins = () => PEOPLE.filter(p => p.role === 'org:admin').length;
+
+  function renderRows() {
+    const isAdmin = myRole === 'org:admin';
+    document.getElementById('rows').innerHTML = PEOPLE.map(p => {
+      const lastAdmin = p.role === 'org:admin' && admins() === 1;
+      return `<tr>
+        <td><div class="lead-name">${p.name}${p.you ? ' <span class="sub">(tú)</span>' : ''}</div><div class="sub">${p.email}</div></td>
+        <td><span class="badge ${p.role === 'org:admin' ? 'b-convertido' : 'b-idle'}">${LABEL[p.role]}</span></td>
+        <td class="hide-sm sub">${CAN[p.role]}</td>
+        <td>${isAdmin ? `
+          <div class="actions" style="margin-top:0">
+            <button type="button" class="secondary" data-act="${p.role === 'org:admin' ? 'demote' : 'promote'}" data-id="${p.id}" ${lastAdmin ? 'disabled' : ''}>${p.role === 'org:admin' ? 'Quitar administrador' : 'Hacer administrador'}</button>
+            <button type="button" class="danger" data-act="remove" data-id="${p.id}" ${lastAdmin ? 'disabled' : ''}>Retirar</button>
+          </div>` : '<span class="sub">Solo administradores</span>'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('k-total').textContent = PEOPLE.length;
+    document.getElementById('k-admins').textContent = admins();
+    document.getElementById('k-admins').parentElement.querySelector('span').textContent = 'administradores';
+    document.getElementById('last-admin').hidden = admins() > 1;
+    document.getElementById('invite-actions').hidden = false;
+  }
+
+  function applyRole() {
+    const isAdmin = myRole === 'org:admin';
+    document.getElementById('role').textContent = LABEL[myRole];
+    document.getElementById('intro').textContent = isAdmin
+      ? 'Quién de tu organización ve los proyectos, aprueba entregables y paga facturas. Solo un administrador cambia roles o retira personas.'
+      : 'Quién de tu organización trabaja en los proyectos. Solo un administrador cambia roles o retira personas.';
+    document.querySelectorAll('[data-role]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.role === myRole)));
+    renderRows();
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function ask(title, body, ok, action) {
+    pending = action;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-body').textContent = body;
+    document.getElementById('confirm-ok').textContent = ok;
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+    const p = PEOPLE.find(x => x.id === b.dataset.id);
+    if (b.dataset.act === 'promote') ask('Hacer administrador', `${p.name} podrá aprobar entregables, pagar facturas y gestionar el equipo.`, 'Hacer administrador', { type: 'role', p, role: 'org:admin' });
+    if (b.dataset.act === 'demote') ask('Quitar administrador', `${p.name} pasa a miembro: ya no puede aprobar, pagar ni gestionar el equipo.`, 'Quitar administrador', { type: 'role', p, role: 'org:member' });
+    if (b.dataset.act === 'remove') ask('Retirar de la organización', `${p.name} pierde acceso a los proyectos. Sus decisiones quedan registradas con su nombre.`, 'Retirar', { type: 'remove', p });
+  });
+
+  document.getElementById('btn-request-invite').addEventListener('click', () => toast('Pedido enviado a Arkanium. Te confirmaremos por correo.'));
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      if (pending.type === 'role') { pending.p.role = pending.role; toast('Rol cambiado. Queda en el registro de la organización.'); }
+      if (pending.type === 'remove') { PEOPLE = PEOPLE.filter(x => x !== pending.p); toast('Persona retirada. Sus decisiones se conservan.'); }
+      document.getElementById('confirm-dialog').classList.remove('open');
+      pending = null; renderRows();
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  document.querySelectorAll('[data-role]').forEach(b => b.addEventListener('click', () => {
+    myRole = b.dataset.role;
+    document.getElementById('view-state').hidden = true;
+    document.getElementById('view-main').hidden = false;
+    applyRole();
+  }));
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    const main = document.getElementById('view-main'); const v = document.getElementById('view-state');
+    main.hidden = state !== 'last'; v.hidden = state === 'last';
+    if (state === 'last') {
+      PEOPLE = PEOPLE.map(p => (p.id === 'user_client' ? p : { ...p, role: 'org:member' }));
+      myRole = 'org:admin'; applyRole();
+      toast('Vista previa: solo queda un administrador.');
+    }
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar el equipo</h2><p>Revisa tu conexión e intenta de nuevo. Ningún rol cambió.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  applyRole();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggles.length || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
+    }
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

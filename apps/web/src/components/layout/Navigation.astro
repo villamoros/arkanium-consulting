@@ -31,8 +31,6 @@ const items = [
 const loginHref = getLocalizedPath(locale, siteConfig.loginPath);
 ---
 
-<a class="nav-login nav-login-mobile" href={loginHref} data-login-link>{content.login}</a>
-
 <button
   class="nav-toggle"
   type="button"
@@ -63,7 +61,7 @@ const loginHref = getLocalizedPath(locale, siteConfig.loginPath);
     )
   }
   <LanguageSwitcher locale={locale} label={ui.changeLanguage} localePaths={localePaths} />
-  <a class="nav-login" href={loginHref} data-login-link>{content.login}</a>
+  <a class="nav-login" href={loginHref} data-login-link data-access-path={loginHref}>{content.login}</a>
 </div>
 
 <script>

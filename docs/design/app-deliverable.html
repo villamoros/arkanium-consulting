@@ -32,12 +32,15 @@
 
 <div class="client-shell">
   <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <ul>
       <li><a href="app-projects.html">Mis proyectos</a></li>
       <li><a href="app-deliverable.html" aria-current="page">Entregables</a></li>
       <li><a href="app-meetings.html">Reuniones</a></li>
       <li><a href="app-invoices.html">Facturas</a></li>
       <li><a href="app-decisions.html">Decisiones</a></li>
+      <li><a href="app-team.html">Equipo</a></li>
+      <li><a href="app-organization.html">Organización</a></li>
     </ul>
   </nav>
 
@@ -211,22 +214,27 @@
 </script>
 <div class="nav-scrim" data-scrim></div>
 <script>
-  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
   (function () {
-    const toggle = document.querySelector("[data-nav-toggle]");
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
     const nav = document.querySelector("nav.side, nav.client-nav");
     const scrim = document.querySelector("[data-scrim]");
-    if (!toggle || !nav) return;
+    if (!toggles.length || !nav) return;
     function setOpen(open, returnFocus) {
       document.body.classList.toggle("nav-open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-      if (!open && returnFocus) toggle.focus();
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
     }
-    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
     scrim.addEventListener("click", () => setOpen(false, true));
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
-    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
   })();
 </script>
 </body>

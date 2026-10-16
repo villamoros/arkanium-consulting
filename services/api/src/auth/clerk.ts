@@ -12,6 +12,10 @@ export interface IdentityGateway {
   inviteMember(input: { orgId: string; email: string; role: "org:admin" | "org:member" }): Promise<{ invitationId: string }>;
   /** Retira a una persona de la organización. */
   removeMember(input: { orgId: string; userId: string }): Promise<void>;
+  /** Miembros de una organización con su rol (lo ve el administrador de esa organización). */
+  listMembers(orgId: string): Promise<Array<{ userId: string; role: string; email: string | null }>>;
+  /** Cambia el rol de una persona dentro de su organización. */
+  updateMemberRole(input: { orgId: string; userId: string; role: "org:admin" | "org:member" }): Promise<void>;
 }
 
 export function createClerkGateway(options: { secretKey: string; authorizedParties: string[] }): IdentityGateway {
@@ -51,6 +55,19 @@ export function createClerkGateway(options: { secretKey: string; authorizedParti
 
     async removeMember({ orgId, userId }) {
       await clerk.organizations.deleteOrganizationMembership({ organizationId: orgId, userId });
+    },
+
+    async listMembers(orgId) {
+      const response = await clerk.organizations.getOrganizationMembershipList({ organizationId: orgId, limit: 100 });
+      return response.data.map((membership) => ({
+        userId: membership.publicUserData?.userId ?? '',
+        role: membership.role,
+        email: null,
+      }));
+    },
+
+    async updateMemberRole({ orgId, userId, role }) {
+      await clerk.organizations.updateOrganizationMembership({ organizationId: orgId, userId, role });
     },
   };
 }

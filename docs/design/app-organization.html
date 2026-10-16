@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Organización</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-role="org:admin" aria-pressed="true">Administrador</button>
+  <button type="button" data-role="org:member" aria-pressed="false">Miembro</button>
+  <button type="button" data-state="suspended" aria-pressed="false">Acceso suspendido</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<header class="topbar">
+  <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span id="role" class="role">Administrador</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta" style="text-decoration:none;color:inherit">LR</a>
+    <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
+    <ul>
+      <li><a href="app-projects.html">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html">Entregables</a></li>
+      <li><a href="app-meetings.html">Reuniones</a></li>
+      <li><a href="app-invoices.html">Facturas</a></li>
+      <li><a href="app-decisions.html">Decisiones</a></li>
+      <li><a href="app-team.html">Equipo</a></li>
+      <li><a href="app-organization.html" aria-current="page">Organización</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Organización</h1>
+        <p>Los datos con los que facturamos a tu empresa y el estado de su acceso. Los cambios de facturación los hace un administrador.</p>
+      </div>
+    </div>
+
+    <div id="banner"></div>
+
+    <div id="view-main" class="layout">
+      <section class="panel" style="padding:18px" aria-label="Datos de facturación">
+        <h2 style="font-size:1rem">Datos de facturación</h2>
+        <div class="filters" style="margin:12px 0 0;display:grid;gap:10px">
+          <label class="sub" style="display:grid;gap:4px">Razón social
+            <input id="f-name" type="text" value="Distribuidora Norte (ejemplo)" />
+          </label>
+          <label class="sub" style="display:grid;gap:4px">Correo para las facturas
+            <input id="f-email" type="email" value="pagos@ejemplo.test" />
+          </label>
+          <label class="sub" style="display:grid;gap:4px">Dirección fiscal
+            <input id="f-address" type="text" value="Dirección de ejemplo, ciudad, país" />
+          </label>
+        </div>
+        <div class="actions"><button type="button" class="primary" id="btn-save">Guardar datos</button></div>
+        <p class="sub" style="margin:10px 0 0">Los cambios se aplican a las facturas nuevas. Las ya emitidas conservan los datos con que se emitieron.</p>
+      </section>
+
+      <aside class="panel" style="padding:18px;align-self:start" aria-label="Acceso y pagos">
+        <h2 style="font-size:1rem">Acceso y pagos</h2>
+        <ul class="checks" style="margin-top:10px">
+          <li><span class="ok" aria-hidden="true">✓</span><span>Acceso de la organización: <b id="status-text">activo</b></span></li>
+          <li><span class="ok" aria-hidden="true">✓</span><span>Pagos: en la página segura de Stripe. Arkanium no recibe datos de tu tarjeta.</span></li>
+        </ul>
+        <div class="section decision" id="admin-zone">
+          <h3>Administrador</h3>
+          <div class="actions">
+            <a class="btn-link" href="app-invoices.html">Ver facturas y pagar</a>
+            <button type="button" class="danger" id="btn-close">Pedir la baja de la organización</button>
+          </div>
+          <p class="sub" style="margin:0">La baja la confirma Arkanium. Facturas, entregables y decisiones se conservan por obligación contable; no se borran.</p>
+        </div>
+        <div class="section" id="member-zone">
+          <h3>Miembro</h3>
+          <p class="notice" style="margin:0">Los datos de facturación y los pagos los gestiona un administrador de la organización.</p>
+        </div>
+      </aside>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Pedir la baja</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="danger" id="confirm-ok">Enviar solicitud</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  let myRole = 'org:admin';
+  let suspended = false;
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function applyRole() {
+    const isAdmin = myRole === 'org:admin';
+    document.getElementById('role').textContent = isAdmin ? 'Administrador' : 'Miembro';
+    document.getElementById('admin-zone').hidden = !isAdmin;
+    document.getElementById('member-zone').hidden = isAdmin;
+    ['f-name', 'f-email', 'f-address'].forEach(id => { document.getElementById(id).disabled = !isAdmin; });
+    document.getElementById('btn-save').hidden = !isAdmin;
+    document.querySelectorAll('[data-role]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.role === myRole)));
+  }
+
+  function applyStatus() {
+    const banner = document.getElementById('banner');
+    document.getElementById('status-text').textContent = suspended ? 'suspendido' : 'activo';
+    banner.innerHTML = suspended
+      ? '<div class="approval" role="alert" style="border-color:rgba(224,122,114,.5);background:rgba(224,122,114,.07)"><span aria-hidden="true">◈</span><div><strong>El acceso de tu organización está suspendido.</strong> Escribe a Arkanium y te responderemos. Tus proyectos, entregables y facturas siguen guardados.</div></div>'
+      : '';
+    document.getElementById('view-main').hidden = false;
+  }
+
+  document.getElementById('btn-save').addEventListener('click', () => {
+    const email = document.getElementById('f-email').value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) { toast('Revisa el correo para las facturas.'); return; }
+    toast('Datos guardados. Quedan en el registro de la organización.');
+  });
+
+  document.getElementById('btn-close').addEventListener('click', () => {
+    document.getElementById('confirm-body').textContent = 'Se envía la solicitud a Arkanium. Nada se elimina: facturas, entregables y decisiones se conservan.';
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  });
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok') { document.getElementById('confirm-dialog').classList.remove('open'); toast('Solicitud enviada a Arkanium.'); }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  document.querySelectorAll('[data-role]').forEach(b => b.addEventListener('click', () => {
+    myRole = b.dataset.role;
+    document.getElementById('view-state').hidden = true;
+    applyRole(); applyStatus();
+  }));
+
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => {
+    const s = b.dataset.state;
+    document.querySelectorAll('[data-state]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    const main = document.getElementById('view-main'); const v = document.getElementById('view-state');
+    if (s === 'suspended') { suspended = true; main.hidden = false; v.hidden = true; applyStatus(); toast('Vista previa: acceso suspendido.'); }
+    if (s === 'error') { main.hidden = true; v.hidden = false; v.innerHTML = '<h2>No pudimos cargar la organización</h2><p>Revisa tu conexión e intenta de nuevo. No se ha guardado ningún cambio.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>'; }
+  }));
+
+  applyRole(); applyStatus();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggles.length || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
+    }
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

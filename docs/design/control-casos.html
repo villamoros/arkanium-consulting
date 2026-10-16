@@ -15,7 +15,6 @@
 <div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
   <span class="muted">Vista previa de estados:</span>
   <button type="button" data-state="normal" aria-pressed="true">Normal</button>
-  <button type="button" data-state="anon" aria-pressed="false">Vista anonimizada</button>
   <button type="button" data-state="empty" aria-pressed="false">Sin casos</button>
   <button type="button" data-state="error" aria-pressed="false">Error</button>
 </div>
@@ -23,6 +22,7 @@
 <div class="shell">
   <nav class="side" id="site-nav" aria-label="Principal">
     <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <div class="side-group">Operación</div>
     <ul>
       <li><a href="control-excepciones.html">Excepciones</a></li>
@@ -62,8 +62,9 @@
     <div class="page-head">
       <div>
         <h1>Manual de caso y biblioteca</h1>
-        <p>Lo que Arkanium aprendió en cada proyecto. Los agentes lo consultan antes de actuar, en modo lectura, como referencia y nunca como ejemplo a copiar.</p>
+        <p>Lo que Arkanium aprendió en cada proyecto. Se actualiza con el tiempo: se agregan casos, se corrigen lecciones y se retiran las que dejaron de servir. Los agentes lo consultan en modo lectura, como referencia y nunca como ejemplo a copiar.</p>
       </div>
+      <button type="button" class="primary" id="btn-new-case">Nuevo caso</button>
     </div>
 
     <div class="approval" role="note">
@@ -79,9 +80,9 @@
     <div id="view-normal">
       <div class="kpis">
         <div class="kpi"><b id="k-cases">3</b><span>casos en la biblioteca</span></div>
-        <div class="kpi"><b>7</b><span>lecciones vigentes</span></div>
+        <div class="kpi"><b id="k-lessons">3</b><span>lecciones vigentes</span></div>
         <div class="kpi"><b>12</b><span>consultas de agentes esta semana (ejemplo)</span></div>
-        <div class="kpi"><b>0</b><span>casos citados como ejemplo</span></div>
+        <div class="kpi"><b id="k-changes">0</b><span>cambios hechos en esta sesión</span></div>
       </div>
 
       <div class="layout">
@@ -113,23 +114,66 @@
   <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
 </footer>
 
+<div class="dialog-back" id="form-dialog" role="dialog" aria-modal="true" aria-labelledby="form-title">
+  <form class="dialog" id="form" novalidate>
+    <h2 id="form-title">Editar</h2>
+    <p class="sub" id="form-help" style="margin:0 0 10px"></p>
+    <div id="form-fields" style="display:grid;gap:10px"></div>
+    <p id="form-error" class="urgent" role="alert" hidden style="margin:10px 0 0"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="submit" class="primary">Guardar</button>
+    </div>
+  </form>
+</div>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Retirar lección</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="danger" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status"></div>
 
 <script>
   // Datos de ejemplo ficticios. "FC-0012" es el caso que citó el agente en la bitácora (L-0531).
+  // Nada se borra: retirar una lección la marca como retirada y queda en el historial.
   const CASES = [
-    { id: 'FC-0012', client: 'Cliente de manufactura (ejemplo)', service: 'Evaluación de arquitectura', phase: 'Evaluar', closed: '2026-06', cited: 3,
+    { id: 'FC-0012', client: 'Cliente de manufactura (ejemplo)', service: 'Evaluación de arquitectura', phase: 'Evaluar', closed: '2026-06', cited: 3, summary: 'Cliente de manufactura con dos módulos que comparten tablas.', anon: 'Cliente industrial mediano · evaluación de arquitectura · dos módulos con tablas compartidas',
       lessons: [
-        { text: 'Cuando dos módulos comparten tablas, pedir el mapa de dependencias antes de estimar.', cited_by: ['Agente de evaluación de arquitectura'], status: 'vigente' },
-        { text: 'Las reglas de impuestos que solo existen en el código son un riesgo alto por defecto.', cited_by: ['Agente de riesgo técnico'], status: 'vigente' },
-      ], anon: 'Cliente industrial mediano · evaluación de arquitectura · dos módulos con tablas compartidas' },
-    { id: 'FC-0009', client: 'Cliente de logística (ejemplo)', service: 'Hoja de ruta de TI', phase: 'Arquitectar', closed: '2026-04', cited: 2,
-      lessons: [{ text: 'Una hoja de ruta sin responsables por etapa se atrasa aunque el alcance esté bien.', cited_by: ['Agente de hoja de ruta de TI'], status: 'vigente' }], anon: 'Operador logístico · hoja de ruta de TI · etapas sin responsables' },
-    { id: 'FC-0004', client: 'Cliente de servicios (ejemplo)', service: 'Chequeo técnico', phase: 'Evaluar', closed: '2026-01', cited: 0,
-      lessons: [{ text: 'Documentar cuando el cliente pide algo fuera de alcance antes de empezar.', cited_by: [], status: 'retirada' }], anon: 'Empresa de servicios · chequeo técnico · alcance no documentado' },
+        { id: 'L1', text: 'Cuando dos módulos comparten tablas, pedir el mapa de dependencias antes de estimar.', cited_by: ['Agente de evaluación de arquitectura'], status: 'vigente', history: ['Creada el 2026-06-20'] },
+        { id: 'L2', text: 'Las reglas de impuestos que solo existen en el código son un riesgo alto por defecto.', cited_by: ['Agente de riesgo técnico'], status: 'vigente', history: ['Creada el 2026-06-20'] },
+      ], history: ['Caso creado el 2026-06-18', 'Cierre registrado el 2026-06-30'] },
+    { id: 'FC-0009', client: 'Cliente de logística (ejemplo)', service: 'Hoja de ruta de TI', phase: 'Arquitectar', closed: '2026-04', cited: 2, summary: 'Hoja de ruta de TI para un operador logístico.', anon: 'Operador logístico · hoja de ruta de TI · etapas sin responsables',
+      lessons: [{ id: 'L3', text: 'Una hoja de ruta sin responsables por etapa se atrasa aunque el alcance esté bien.', cited_by: ['Agente de hoja de ruta de TI'], status: 'vigente', history: ['Creada el 2026-04-12'] }],
+      history: ['Caso creado el 2026-04-02'] },
+    { id: 'FC-0004', client: 'Cliente de servicios (ejemplo)', service: 'Chequeo técnico', phase: 'Evaluar', closed: '2026-01', cited: 0, summary: 'Chequeo técnico de una empresa de servicios.', anon: 'Empresa de servicios · chequeo técnico · alcance no documentado',
+      lessons: [{ id: 'L4', text: 'Documentar cuando el cliente pide algo fuera de alcance antes de empezar.', cited_by: [], status: 'retirada', history: ['Creada el 2026-01-15', 'Retirada el 2026-03-02: se reemplaza por una lección sobre cambios de alcance'] }],
+      history: ['Caso creado el 2026-01-10'] },
   ];
+  const SERVICES = ['Evaluación de arquitectura', 'Hoja de ruta de TI', 'Chequeo técnico', 'Diagnóstico de arquitectura', 'CTO fraccional', 'Sprint de descubrimiento'];
+  const PHASES = ['Evaluar', 'Arquitectar', 'Modernizar', 'Escalar'];
+
   let selected = 'FC-0012';
   let view = 'full';
+  let changes = 0;
+  let pending = null;   // acción de confirmación
+  let formMode = null;  // { kind: 'case-new' | 'case-edit' | 'lesson-new' | 'lesson-edit', caseId, lessonId }
+
+  const caseOf = id => CASES.find(c => c.id === id);
+  const nextId = (prefix, list) => prefix + String(list.length + 1).padStart(4, '0');
+  const activeLessons = c => c.lessons.filter(l => l.status === 'vigente').length;
+
+  function renderKpis() {
+    document.getElementById('k-cases').textContent = CASES.length;
+    document.getElementById('k-lessons').textContent = CASES.reduce((n, c) => n + activeLessons(c), 0);
+    document.getElementById('k-changes').textContent = changes;
+  }
 
   function renderRows() {
     document.getElementById('rows').innerHTML = CASES.map(c => `
@@ -139,27 +183,42 @@
         <td class="hide-sm sub">${c.phase}</td>
         <td class="sub">${c.closed}</td>
       </tr>`).join('');
-    document.getElementById('k-cases').textContent = CASES.length;
+    renderKpis();
   }
 
   function renderDetail() {
-    const c = CASES.find(x => x.id === selected);
+    const c = caseOf(selected);
     if (!c) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un caso para ver sus lecciones.</p>'; return; }
-    const summary = view === 'full' ? c.client : c.anon;
+    const summary = view === 'full' ? c.summary : c.anon;
     document.getElementById('detail').innerHTML = `
       <div class="head"><div><h2>${c.id}</h2><div class="sub">${c.service} · ${c.phase}</div></div><span class="badge ${c.cited ? 'b-convertido' : 'b-idle'}">${c.cited} citas</span></div>
 
-      <div class="section"><h3>${view === 'full' ? 'Caso' : 'Resumen anonimizado'}</h3><p style="margin:0">${summary}</p></div>
+      <div class="section"><h3>${view === 'full' ? 'Resumen del caso' : 'Resumen anonimizado'}</h3>
+        <p style="margin:0">${summary}</p>
+        <div class="actions"><button type="button" class="secondary" data-act="edit-case">Editar caso</button></div>
+      </div>
 
       <div class="section"><h3>Lecciones del manual</h3>
-        ${c.lessons.map(l => `<div class="step ${l.status === 'vigente' ? 'ok' : 'pending'}"><i aria-hidden="true">${l.status === 'vigente' ? '✓' : '—'}</i><span>${l.text}<br><span class="sub">${l.status === 'vigente' ? 'Vigente' : 'Retirada'}${l.cited_by.length ? ' · citada por ' + l.cited_by.join(', ') : ''}</span></span></div>`).join('')}
+        ${c.lessons.map(l => `
+          <div class="step ${l.status === 'vigente' ? 'ok' : 'pending'}">
+            <i aria-hidden="true">${l.status === 'vigente' ? '✓' : '—'}</i>
+            <span style="flex:1">${l.text}<br><span class="sub">${l.status === 'vigente' ? 'Vigente' : 'Retirada'}${l.cited_by.length ? ' · citada por ' + l.cited_by.join(', ') : ''}</span></span>
+            <span style="display:flex;gap:6px;flex-wrap:wrap">
+              <button type="button" class="secondary" data-act="edit-lesson" data-lesson="${l.id}" ${l.status === 'vigente' ? '' : 'disabled'}>Editar</button>
+              ${l.status === 'vigente'
+                ? `<button type="button" class="danger" data-act="retire-lesson" data-lesson="${l.id}">Retirar</button>`
+                : `<button type="button" class="secondary" data-act="restore-lesson" data-lesson="${l.id}">Restaurar</button>`}
+            </span>
+          </div>`).join('')}
+        <div class="actions"><button type="button" class="primary" data-act="new-lesson">Agregar lección</button></div>
+      </div>
+
+      <div class="section"><h3>Historial</h3>
+        <ul class="timeline">${[...c.history, ...c.lessons.flatMap(l => l.history.map(h => `${l.id}: ${h}`))].map(h => `<li>${h}</li>`).join('')}</ul>
       </div>
 
       <div class="section decision"><h3>Control</h3>
-        <div class="actions">
-          <button type="button" class="secondary" data-act="retire">Retirar una lección</button>
-        </div>
-        <p class="sub" style="margin:0">Los agentes solo leen. Ninguno puede editar, copiar ni citar un caso como ejemplo. Cada consulta queda en la bitácora.</p>
+        <p class="sub" style="margin:0">Los agentes solo leen. Ninguno puede editar, copiar ni citar un caso como ejemplo. Cada cambio queda en la bitácora con tu nombre y la fecha.</p>
       </div>`;
   }
 
@@ -168,6 +227,113 @@
     setTimeout(() => t.classList.remove('show'), 2800);
   }
 
+  // ───────── Formularios ─────────
+
+  function field(id, label, value = '', { textarea = false, select = null, required = true, maxlength = 300 } = {}) {
+    if (select) {
+      return `<label class="sub" style="display:grid;gap:4px">${label}
+        <select id="${id}">${select.map(o => `<option ${o === value ? 'selected' : ''}>${o}</option>`).join('')}</select></label>`;
+    }
+    const tag = textarea
+      ? `<textarea id="${id}" maxlength="${maxlength}" ${required ? 'required' : ''} style="min-height:90px">${value}</textarea>`
+      : `<input id="${id}" type="text" maxlength="${maxlength}" value="${value.replace(/"/g, '&quot;')}" ${required ? 'required' : ''} />`;
+    return `<label class="sub" style="display:grid;gap:4px">${label}${tag}</label>`;
+  }
+
+  function openForm(mode) {
+    formMode = mode;
+    const c = caseOf(mode.caseId);
+    const lesson = mode.lessonId ? c?.lessons.find(l => l.id === mode.lessonId) : null;
+    const f = document.getElementById('form-fields');
+    const title = document.getElementById('form-title');
+    const help = document.getElementById('form-help');
+    document.getElementById('form-error').hidden = true;
+
+    if (mode.kind === 'case-new') {
+      title.textContent = 'Nuevo caso';
+      help.textContent = 'Se crea con su identificador. El nombre del cliente se guarda solo en la vista completa; la anonimizada se escribe aparte (D-11).';
+      f.innerHTML = field('f-client', 'Cliente (solo vista completa)', '') + field('f-service', 'Servicio', '', { select: SERVICES })
+        + field('f-phase', 'Fase', 'Evaluar', { select: PHASES }) + field('f-closed', 'Cierre (AAAA-MM)', '2026-10')
+        + field('f-summary', 'Resumen (vista completa)', '', { textarea: true, maxlength: 800 })
+        + field('f-anon', 'Resumen anonimizado', '', { textarea: true, maxlength: 800 });
+    }
+    if (mode.kind === 'case-edit') {
+      title.textContent = `Editar ${c.id}`;
+      help.textContent = 'Cada cambio queda en el historial del caso. El identificador no cambia.';
+      f.innerHTML = field('f-service', 'Servicio', c.service, { select: SERVICES })
+        + field('f-phase', 'Fase', c.phase, { select: PHASES })
+        + field('f-summary', 'Resumen (vista completa)', c.summary, { textarea: true, maxlength: 800 })
+        + field('f-anon', 'Resumen anonimizado', c.anon, { textarea: true, maxlength: 800 });
+    }
+    if (mode.kind === 'lesson-new') {
+      title.textContent = `Nueva lección en ${c.id}`;
+      help.textContent = 'Una lección es una regla corta que los agentes pueden consultar antes de actuar.';
+      f.innerHTML = field('f-text', 'Lección', '', { textarea: true, maxlength: 400 });
+    }
+    if (mode.kind === 'lesson-edit') {
+      title.textContent = `Editar lección de ${c.id}`;
+      help.textContent = 'El texto anterior queda en el historial de la lección.';
+      f.innerHTML = field('f-text', 'Lección', lesson.text, { textarea: true, maxlength: 400 });
+    }
+    document.getElementById('form-dialog').classList.add('open');
+    f.querySelector('input, textarea, select').focus();
+  }
+
+  function closeForm() {
+    document.getElementById('form-dialog').classList.remove('open');
+    formMode = null;
+  }
+
+  function saveForm() {
+    const mode = formMode;
+    const err = document.getElementById('form-error');
+    const val = id => (document.getElementById(id)?.value ?? '').trim();
+    const c = caseOf(mode.caseId);
+    const stamp = new Date().toISOString().slice(0, 10);
+
+    if (mode.kind === 'case-new') {
+      const client = val('f-client'), summary = val('f-summary'), anon = val('f-anon');
+      if (!client || !summary || !anon) { err.textContent = 'Completa el cliente, el resumen y la versión anonimizada.'; err.hidden = false; return; }
+      const id = nextId('FC-', CASES);
+      CASES.push({ id, client, service: val('f-service'), phase: val('f-phase'), closed: val('f-closed'), cited: 0, summary, anon, lessons: [], history: [`Caso creado el ${stamp}`] });
+      selected = id;
+    }
+    if (mode.kind === 'case-edit') {
+      const changed = [];
+      const pairs = [['service', 'f-service'], ['phase', 'f-phase'], ['summary', 'f-summary'], ['anon', 'f-anon']];
+      for (const [key, id] of pairs) { const v = val(id); if (v && v !== c[key]) { c[key] = v; changed.push(key); } }
+      if (changed.length === 0) { err.textContent = 'No hay cambios que guardar.'; err.hidden = false; return; }
+      c.history.push(`Editado el ${stamp}: ${changed.join(', ')}`);
+    }
+    if (mode.kind === 'lesson-new') {
+      const text = val('f-text');
+      if (!text) { err.textContent = 'Escribe la lección.'; err.hidden = false; return; }
+      const id = 'L' + (CASES.reduce((n, x) => n + x.lessons.length, 0) + 1);
+      c.lessons.push({ id, text, cited_by: [], status: 'vigente', history: [`Creada el ${stamp}`] });
+    }
+    if (mode.kind === 'lesson-edit') {
+      const lesson = c.lessons.find(l => l.id === mode.lessonId);
+      const text = val('f-text');
+      if (!text) { err.textContent = 'Escribe la lección.'; err.hidden = false; return; }
+      if (text === lesson.text) { err.textContent = 'El texto no cambió.'; err.hidden = false; return; }
+      lesson.history.push(`Editada el ${stamp}. Antes: «${lesson.text}»`);
+      lesson.text = text;
+    }
+
+    changes += 1;
+    closeForm();
+    renderRows(); renderDetail();
+    toast('Cambio guardado. Queda en el historial y en la bitácora.');
+  }
+
+  // ───────── Eventos ─────────
+
+  document.getElementById('form').addEventListener('submit', e => { e.preventDefault(); if (formMode) saveForm(); });
+  document.getElementById('form-dialog').addEventListener('click', e => { if (e.target.matches('[data-close]') || e.target.id === 'form-dialog') closeForm(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeForm(); document.getElementById('confirm-dialog').classList.remove('open'); } });
+
+  document.getElementById('btn-new-case').addEventListener('click', () => openForm({ kind: 'case-new', caseId: null }));
+
   document.getElementById('rows').addEventListener('click', e => {
     const row = e.target.closest('tr[data-id]'); if (!row) return;
     selected = row.dataset.id; renderRows(); renderDetail();
@@ -175,25 +341,51 @@
   document.getElementById('rows').addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
   });
+
   document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => {
     view = b.dataset.view;
     document.querySelectorAll('[data-view]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     renderRows(); renderDetail();
   }));
+
   document.getElementById('detail').addEventListener('click', e => {
     const b = e.target.closest('[data-act]'); if (!b) return;
-    const c = CASES.find(x => x.id === selected);
-    const l = c.lessons.find(x => x.status === 'vigente');
-    if (l) { l.status = 'retirada'; renderDetail(); toast('Lección retirada. Queda en la bitácora.'); } else toast('No hay lecciones vigentes en este caso.');
+    const c = caseOf(selected);
+    const act = b.dataset.act;
+    if (act === 'edit-case') openForm({ kind: 'case-edit', caseId: c.id });
+    if (act === 'new-lesson') openForm({ kind: 'lesson-new', caseId: c.id });
+    if (act === 'edit-lesson') openForm({ kind: 'lesson-edit', caseId: c.id, lessonId: b.dataset.lesson });
+    if (act === 'retire-lesson') {
+      pending = { type: 'retire', caseId: c.id, lessonId: b.dataset.lesson };
+      document.getElementById('confirm-title').textContent = 'Retirar lección';
+      document.getElementById('confirm-body').textContent = 'Los agentes dejan de consultarla. Queda en el historial y se puede restaurar.';
+      document.getElementById('confirm-dialog').classList.add('open');
+    }
+    if (act === 'restore-lesson') {
+      const lesson = c.lessons.find(l => l.id === b.dataset.lesson);
+      lesson.status = 'vigente'; lesson.history.push(`Restaurada el ${new Date().toISOString().slice(0, 10)}`);
+      changes += 1; renderRows(); renderDetail(); toast('Lección restaurada. Queda en la bitácora.');
+    }
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      const c = caseOf(pending.caseId);
+      const lesson = c.lessons.find(l => l.id === pending.lessonId);
+      lesson.status = 'retirada';
+      lesson.history.push(`Retirada el ${new Date().toISOString().slice(0, 10)}`);
+      document.getElementById('confirm-dialog').classList.remove('open');
+      pending = null; changes += 1; renderRows(); renderDetail(); toast('Lección retirada. Queda en el historial.');
+    }
   });
 
   function setState(state) {
     document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
     if (state === 'normal') { location.reload(); return; }
-    if (state === 'anon') { view = 'anon'; document.querySelectorAll('[data-view]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.view === 'anon'))); document.getElementById('view-normal').hidden = false; document.getElementById('view-state').hidden = true; renderRows(); renderDetail(); toast('Vista previa anonimizada. Ninguna opción está decidida.'); return; }
     const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
     normal.hidden = true; v.hidden = false;
-    if (state === 'empty') v.innerHTML = '<h2>La biblioteca está vacía</h2><p>Se llena al cerrar el primer proyecto (G4). Hasta entonces, los agentes no tienen casos previos que consultar.</p>';
+    if (state === 'empty') v.innerHTML = '<h2>La biblioteca está vacía</h2><p>Se llena al cerrar el primer proyecto (G4). Hasta entonces, los agentes no tienen casos previos que consultar.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Volver</button></div>';
     if (state === 'error') v.innerHTML = '<h2>No pudimos cargar la biblioteca</h2><p>Revisa tu conexión e intenta de nuevo. Ningún caso se ha modificado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
   }
   document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
@@ -202,22 +394,27 @@
 </script>
 <div class="nav-scrim" data-scrim></div>
 <script>
-  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
   (function () {
-    const toggle = document.querySelector("[data-nav-toggle]");
-    const nav = document.querySelector("nav.side");
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
     const scrim = document.querySelector("[data-scrim]");
-    if (!toggle || !nav) return;
+    if (!toggles.length || !nav) return;
     function setOpen(open, returnFocus) {
       document.body.classList.toggle("nav-open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-      if (!open && returnFocus) toggle.focus();
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
     }
-    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
     scrim.addEventListener("click", () => setOpen(false, true));
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
-    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
   })();
 </script>
 </body>

@@ -5,9 +5,14 @@
  *
  * SQL estándar: el mismo esquema funciona en PostgreSQL local y en Supabase.
  */
-import { boolean, index, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { boolean, customType, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+
+/** Binario en PostgreSQL. Pensado para entregables pequeños en esta fase; ver deliverables. */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
 
 export const organizationKind = pgEnum('organization_kind', ['internal', 'client']);
+
+export const organizationStatus = pgEnum('organization_status', ['active', 'suspended']);
 
 export const leadStatus = pgEnum('lead_status', ['nuevo', 'calificado', 'pospuesto', 'descartado', 'convertido']);
 
@@ -24,6 +29,11 @@ export const organizations = pgTable(
     clerkOrgId: text('clerk_org_id'),
     name: text('name').notNull(),
     kind: organizationKind('kind').notNull().default('client'),
+    /** Suspendida: el owner corta el acceso del cliente sin borrar nada. */
+    status: organizationStatus('status').notNull().default('active'),
+    /** Cliente de Stripe, creado la primera vez que se emite una factura. */
+    stripeCustomerId: text('stripe_customer_id'),
+    billingEmail: text('billing_email'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex('organizations_clerk_org_id_uq').on(t.clerkOrgId)],
@@ -123,4 +133,166 @@ export const auditLog = pgTable(
     detail: jsonb('detail').notNull().default({}),
   },
   (t) => [index('audit_log_subject_idx').on(t.subjectType, t.subjectId)],
+);
+
+/* ───────────── Contratos siguientes (ARK-ARCH-002): proyectos, entregables, reuniones, facturas, decisiones ───────────── */
+
+export const projectPhase = pgEnum('project_phase', ['evaluar', 'arquitectar', 'modernizar', 'escalar']);
+
+export const milestoneStatus = pgEnum('milestone_status', ['pendiente', 'en_curso', 'completado']);
+
+export const deliverableStatus = pgEnum('deliverable_status', ['en_revision', 'publicado', 'con_correcciones', 'aprobado']);
+
+export const correctionStatus = pgEnum('correction_status', ['abierta', 'resuelta']);
+
+export const meetingStatus = pgEnum('meeting_status', ['solicitada', 'confirmada', 'realizada']);
+
+export const invoiceStatus = pgEnum('invoice_status', ['borrador', 'enviada', 'pagada', 'anulada']);
+
+/** Proyecto de una organización (F-05). El cliente solo ve sus hitos y avances, nunca tareas internas. */
+export const projects = pgTable(
+  'projects',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    name: text('name').notNull(),
+    serviceFamily: serviceFamily('service_family').notNull().default('unknown'),
+    phase: projectPhase('phase').notNull().default('evaluar'),
+    progress: text('progress').notNull().default(''),
+    nextStep: text('next_step').notNull().default(''),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('projects_organization_idx').on(t.organizationId)],
+);
+
+/** Hito con fecha prevista (D-21). Cambiar la fecha deja marca para avisar al cliente. */
+export const milestones = pgTable(
+  'milestones',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id),
+    name: text('name').notNull(),
+    status: milestoneStatus('status').notNull().default('pendiente'),
+    plannedDate: timestamp('planned_date', { withTimezone: true }),
+    dateChangedAt: timestamp('date_changed_at', { withTimezone: true }),
+    position: integer('position').notNull().default(0),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('milestones_project_idx').on(t.projectId)],
+);
+
+/**
+ * Entregable (F-08). El contenido se guarda en la base en esta fase; en producción pasa a almacenamiento
+ * de archivos sin cambiar la API. Solo se descarga cuando está publicado.
+ */
+export const deliverables = pgTable(
+  'deliverables',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id),
+    title: text('title').notNull(),
+    version: integer('version').notNull().default(1),
+    status: deliverableStatus('status').notNull().default('en_revision'),
+    fileName: text('file_name'),
+    mimeType: text('mime_type'),
+    content: bytea('content'),
+    contentSha256: text('content_sha256'),
+    publishedAt: timestamp('published_at', { withTimezone: true }),
+    approvedAt: timestamp('approved_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('deliverables_project_idx').on(t.projectId)],
+);
+
+/** Corrección que deja el cliente sobre un entregable (A-03). Pasa a revisión; no se aplica sola. */
+export const corrections = pgTable(
+  'corrections',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    deliverableId: uuid('deliverable_id')
+      .notNull()
+      .references(() => deliverables.id),
+    authorId: text('author_id').notNull(),
+    text: text('text').notNull(),
+    status: correctionStatus('status').notNull().default('abierta'),
+    resolutionNote: text('resolution_note'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true }),
+  },
+  (t) => [index('corrections_deliverable_idx').on(t.deliverableId)],
+);
+
+/** Reunión: el cliente pide, el owner confirma y publica el acta (F-03, A-04, F-09, A-05). */
+export const meetings = pgTable(
+  'meetings',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    projectId: uuid('project_id').references(() => projects.id),
+    topic: text('topic').notNull(),
+    status: meetingStatus('status').notNull().default('solicitada'),
+    requestedBy: text('requested_by').notNull(),
+    preferredWindows: jsonb('preferred_windows').notNull().default([]),
+    startsAt: timestamp('starts_at', { withTimezone: true }),
+    minutesText: text('minutes_text'),
+    minutesPublishedAt: timestamp('minutes_published_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('meetings_organization_idx').on(t.organizationId)],
+);
+
+/** Factura (F-10). Se emite en Stripe; el pago ocurre en la página segura de Stripe. */
+export const invoices = pgTable(
+  'invoices',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    projectId: uuid('project_id').references(() => projects.id),
+    number: text('number').notNull(),
+    concept: text('concept').notNull(),
+    amountCents: integer('amount_cents').notNull(),
+    currency: text('currency').notNull().default('usd'),
+    dueDays: integer('due_days').notNull().default(30),
+    status: invoiceStatus('status').notNull().default('borrador'),
+    stripeInvoiceId: text('stripe_invoice_id'),
+    hostedUrl: text('hosted_url'),
+    issuedAt: timestamp('issued_at', { withTimezone: true }),
+    paidAt: timestamp('paid_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex('invoices_number_uq').on(t.number), index('invoices_organization_idx').on(t.organizationId)],
+);
+
+/**
+ * Registro de decisiones del cliente: qué aprobó, corrigió o firmó, con su texto exacto (app → Decisiones).
+ * Solo se agrega: una decisión nueva nunca edita la anterior.
+ */
+export const decisions = pgTable(
+  'decisions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    projectId: uuid('project_id').references(() => projects.id),
+    kind: text('kind').notNull(),
+    subjectType: text('subject_type').notNull(),
+    subjectId: uuid('subject_id').notNull(),
+    text: text('text').notNull(),
+    actorId: text('actor_id').notNull(),
+    actorRole: text('actor_role').notNull(),
+    documentSha256: text('document_sha256'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('decisions_organization_idx').on(t.organizationId)],
 );

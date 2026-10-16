@@ -23,6 +23,7 @@
 <div class="shell">
   <nav class="side" id="site-nav" aria-label="Principal">
     <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <div class="side-group">Operación</div>
     <ul>
       <li><a href="control-excepciones.html">Excepciones</a></li>
@@ -195,22 +196,27 @@
 </script>
 <div class="nav-scrim" data-scrim></div>
 <script>
-  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
   (function () {
-    const toggle = document.querySelector("[data-nav-toggle]");
-    const nav = document.querySelector("nav.side");
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
     const scrim = document.querySelector("[data-scrim]");
-    if (!toggle || !nav) return;
+    if (!toggles.length || !nav) return;
     function setOpen(open, returnFocus) {
       document.body.classList.toggle("nav-open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-      if (!open && returnFocus) toggle.focus();
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
     }
-    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
     scrim.addEventListener("click", () => setOpen(false, true));
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
-    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
   })();
 </script>
 </body>

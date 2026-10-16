@@ -4,9 +4,15 @@ import cors from '@fastify/cors';
 import { healthResponseSchema, leadDecisionSchema, leadIntakeSchema, memberInvitationSchema, type HealthResponse, type Lead as LeadDto } from '@arkanium/contracts';
 import type { IdentityGateway } from './auth/clerk.js';
 import type { Db } from './db/client.js';
-import { decideLead, captureLead, convertLead, listLeads, LeadError, type Lead } from './leads/service.js';
-import { inviteMember, removeMember, OrganizationError } from './organizations/service.js';
-import { decideDestination } from './session/destination.js';
+import { decideLead, captureLead, convertLead, findLead, listLeads, LeadError, type Lead } from './leads/service.js';
+import { inviteMember, OrganizationError } from './organizations/service.js';
+import { decideDestination, listDestinations } from './session/destination.js';
+import { sendServiceError } from './access.js';
+import { ServiceError } from './errors.js';
+import type { BillingGateway } from './billing/stripe.js';
+import { verifyStripeSignature } from './billing/stripe.js';
+import { markPaidFromStripe } from './billing/service.js';
+import { registerOperationRoutes } from './routes/operations.js';
 
 export const SERVICE_NAME = 'arkanium-api';
 export const SERVICE_VERSION = '0.1.0';
@@ -23,6 +29,10 @@ export interface AppOptions {
   db?: Db;
   /** Token de servicio que usa el sitio para entregar leads (F-01). Sin él, la captación responde 503. */
   leadIntakeToken?: string;
+  /** Facturación (Stripe, claves de prueba mientras no esté constituida la LLC). Sin ella, emitir responde 503. */
+  billing?: BillingGateway;
+  /** Secreto del webhook de Stripe para confirmar pagos. Sin él, el webhook responde 503. */
+  stripeWebhookSecret?: string;
 }
 
 /**
@@ -30,11 +40,18 @@ export interface AppOptions {
  * Así las pruebas la usan con inject() y no levantan el servidor.
  */
 export function buildApp(options: AppOptions = {}): FastifyInstance {
-  const app = Fastify({ logger: options.logger ?? false });
+  // El límite de 8 MB cubre un entregable de 5 MB en base64; el tope real de 5 MB lo aplica el servicio.
+  const app = Fastify({ logger: options.logger ?? false, bodyLimit: 8 * 1024 * 1024 });
 
   if (options.corsOrigins?.length) {
     app.register(cors, { origin: options.corsOrigins });
   }
+
+  // Errores de negocio con código HTTP; el resto sigue el camino normal de Fastify.
+  app.setErrorHandler((error, _request, reply) => {
+    if (error instanceof ServiceError) return sendServiceError(reply, error);
+    return reply.send(error);
+  });
 
   app.get('/health', async (): Promise<HealthResponse> => {
     return healthResponseSchema.parse({ status: 'ok', service: SERVICE_NAME, version: SERVICE_VERSION });
@@ -51,9 +68,21 @@ export function buildApp(options: AppOptions = {}): FastifyInstance {
       return decideDestination(memberships, internalOrgId);
     });
 
+    // Todos los destinos de la persona, para el menú de sesión del sitio.
+    app.get('/session/destinations', async (request, reply) => {
+      const userId = await authenticate(request, identity);
+      if (!userId) return reply.code(401).send({ error: 'unauthorized' });
+
+      const memberships = await identity.listOrganizations(userId);
+      return { destinations: listDestinations(memberships, internalOrgId) };
+    });
+
     if (options.db) {
-      registerLeadRoutes(app, { db: options.db, identity, internalOrgId, leadIntakeToken: options.leadIntakeToken });
-      registerMemberRoutes(app, { db: options.db, identity, internalOrgId });
+      const db = options.db;
+      registerLeadRoutes(app, { db, identity, internalOrgId, leadIntakeToken: options.leadIntakeToken });
+      registerMemberRoutes(app, { db, identity, internalOrgId });
+      registerOperationRoutes(app, { db, identity, internalOrgId, billing: options.billing });
+      registerStripeWebhook(app, { db, secret: options.stripeWebhookSecret });
     }
   }
 
@@ -110,6 +139,11 @@ function toLeadDto(lead: Lead): LeadDto {
     status: lead.status,
     receivedAt: lead.receivedAt.toISOString(),
     organizationId: lead.organizationId,
+    context: lead.context,
+    source: lead.source,
+    proposedFamily: lead.proposedFamily,
+    proposedReason: lead.proposedReason,
+    decisionNote: lead.decisionNote,
   };
 }
 
@@ -149,6 +183,17 @@ function registerLeadRoutes(app: FastifyInstance, deps: LeadRouteDeps): void {
     if (!ownerId) return;
     const leadsList = await listLeads(db, request.query.status);
     return { leads: leadsList.map(toLeadDto) };
+  });
+
+  // Detalle de un lead para el owner.
+  app.get<{ Params: { id: string } }>('/leads/:id', async (request, reply) => {
+    const ownerId = await requireOwner(request, reply, identity, internalOrgId);
+    if (!ownerId) return;
+    try {
+      return toLeadDto(await findLead(db, request.params.id));
+    } catch (error) {
+      return leadError(reply, error);
+    }
   });
 
   // F-02: el owner califica, pospone o descarta.
@@ -205,17 +250,36 @@ function registerMemberRoutes(app: FastifyInstance, deps: MemberRouteDeps): void
     }
   });
 
-  // D-03: el owner retira a una persona de la organización.
-  app.delete<{ Params: { id: string; userId: string } }>('/organizations/:id/members/:userId', async (request, reply) => {
-    const ownerId = await requireOwner(request, reply, identity, internalOrgId);
-    if (!ownerId) return;
+}
 
-    try {
-      await removeMember(db, identity, { organizationId: request.params.id, userId: request.params.userId, ownerId });
-      return reply.code(204).send();
-    } catch (error) {
-      return organizationError(reply, error);
-    }
+/**
+ * Webhook de Stripe. Solo confirma pagos (invoice.paid). Lee el cuerpo sin transformar,
+ * porque la firma se calcula sobre los bytes exactos que envía Stripe.
+ */
+function registerStripeWebhook(app: FastifyInstance, deps: { db: Db; secret?: string }): void {
+  const { db, secret } = deps;
+  app.register(async (scope) => {
+    scope.addContentTypeParser('application/json', { parseAs: 'string' }, (_request, body, done) => done(null, body));
+
+    scope.post('/webhooks/stripe', async (request, reply) => {
+      if (!secret) return reply.code(503).send({ error: 'webhook_not_configured' });
+      const raw = typeof request.body === 'string' ? request.body : '';
+      const signature = request.headers['stripe-signature'];
+      if (!verifyStripeSignature(raw, typeof signature === 'string' ? signature : undefined, secret)) {
+        return reply.code(400).send({ error: 'invalid_signature' });
+      }
+
+      let event: { type: string; created: number; data: { object: { id: string } } };
+      try {
+        event = JSON.parse(raw);
+      } catch {
+        return reply.code(400).send({ error: 'invalid' });
+      }
+      if (event.type === 'invoice.paid') {
+        await markPaidFromStripe(db, event.data.object.id, new Date(event.created * 1000));
+      }
+      return reply.code(200).send({ received: true });
+    });
   });
 }
 

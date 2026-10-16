@@ -11,6 +11,10 @@ export interface ApiConfig {
   databaseUrl?: string;
   /** Token de servicio del sitio para entregar leads. Sin él, la captación responde 503. */
   leadIntakeToken?: string;
+  /** Clave secreta de Stripe (sk_test_… en desarrollo). Sin ella, emitir facturas responde 503. */
+  stripeSecretKey?: string;
+  /** Secreto del webhook de Stripe (whsec_…). Sin él, el webhook responde 503. */
+  stripeWebhookSecret?: string;
 }
 
 /** Lee la configuración del entorno. Falla al arrancar si falta lo indispensable, con un mensaje claro. */
@@ -29,5 +33,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     clerkSecretKey: env.CLERK_SECRET_KEY!,
     databaseUrl: env.DATABASE_URL || undefined,
     leadIntakeToken: env.LEAD_INTAKE_TOKEN || undefined,
+    stripeSecretKey: env.STRIPE_SECRET_KEY || undefined,
+    stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || undefined,
   };
 }

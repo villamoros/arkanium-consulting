@@ -200,6 +200,8 @@ export const es: TranslationSchema = {
     noOrganization: "Sin organización",
     roleAdmin: "Administrador",
     roleMember: "Miembro",
+    goToCore: "Abrir Core",
+    goToApp: "Abrir dashboard · {org}",
   },
   access: {
     title: "Acceso",

@@ -32,6 +32,15 @@ export const leadSchema = z.object({
   status: z.enum(leadStatusValues),
   receivedAt: z.string(),
   organizationId: z.string().uuid().nullable(),
+  /** Mensaje que escribió la persona en el formulario. */
+  context: z.string().nullable(),
+  /** Origen de la captación (por ejemplo, website). */
+  source: z.string(),
+  /** Propuesta del agente de calificación: solo sugiere; la decisión es del owner. */
+  proposedFamily: z.enum(['architecture', 'strategy', 'product', 'unknown']).nullable(),
+  proposedReason: z.string().nullable(),
+  /** Motivo que escribió el owner al calificar, posponer o descartar. */
+  decisionNote: z.string().nullable(),
 });
 export type Lead = z.infer<typeof leadSchema>;
 

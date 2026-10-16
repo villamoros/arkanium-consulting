@@ -1,0 +1,29 @@
+# Base de datos local de desarrollo. Solo PostgreSQL: las apps corren en tu máquina con `pnpm dev`.
+# Puerto 5433 en tu máquina, para no chocar con un PostgreSQL ya instalado en Windows (5432).
+# Credenciales en infra/.env (no se versiona). Ver infra/.env.example.
+#
+# Levantar:  docker compose -f infra/docker-compose.dev.yml up -d
+# Apagar:    docker compose -f infra/docker-compose.dev.yml down        (conserva los datos)
+# Borrar todo (datos incluidos): docker compose -f infra/docker-compose.dev.yml down -v
+name: arkanium-dev
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5433:5432"
+    volumes:
+      - arkanium_pg_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  arkanium_pg_dev:

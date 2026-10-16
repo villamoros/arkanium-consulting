@@ -1,6 +1,7 @@
 /**
  * Menú de sesión: si la persona ya inició sesión, el enlace «Iniciar sesión» del menú se convierte en
- * su nombre, con su organización y su rol, y un botón para cerrar sesión.
+ * su nombre, con su organización y su rol, enlaces a los dashboards a los que puede entrar y un botón
+ * para cerrar sesión. Los enlaces pasan por /acceso/, que activa la organización antes de entrar.
  * No hace nada sin sesión: el enlace de inicio de sesión queda como está.
  */
 import { Clerk } from '@clerk/clerk-js';
@@ -8,7 +9,7 @@ import { Clerk } from '@clerk/clerk-js';
 /** Lo que el menú necesita de cada membresía. */
 interface Membership {
   role: string;
-  organization: { name: string };
+  organization: { id: string; name: string };
 }
 
 interface SessionStrings {
@@ -17,9 +18,18 @@ interface SessionStrings {
   noOrganization: string;
   roleAdmin: string;
   roleMember: string;
+  goToCore: string;
+  goToApp: string;
+}
+
+/** Un destino al que la API dice que la persona puede entrar. */
+interface Destination {
+  destination: 'core' | 'app';
+  orgId: string;
 }
 
 const publishableKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+const apiUrl = import.meta.env.PUBLIC_API_URL;
 const triggers = document.querySelectorAll<HTMLAnchorElement>('[data-login-link]');
 const strings = JSON.parse(document.getElementById('session-strings')?.textContent ?? '{}') as SessionStrings;
 
@@ -30,7 +40,18 @@ function roleLabel(role: string): string {
   return role === 'org:admin' ? strings.roleAdmin : strings.roleMember;
 }
 
-function buildMenu(name: string, email: string | undefined, memberships: Membership[], onSignOut: () => void): HTMLElement {
+/** Texto del enlace a un destino. El nombre de la organización sustituye a {org}. */
+function destinationLabel(destination: Destination, orgName: string): string {
+  return destination.destination === 'core' ? strings.goToCore : strings.goToApp.replace('{org}', orgName);
+}
+
+/** Enlace a /acceso/ con el destino elegido. La página vuelve a comprobarlo con la API. */
+function destinationHref(accessPath: string, destination: Destination): string {
+  const params = new URLSearchParams({ destino: destination.destination, org: destination.orgId });
+  return `${accessPath}?${params.toString()}`;
+}
+
+function buildMenu(name: string, email: string | undefined, memberships: Membership[], onSignOut: () => void): { menu: HTMLElement; links: HTMLUListElement } {
   const menu = document.createElement('div');
   menu.className = 'session-menu';
 
@@ -71,6 +92,11 @@ function buildMenu(name: string, email: string | undefined, memberships: Members
   }
   panel.append(roles);
 
+  // Enlaces a los dashboards: se llenan cuando la API responde.
+  const links = document.createElement('ul');
+  links.className = 'session-links';
+  panel.append(links);
+
   const signOut = document.createElement('button');
   signOut.type = 'button';
   signOut.className = 'button button-secondary session-signout';
@@ -100,7 +126,30 @@ function buildMenu(name: string, email: string | undefined, memberships: Members
   });
 
   menu.append(trigger, panel);
-  return menu;
+  return { menu, links };
+}
+
+/** Pide a la API los destinos de la persona y los pinta como enlaces. Si falla, el menú sigue sin enlaces. */
+async function fillDestinations(links: HTMLUListElement, token: string, accessPath: string, memberships: Membership[]) {
+  if (!apiUrl) return;
+  try {
+    const response = await fetch(`${apiUrl}/session/destinations`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!response.ok) throw new Error(`API respondió ${response.status}`);
+    const { destinations } = (await response.json()) as { destinations: Destination[] };
+
+    for (const destination of destinations) {
+      const orgName = memberships.find((m) => m.organization.id === destination.orgId)?.organization.name ?? destination.orgId;
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.className = 'session-link';
+      link.href = destinationHref(accessPath, destination);
+      link.textContent = destinationLabel(destination, orgName);
+      item.append(link);
+      links.append(item);
+    }
+  } catch (error) {
+    console.error('[sesión] destinos', error);
+  }
 }
 
 async function run() {
@@ -113,12 +162,17 @@ async function run() {
 
   const name = user.fullName || user.primaryEmailAddress?.emailAddress || strings.account;
   const email = user.primaryEmailAddress?.emailAddress;
-  const memberships = user.organizationMemberships ?? [];
+  const memberships = (user.organizationMemberships ?? []) as Membership[];
   const onSignOut = () => {
     void clerk.signOut({ redirectUrl: window.location.href });
   };
+  const accessPath = triggers[0]?.dataset.accessPath ?? '/acceso/';
 
-  triggers.forEach((link) => link.replaceWith(buildMenu(name, email, memberships, onSignOut)));
+  const { menu, links } = buildMenu(name, email, memberships, onSignOut);
+  triggers.forEach((link) => link.replaceWith(menu));
+
+  const token = await clerk.session?.getToken();
+  if (token) await fillDestinations(links, token, accessPath, memberships);
 }
 
 run().catch((error) => console.error('[sesión]', error));

@@ -94,15 +94,6 @@
   border-color: var(--color-gold);
 }
 
-/* Inicio de sesión visible en la cabecera móvil (el de .nav-links queda dentro del menú desplegable) */
-.nav-login-mobile {
-  display: none;
-  min-height: 42px;
-  margin-left: auto;
-  align-items: center;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.875rem;
-}
 
 .nav-toggle {
   display: none;
@@ -2091,14 +2082,6 @@
    Único bloque del menú móvil (antes duplicado en ≤720px)
 ═══════════════════════════════════════════════ */
 @media (max-width: 1120px) {
-  .nav-login-mobile {
-    display: inline-flex;
-  }
-
-  .nav-links .nav-login {
-    display: none;
-  }
-
   .nav-toggle {
     display: flex;
     margin-left: 10px;

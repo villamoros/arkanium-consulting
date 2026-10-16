@@ -21,6 +21,7 @@
 <div class="shell">
   <nav class="side" id="site-nav" aria-label="Principal">
     <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <div class="side-group">Ventas</div>
     <ul>
       <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
@@ -59,7 +60,7 @@
       <div class="kpis">
         <div class="kpi"><b id="k-orgs">3</b><span>organizaciones clientes</span></div>
         <div class="kpi"><b>5</b><span>personas con acceso</span></div>
-        <div class="kpi"><b>1</b><span>invitación pendiente</span></div>
+        <div class="kpi"><b id="k-suspended">1</b><span>accesos suspendidos</span></div>
         <div class="kpi"><b>4</b><span>proyectos activos</span></div>
       </div>
 
@@ -95,6 +96,43 @@
   <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
 </footer>
 
+<div class="dialog-back" id="role-dialog" role="dialog" aria-modal="true" aria-labelledby="role-title" style="position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;place-items:center;padding:16px;z-index:10">
+  <div class="dialog" style="width:min(460px,100%);background:var(--ink-2);border:1px solid var(--line-strong);border-radius:var(--radius);padding:22px">
+    <h2 id="role-title">Cambiar rol</h2>
+    <p class="muted" id="role-body"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="role-ok">Cambiar</button>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-back" id="suspend-dialog" role="dialog" aria-modal="true" aria-labelledby="suspend-title" style="position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;place-items:center;padding:16px;z-index:10">
+  <div class="dialog" style="width:min(460px,100%);background:var(--ink-2);border:1px solid var(--line-strong);border-radius:var(--radius);padding:22px">
+    <h2 id="suspend-title">Suspender acceso</h2>
+    <p class="muted">El cliente deja de entrar a la app. Nada se borra. El motivo queda en la bitácora.</p>
+    <label class="sub" for="suspend-reason" style="display:grid;gap:4px">Motivo (obligatorio)
+      <textarea id="suspend-reason" maxlength="300" style="min-height:80px;background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px"></textarea>
+    </label>
+    <p id="suspend-error" class="urgent" role="alert" hidden style="margin:8px 0 0">Escribe el motivo para suspender.</p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="danger" id="suspend-ok">Suspender</button>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-back" id="reactivate-dialog" role="dialog" aria-modal="true" aria-labelledby="reactivate-title" style="position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;place-items:center;padding:16px;z-index:10">
+  <div class="dialog" style="width:min(460px,100%);background:var(--ink-2);border:1px solid var(--line-strong);border-radius:var(--radius);padding:22px">
+    <h2 id="reactivate-title">Reactivar acceso</h2>
+    <p class="muted" id="reactivate-body"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="reactivate-ok">Reactivar</button>
+    </div>
+  </div>
+</div>
+
 <div class="dialog-back" id="remove-dialog" role="dialog" aria-modal="true" aria-labelledby="remove-title" style="position:fixed;inset:0;background:rgba(5,8,14,.72);display:none;place-items:center;padding:16px;z-index:10">
   <div class="dialog" style="width:min(460px,100%);background:var(--ink-2);border:1px solid var(--line-strong);border-radius:var(--radius);padding:22px">
     <h2 id="remove-title">Retirar a la persona</h2>
@@ -111,36 +149,47 @@
 <script>
   // Datos de ejemplo ficticios.
   const ORGS = [
-    { id: 'O1', name: 'Distribuidora Norte', people: [['Laura Ruiz', 'laura@ejemplo.test', 'Administrador'], ['Pablo Soto', 'pablo@ejemplo.test', 'Miembro']], projects: ['Modernización ERP', 'Diagnóstico de arquitectura'], pending: [] },
-    { id: 'O2', name: 'Fintech Puente', people: [['Marcos Vidal', 'marcos@ejemplo.test', 'Administrador']], projects: ['CTO fraccional, nivel crecimiento'], pending: [] },
-    { id: 'O3', name: 'Logística Andina', people: [['Carlos Medina', 'carlos@ejemplo.test', 'Administrador'], ['Sara Lima', 'sara@ejemplo.test', 'Miembro']], projects: ['Hoja de ruta de TI'], pending: ['nuevo@ejemplo.test · Miembro · enviada hace 2 días'] },
+    { id: 'O1', name: 'Distribuidora Norte', status: 'activa', people: [['Laura Ruiz', 'laura@ejemplo.test', 'org:admin'], ['Pablo Soto', 'pablo@ejemplo.test', 'org:member']], projects: ['Modernización ERP', 'Diagnóstico de arquitectura'], pending: [],
+      decisions: [['14 oct', 'Aprobó el informe preliminar, versión 2', 'Laura Ruiz', 'Aprobado. Las correcciones de riesgos ya están incluidas.'], ['9 oct', 'Aceptó el SOW del diagnóstico', 'Laura Ruiz', 'Acepto el alcance y el anticipo del 50 %.']] },
+    { id: 'O2', name: 'Fintech Puente', status: 'activa', people: [['Marcos Vidal', 'marcos@ejemplo.test', 'org:admin']], projects: ['CTO fraccional, nivel crecimiento'], pending: [], decisions: [] },
+    { id: 'O3', name: 'Logística Andina', status: 'suspendida', suspendedReason: 'Factura vencida sin respuesta (ejemplo)', people: [['Carlos Medina', 'carlos@ejemplo.test', 'org:admin'], ['Sara Lima', 'sara@ejemplo.test', 'org:member']], projects: ['Hoja de ruta de TI'], pending: ['nuevo@ejemplo.test · Miembro · enviada hace 2 días'], decisions: [['2 oct', 'Pidió una reunión sobre la hoja de ruta', 'Sara Lima', 'Necesitamos revisar el alcance de la etapa 2.']] },
   ];
+  const ROLE_LABEL = { 'org:admin': 'Administrador', 'org:member': 'Miembro' };
   let selected = 'O1';
-  let removing = null;
+  let pending = null; // { type: 'remove' | 'suspend' | 'reactivate' | 'role', ... }
+
+  const admins = o => o.people.filter(p => p[2] === 'org:admin').length;
 
   function renderRows() {
     const q = document.getElementById('q').value.trim().toLowerCase();
     const rows = ORGS.filter(o => !q || (o.name + ' ' + o.people.map(p => p[0]).join(' ')).toLowerCase().includes(q));
     document.getElementById('rows').innerHTML = rows.length ? rows.map(o => `
       <tr tabindex="0" data-id="${o.id}" aria-selected="${o.id === selected}">
-        <td><div class="lead-name">${o.name}</div><div class="sub">Cliente</div></td>
+        <td><div class="lead-name">${o.name}</div><div class="sub">Cliente${o.status === 'suspendida' ? ' · <span class="urgent" style="font-size:12px">acceso suspendido</span>' : ''}</div></td>
         <td>${o.people.length}${o.pending.length ? ` <span class="sub">+ ${o.pending.length} invitación</span>` : ''}</td>
         <td class="hide-sm sub">${o.projects.join(', ')}</td>
       </tr>`).join('') : '<tr><td colspan="3" class="muted">No hay clientes con esa búsqueda.</td></tr>';
     document.getElementById('k-orgs').textContent = ORGS.length;
+    document.getElementById('k-suspended').textContent = ORGS.filter(o => o.status === 'suspendida').length;
   }
 
   function renderDetail() {
     const o = ORGS.find(x => x.id === selected);
     if (!o) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una organización.</p>'; return; }
+    const suspended = o.status === 'suspendida';
     document.getElementById('detail').innerHTML = `
-      <div class="head"><div><h2>${o.name}</h2><div class="sub">Organización cliente</div></div></div>
+      <div class="head"><div><h2>${o.name}</h2><div class="sub">Organización cliente</div></div>
+        <span class="badge ${suspended ? 'b-descartado' : 'b-convertido'}">${suspended ? 'Suspendida' : 'Activa'}</span></div>
+
+      ${suspended ? `<div class="approval" role="note" style="border-color:rgba(224,122,114,.5);background:rgba(224,122,114,.07)"><span aria-hidden="true">◈</span><div><strong>Acceso suspendido.</strong> ${o.suspendedReason}. El cliente no entra a la app; tú sí. Nada se borró.</div></div>` : ''}
 
       <div class="section"><h3>Personas</h3>
         <div class="table-wrap">${o.people.map((p, i) => `
           <div class="agent-row"><span><b>${p[0]}</b><br><span class="sub">${p[1]}</span></span>
-          <span style="display:flex;gap:8px;align-items:center"><span class="idle-tag">${p[2]}</span>
-          <button type="button" class="danger" data-remove="${i}" aria-label="Retirar a ${p[0]}">Retirar</button></span></div>`).join('')}
+          <span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span class="idle-tag">${ROLE_LABEL[p[2]]}</span>
+            <button type="button" class="secondary" data-role-change="${i}" aria-label="Cambiar rol de ${p[0]}" ${p[2] === 'org:admin' && admins(o) === 1 ? 'disabled' : ''}>${p[2] === 'org:admin' ? 'Hacer miembro' : 'Hacer administrador'}</button>
+            <button type="button" class="danger" data-remove="${i}" aria-label="Retirar a ${p[0]}">Retirar</button></span></div>`).join('')}
         </div>
         ${o.pending.length ? `<h3 style="margin-top:14px">Invitaciones pendientes</h3><ul class="checks">${o.pending.map(t => `<li><span>${t}</span></li>`).join('')}</ul>` : ''}
       </div>
@@ -151,27 +200,75 @@
         <label class="sub" for="inv-role">Rol</label>
         <select id="inv-role" style="width:100%;background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px;margin:4px 0 10px">
           <option value="org:member">Miembro · ve sus proyectos asignados</option>
-          <option value="org:admin">Administrador · invita y aprueba entregables</option>
+          <option value="org:admin">Administrador · aprueba entregables y paga facturas</option>
         </select>
         <div class="actions"><button type="button" class="primary" data-act="invite">Enviar invitación</button></div>
         <p class="sub" style="margin:0">La invitación la envía Arkanium desde aquí. El cliente no puede invitar a nadie por su cuenta.</p>
       </div>
 
-      <div class="section"><h3>Proyectos</h3><ul class="checks">${o.projects.map(p => `<li><span>${p}</span></li>`).join('')}</ul></div>`;
+      <div class="section"><h3>Proyectos</h3><ul class="checks">${o.projects.map(p => `<li><span>${p}</span></li>`).join('')}</ul></div>
+
+      <div class="section"><h3>Registro de decisiones del cliente</h3>
+        ${o.decisions.length ? `<ul class="timeline">${o.decisions.map(([d, what, who, text]) => `<li><time>${d}</time><div><b>${what}</b><br><span class="sub">${who}</span><br><span style="font-size:13px">«${text}»</span></div></li>`).join('')}</ul>` : '<p class="sub" style="margin:0">Todavía no hay decisiones registradas.</p>'}
+        <p class="sub" style="margin:8px 0 0">Solo lectura. Las decisiones no se editan.</p>
+      </div>
+
+      <div class="section decision"><h3>Acceso de la organización</h3>
+        <div class="actions">
+          ${suspended
+            ? '<button type="button" class="primary" data-act="reactivate">Reactivar acceso</button>'
+            : '<button type="button" class="danger" data-act="suspend">Suspender acceso</button>'}
+        </div>
+        <p class="sub" style="margin:0">${suspended ? 'Reactivar devuelve el acceso de inmediato.' : 'Suspender corta el acceso del cliente a la app sin borrar nada. Queda en la bitácora con el motivo.'}</p>
+      </div>`;
   }
 
   function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
 
+  function openDialog(id) { document.getElementById(id).style.display = 'grid'; }
+  function closeDialogs() {
+    ['remove-dialog', 'role-dialog', 'suspend-dialog', 'reactivate-dialog'].forEach(id => { document.getElementById(id).style.display = 'none'; });
+    pending = null;
+  }
+
   document.getElementById('rows').addEventListener('click', e => { const r = e.target.closest('tr[data-id]'); if (r) { selected = r.dataset.id; renderRows(); renderDetail(); } });
   document.getElementById('rows').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); } });
+
   document.getElementById('detail').addEventListener('click', e => {
+    const o = ORGS.find(x => x.id === selected);
+    const rc = e.target.closest('[data-role-change]');
+    if (rc) {
+      const i = +rc.dataset.roleChange; const p = o.people[i];
+      pending = { type: 'role', i };
+      document.getElementById('role-body').textContent = p[2] === 'org:admin'
+        ? `${p[0]} pasa a miembro: ya no aprueba entregables, no paga facturas y no gestiona el equipo.`
+        : `${p[0]} pasa a administrador: podrá aprobar entregables, pagar facturas y gestionar el equipo del cliente.`;
+      document.getElementById('role-ok').textContent = p[2] === 'org:admin' ? 'Hacer miembro' : 'Hacer administrador';
+      openDialog('role-dialog');
+      return;
+    }
     const rem = e.target.closest('[data-remove]');
     if (rem) {
-      const o = ORGS.find(x => x.id === selected); const p = o.people[+rem.dataset.remove];
-      removing = { idx: +rem.dataset.remove, name: p[0] };
+      const p = o.people[+rem.dataset.remove];
+      pending = { type: 'remove', idx: +rem.dataset.remove, name: p[0] };
       document.getElementById('remove-body').textContent = `${p[0]} dejará de tener acceso a los proyectos de ${o.name}. Su historial queda en la bitácora.`;
-      const d = document.getElementById('remove-dialog'); d.style.display = 'grid';
+      openDialog('remove-dialog');
       document.getElementById('remove-ok').focus();
+      return;
+    }
+    const act = e.target.closest('[data-act]');
+    if (act && act.dataset.act === 'suspend') {
+      pending = { type: 'suspend' };
+      document.getElementById('suspend-reason').value = '';
+      document.getElementById('suspend-error').hidden = true;
+      openDialog('suspend-dialog');
+      document.getElementById('suspend-reason').focus();
+      return;
+    }
+    if (act && act.dataset.act === 'reactivate') {
+      pending = { type: 'reactivate' };
+      document.getElementById('reactivate-body').textContent = `${o.name} vuelve a entrar a la app con sus permisos. Queda en la bitácora.`;
+      openDialog('reactivate-dialog');
       return;
     }
     const inv = e.target.closest('[data-act="invite"]');
@@ -179,21 +276,51 @@
       const email = document.getElementById('inv-email').value.trim();
       if (!/^\S+@\S+\.\S+$/.test(email)) { toast('Escribe un correo válido.'); document.getElementById('inv-email').focus(); return; }
       const role = document.getElementById('inv-role').value === 'org:admin' ? 'Administrador' : 'Miembro';
-      ORGS.find(x => x.id === selected).pending.push(`${email} · ${role} · enviada ahora`);
+      o.pending.push(`${email} · ${role} · enviada ahora`);
       document.getElementById('inv-email').value = '';
       renderRows(); renderDetail();
       toast('Invitación enviada. Queda registrada en la bitácora.');
     }
   });
-  function closeRemove() { document.getElementById('remove-dialog').style.display = 'none'; removing = null; }
+
   document.getElementById('remove-dialog').addEventListener('click', e => {
-    if (e.target.matches('[data-close]') || e.target.id === 'remove-dialog') { closeRemove(); return; }
-    if (e.target.id === 'remove-ok' && removing) {
-      const o = ORGS.find(x => x.id === selected); o.people.splice(removing.idx, 1);
-      const name = removing.name; closeRemove(); renderRows(); renderDetail(); toast(`${name} fue retirada. Queda registrado en la bitácora.`);
+    if (e.target.matches('[data-close]') || e.target.id === 'remove-dialog') { closeDialogs(); return; }
+    if (e.target.id === 'remove-ok' && pending && pending.type === 'remove') {
+      const o = ORGS.find(x => x.id === selected); o.people.splice(pending.idx, 1);
+      const name = pending.name; closeDialogs(); renderRows(); renderDetail(); toast(`${name} fue retirada. Queda registrado en la bitácora.`);
     }
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRemove(); });
+
+  document.getElementById('role-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'role-dialog') { closeDialogs(); return; }
+    if (e.target.id === 'role-ok' && pending && pending.type === 'role') {
+      const o = ORGS.find(x => x.id === selected); const p = o.people[pending.i];
+      p[2] = p[2] === 'org:admin' ? 'org:member' : 'org:admin';
+      closeDialogs(); renderRows(); renderDetail(); toast('Rol cambiado. Queda registrado en la bitácora.');
+    }
+  });
+
+  document.getElementById('suspend-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'suspend-dialog') { closeDialogs(); return; }
+    if (e.target.id === 'suspend-ok' && pending && pending.type === 'suspend') {
+      const reason = document.getElementById('suspend-reason').value.trim();
+      if (!reason) { document.getElementById('suspend-error').hidden = false; return; }
+      const o = ORGS.find(x => x.id === selected);
+      o.status = 'suspendida'; o.suspendedReason = reason;
+      closeDialogs(); renderRows(); renderDetail(); toast('Acceso suspendido. Queda registrado con el motivo.');
+    }
+  });
+
+  document.getElementById('reactivate-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'reactivate-dialog') { closeDialogs(); return; }
+    if (e.target.id === 'reactivate-ok' && pending && pending.type === 'reactivate') {
+      const o = ORGS.find(x => x.id === selected);
+      o.status = 'activa'; delete o.suspendedReason;
+      closeDialogs(); renderRows(); renderDetail(); toast('Acceso reactivado. Queda registrado en la bitácora.');
+    }
+  });
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDialogs(); });
   document.getElementById('q').addEventListener('input', renderRows);
 
   function setState(s) {
@@ -211,22 +338,27 @@
 </script>
 <div class="nav-scrim" data-scrim></div>
 <script>
-  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
   (function () {
-    const toggle = document.querySelector("[data-nav-toggle]");
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
     const nav = document.querySelector("nav.side, nav.client-nav");
     const scrim = document.querySelector("[data-scrim]");
-    if (!toggle || !nav) return;
+    if (!toggles.length || !nav) return;
     function setOpen(open, returnFocus) {
       document.body.classList.toggle("nav-open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-      if (!open && returnFocus) toggle.focus();
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
     }
-    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
     scrim.addEventListener("click", () => setOpen(false, true));
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
-    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
   })();
 </script>
 </body>

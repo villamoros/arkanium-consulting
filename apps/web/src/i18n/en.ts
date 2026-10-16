@@ -200,6 +200,8 @@ export const en = {
     noOrganization: "No organization",
     roleAdmin: "Administrator",
     roleMember: "Member",
+    goToCore: "Open Core",
+    goToApp: "Open dashboard · {org}",
   },
   access: {
     title: "Access",

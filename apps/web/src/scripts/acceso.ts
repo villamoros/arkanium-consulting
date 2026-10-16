@@ -1,6 +1,9 @@
 /**
- * Página /acceso/: tras el inicio de sesión, pregunta a la API a qué aplicación va la persona
- * y activa su organización en Clerk antes de redirigir.
+ * Página /acceso/: activa la organización de la persona en Clerk y la lleva a su aplicación.
+ *
+ * - Sin parámetros: pregunta a la API a qué aplicación va (la primera que le corresponda).
+ * - Con ?destino=core|app&org=…: el menú de sesión eligió un dashboard concreto. La API confirma
+ *   que la persona puede entrar ahí antes de activar la organización.
  *
  * Sin sesión: Clerk muestra su página de acceso y vuelve aquí.
  * La API es quien decide; esta página solo redirige.
@@ -11,6 +14,9 @@ type Destination = 'core' | 'app' | 'none';
 interface DestinationResponse {
   destination: Destination;
   orgId?: string;
+}
+interface DestinationsResponse {
+  destinations: Array<{ destination: 'core' | 'app'; orgId: string }>;
 }
 
 const publishableKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
@@ -26,6 +32,12 @@ function show(state: 'checking' | 'none' | 'error') {
   });
 }
 
+/** Activa la organización y lleva a la aplicación. Las apps leen la organización activa de la sesión. */
+async function enter(clerk: Clerk, destination: 'core' | 'app', orgId: string) {
+  await clerk.setActive({ organization: orgId });
+  window.location.href = targets[destination];
+}
+
 async function run() {
   if (!publishableKey || !apiUrl) throw new Error('Configuración incompleta');
 
@@ -38,9 +50,28 @@ async function run() {
   }
 
   const token = await clerk.session.getToken();
-  const response = await fetch(`${apiUrl}/session/destination`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const headers = { Authorization: `Bearer ${token}` };
+
+  // Elección explícita desde el menú de sesión.
+  const params = new URLSearchParams(window.location.search);
+  const wanted = params.get('destino');
+  const wantedOrg = params.get('org');
+  if ((wanted === 'core' || wanted === 'app') && wantedOrg) {
+    const response = await fetch(`${apiUrl}/session/destinations`, { headers });
+    if (!response.ok) throw new Error(`API respondió ${response.status}`);
+    const { destinations } = (await response.json()) as DestinationsResponse;
+    const match = destinations.find((d) => d.destination === wanted && d.orgId === wantedOrg);
+    if (!match) {
+      // La persona no tiene ese acceso: no se activa nada.
+      show('error');
+      return;
+    }
+    await enter(clerk, match.destination, match.orgId);
+    return;
+  }
+
+  // Entrada normal: la primera aplicación que le corresponda.
+  const response = await fetch(`${apiUrl}/session/destination`, { headers });
   if (!response.ok) throw new Error(`API respondió ${response.status}`);
 
   const data = (await response.json()) as DestinationResponse;
@@ -48,10 +79,7 @@ async function run() {
     show('none');
     return;
   }
-
-  // Activar la organización antes de salir: las apps leen la organización activa de la sesión.
-  await clerk.setActive({ organization: data.orgId });
-  window.location.href = targets[data.destination];
+  await enter(clerk, data.destination, data.orgId);
 }
 
 show('checking');

@@ -20,3 +20,25 @@ export function decideDestination(memberships: Array<{ orgId: string }>, interna
   if (first) return { destination: 'app', orgId: first.orgId };
   return { destination: 'none' };
 }
+
+/**
+ * Todos los destinos a los que puede entrar la persona, para el menú del sitio.
+ * Core si pertenece a la organización interna; un dashboard de cliente por cada organización de cliente.
+ * Es navegación: cada app y cada endpoint vuelven a comprobar el acceso.
+ */
+export interface Destinations {
+  destination: 'core' | 'app';
+  orgId: string;
+}
+
+export function listDestinations(memberships: Array<{ orgId: string }>, internalOrgId: string): Destinations[] {
+  const seen = new Set<string>();
+  const result: Destinations[] = [];
+  for (const membership of memberships) {
+    if (seen.has(membership.orgId)) continue;
+    seen.add(membership.orgId);
+    result.push({ destination: membership.orgId === internalOrgId ? 'core' : 'app', orgId: membership.orgId });
+  }
+  // Core primero: es el panel del equipo.
+  return result.sort((a, b) => (a.destination === b.destination ? 0 : a.destination === 'core' ? -1 : 1));
+}

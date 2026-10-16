@@ -254,11 +254,15 @@
 .nav-toggle[aria-expanded="true"] span:first-child { transform: translateY(6px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] span:last-child { transform: translateY(-6px) rotate(-45deg); }
 
+/* Botón dentro del menú: aparece solo cuando el menú es deslizable y viaja con el panel. */
+.nav-toggle--in { display: none; position: absolute; top: 14px; right: 14px; }
+
 .nav-scrim { position: fixed; inset: 0; background: rgba(5, 8, 14, 0.6); opacity: 0; pointer-events: none; transition: opacity 300ms ease; z-index: 40; }
 
 @media (max-width: 1099px) {
   .shell, .client-shell { grid-template-columns: 1fr; }
-  .nav-bar, .nav-toggle { display: flex; }
+  .nav-bar { display: flex; }
+  .nav-toggle:not(.nav-toggle--in) { display: flex; }
   nav.side, .client-nav {
     position: fixed; top: 0; bottom: 0; left: 0; z-index: 50;
     width: min(300px, 86vw); overflow-y: auto; margin: 0;
@@ -267,8 +271,11 @@
     transform: translateX(-104%); visibility: hidden;
     transition: transform 300ms ease, visibility 300ms ease;
   }
+  nav.side .brand { padding-right: 52px; }
   nav.side ul, .client-nav ul { grid-auto-flow: row; overflow: visible; }
+  .nav-toggle--in { display: flex; }
   body.nav-open nav.side, body.nav-open .client-nav { transform: none; visibility: visible; }
+  body.nav-open .nav-bar { visibility: hidden; }
   body.nav-open { overflow: hidden; }
   body.nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
 }
@@ -280,6 +287,8 @@
 <div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
   <span class="muted">Vista previa:</span>
   <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-role="admin" aria-pressed="true">Administrador</button>
+  <button type="button" data-role="member" aria-pressed="false">Miembro</button>
   <button type="button" data-state="empty" aria-pressed="false">Sin facturas</button>
   <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
   <button type="button" data-state="error" aria-pressed="false">Error</button>
@@ -288,7 +297,7 @@
 <header class="topbar">
   <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-    <span class="role">Administrador</span>
+    <span id="role" class="role">Administrador</span>
     <a class="avatar" href="app-account.html" aria-label="Mi cuenta" style="text-decoration:none;color:inherit">LR</a>
     <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
   </div>
@@ -296,12 +305,15 @@
 
 <div class="client-shell">
   <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <ul>
       <li><a href="app-projects.html">Mis proyectos</a></li>
       <li><a href="app-deliverable.html">Entregables</a></li>
       <li><a href="app-meetings.html">Reuniones</a></li>
       <li><a href="app-invoices.html" aria-current="page">Facturas</a></li>
       <li><a href="app-decisions.html">Decisiones</a></li>
+      <li><a href="app-team.html">Equipo</a></li>
+      <li><a href="app-organization.html">Organización</a></li>
     </ul>
   </nav>
 
@@ -371,6 +383,15 @@
     'FAC-1038': 'data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiA+PiA+PiAvQ29udGVudHMgNSAwIFIgPj4KZW5kb2JqCjQgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+CmVuZG9iago1IDAgb2JqCjw8IC9MZW5ndGggMjM1ID4+CnN0cmVhbQpCVAovRjEgMTggVGYKNjAgNzQwIFRkCihGYWN0dXJhIEZBQy0xMDM4KSBUagovRjEgMTEgVGYKMCAtMjggVGQKKEFyY2hpdm8gZGUgZWplbXBsbyBwYXJhIHJldmlzYXIgZWwgZGlzZfFvLiBEYXRvcyBmaWN0aWNpb3MuKSBUagowIC0xNiBUZAooQ29uY2VwdG86IGFudGljaXBvIGRlIGluaWNpby4pIFRqCjAgLTE2IFRkCihNb250bzogVVNEIDEsNTAwLjAwLiBFc3RhZG86IHBhZ2FkYS4pIFRqCjAgLTE2IFRkCkVUCmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzMTEgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo1OTcKJSVFT0YK',
   };
   let current = 'FAC-1051';
+  // Solo un administrador de la organización paga; los miembros descargan y comparten.
+  let ROLE = 'admin';
+  function setRole(role) {
+    ROLE = role;
+    document.getElementById('role').textContent = role === 'admin' ? 'Administrador' : 'Miembro';
+    document.querySelectorAll('[data-role]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.role === role)));
+    renderDetail();
+  }
+  document.querySelectorAll('[data-role]').forEach(b => b.addEventListener('click', () => setRole(b.dataset.role)));
 
   const money = n => 'USD ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -413,8 +434,10 @@
         <dl class="kv"><dt>Emitida</dt><dd>${i.issued}</dd><dt>Vence</dt><dd>${i.status === 'Pagada' ? '—' : i.due}</dd>${i.status === 'Pagada' ? `<dt>Pagada</dt><dd>${i.paidOn}</dd>` : ''}</dl>
       </div>
       <div class="actions" style="margin-top:14px"><a class="btn-link" href="${INVOICE_FILES[i.num]}" download>Descargar factura (PDF)</a></div>
-      ${i.status === 'Pendiente' ? `<div class="actions" style="margin-top:8px"><button type="button" class="primary" data-pay="${i.num}">Pagar ${money(i.amount)}</button></div>
-        <p class="sub" style="margin:8px 0 0">Serás llevado a la página segura de Stripe. Arkanium no recibe datos de tu tarjeta.</p>` : '<p class="sub" style="margin:10px 0 0">Factura pagada.</p>'}`;
+      ${i.status === 'Pendiente' && ROLE === 'admin' ? `<div class="actions" style="margin-top:8px"><button type="button" class="primary" data-pay="${i.num}">Pagar ${money(i.amount)}</button></div>
+        <p class="sub" style="margin:8px 0 0">Serás llevado a la página segura de Stripe. Arkanium no recibe datos de tu tarjeta.</p>`
+        : i.status === 'Pendiente' ? '<p class="notice" style="margin:8px 0 0">El pago lo hace un administrador de tu organización. Puedes descargar la factura y compartirla con él.</p>'
+        : '<p class="sub" style="margin:10px 0 0">Factura pagada.</p>'}`;
   }
 
   function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
@@ -443,22 +466,27 @@
 </script>
 <div class="nav-scrim" data-scrim></div>
 <script>
-  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
   (function () {
-    const toggle = document.querySelector("[data-nav-toggle]");
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
     const nav = document.querySelector("nav.side, nav.client-nav");
     const scrim = document.querySelector("[data-scrim]");
-    if (!toggle || !nav) return;
+    if (!toggles.length || !nav) return;
     function setOpen(open, returnFocus) {
       document.body.classList.toggle("nav-open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-      if (!open && returnFocus) toggle.focus();
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
     }
-    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
     scrim.addEventListener("click", () => setOpen(false, true));
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
-    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
   })();
 </script>
 </body>

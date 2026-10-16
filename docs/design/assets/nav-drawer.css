@@ -8,11 +8,15 @@
 .nav-toggle[aria-expanded="true"] span:first-child { transform: translateY(6px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] span:last-child { transform: translateY(-6px) rotate(-45deg); }
 
+/* Botón dentro del menú: aparece solo cuando el menú es deslizable y viaja con el panel. */
+.nav-toggle--in { display: none; position: absolute; top: 14px; right: 14px; }
+
 .nav-scrim { position: fixed; inset: 0; background: rgba(5, 8, 14, 0.6); opacity: 0; pointer-events: none; transition: opacity 300ms ease; z-index: 40; }
 
 @media (max-width: 1099px) {
   .shell, .client-shell { grid-template-columns: 1fr; }
-  .nav-bar, .nav-toggle { display: flex; }
+  .nav-bar { display: flex; }
+  .nav-toggle:not(.nav-toggle--in) { display: flex; }
   nav.side, .client-nav {
     position: fixed; top: 0; bottom: 0; left: 0; z-index: 50;
     width: min(300px, 86vw); overflow-y: auto; margin: 0;
@@ -21,8 +25,11 @@
     transform: translateX(-104%); visibility: hidden;
     transition: transform 300ms ease, visibility 300ms ease;
   }
+  nav.side .brand { padding-right: 52px; }
   nav.side ul, .client-nav ul { grid-auto-flow: row; overflow: visible; }
+  .nav-toggle--in { display: flex; }
   body.nav-open nav.side, body.nav-open .client-nav { transform: none; visibility: visible; }
+  body.nav-open .nav-bar { visibility: hidden; }
   body.nav-open { overflow: hidden; }
   body.nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
 }

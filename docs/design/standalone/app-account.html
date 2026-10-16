@@ -285,11 +285,15 @@
 .nav-toggle[aria-expanded="true"] span:first-child { transform: translateY(6px) rotate(45deg); }
 .nav-toggle[aria-expanded="true"] span:last-child { transform: translateY(-6px) rotate(-45deg); }
 
+/* Botón dentro del menú: aparece solo cuando el menú es deslizable y viaja con el panel. */
+.nav-toggle--in { display: none; position: absolute; top: 14px; right: 14px; }
+
 .nav-scrim { position: fixed; inset: 0; background: rgba(5, 8, 14, 0.6); opacity: 0; pointer-events: none; transition: opacity 300ms ease; z-index: 40; }
 
 @media (max-width: 1099px) {
   .shell, .client-shell { grid-template-columns: 1fr; }
-  .nav-bar, .nav-toggle { display: flex; }
+  .nav-bar { display: flex; }
+  .nav-toggle:not(.nav-toggle--in) { display: flex; }
   nav.side, .client-nav {
     position: fixed; top: 0; bottom: 0; left: 0; z-index: 50;
     width: min(300px, 86vw); overflow-y: auto; margin: 0;
@@ -298,8 +302,11 @@
     transform: translateX(-104%); visibility: hidden;
     transition: transform 300ms ease, visibility 300ms ease;
   }
+  nav.side .brand { padding-right: 52px; }
   nav.side ul, .client-nav ul { grid-auto-flow: row; overflow: visible; }
+  .nav-toggle--in { display: flex; }
   body.nav-open nav.side, body.nav-open .client-nav { transform: none; visibility: visible; }
+  body.nav-open .nav-bar { visibility: hidden; }
   body.nav-open { overflow: hidden; }
   body.nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
 }
@@ -327,12 +334,15 @@
 
 <div class="client-shell">
   <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <button type="button" class="nav-toggle nav-toggle--in" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
     <ul>
       <li><a href="app-projects.html">Mis proyectos</a></li>
       <li><a href="app-deliverable.html">Entregables</a></li>
       <li><a href="app-meetings.html">Reuniones</a></li>
       <li><a href="app-invoices.html">Facturas</a></li>
       <li><a href="app-decisions.html">Decisiones</a></li>
+      <li><a href="app-team.html">Equipo</a></li>
+      <li><a href="app-organization.html">Organización</a></li>
     </ul>
   </nav>
 
@@ -526,22 +536,27 @@
 </script>
 <div class="nav-scrim" data-scrim></div>
 <script>
-  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  // Menú deslizable: se abre con el botón (fuera o dentro del panel), se cierra con el velo, con Escape o al elegir una sección.
   (function () {
-    const toggle = document.querySelector("[data-nav-toggle]");
+    const toggles = document.querySelectorAll("[data-nav-toggle]");
     const nav = document.querySelector("nav.side, nav.client-nav");
     const scrim = document.querySelector("[data-scrim]");
-    if (!toggle || !nav) return;
+    if (!toggles.length || !nav) return;
     function setOpen(open, returnFocus) {
       document.body.classList.toggle("nav-open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-      if (!open && returnFocus) toggle.focus();
+      toggles.forEach((t) => {
+        t.setAttribute("aria-expanded", String(open));
+        t.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      });
+      if (!open && returnFocus) {
+        const visible = [...toggles].find((t) => getComputedStyle(t).display !== "none");
+        if (visible) visible.focus();
+      }
     }
-    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    toggles.forEach((t) => t.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open"))));
     scrim.addEventListener("click", () => setOpen(false, true));
-    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
-    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", (e) => { if (e.target.closest("a")) setOpen(false); });
   })();
 </script>
 </body>
