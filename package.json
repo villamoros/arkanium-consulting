@@ -8,6 +8,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "dev:all": "pnpm --parallel --filter @arkanium/web --filter @arkanium/api --filter @arkanium/app --filter @arkanium/core --filter @arkanium/control run dev"
   }
 }

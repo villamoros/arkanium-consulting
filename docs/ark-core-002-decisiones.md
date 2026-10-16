@@ -38,9 +38,9 @@ Mini CMS y CRM: quedan en `arkanium-core`, según tu indicación.
 Tu modelo tiene **dos niveles**, y conviene separarlos desde ahora:
 
 - **Organización (cliente).** Es la organización de Clerk. Agrupa a todas las personas de un cliente y es la frontera de aislamiento principal.
-- **Engagement (servicio contratado).** Cada servicio que compra un cliente abre un espacio propio con su equipo de agentes y su manual de caso. Esto **no es un concepto de Clerk**: es nuestro. Vive dentro de la organización como entidad propia.
+- **Proyecto (servicio contratado).** Cada servicio que compra un cliente abre un espacio propio con su equipo de agentes y su manual de caso. Esto **no es un concepto de Clerk**: es nuestro. Vive dentro de la organización como entidad propia.
 
-Consecuencia: un cliente con dos servicios tiene una organización y dos engagements. Las personas del cliente pueden tener acceso a uno, a los dos o a ninguno, según permisos del engagement.
+Consecuencia: un cliente con dos servicios tiene una organización y dos proyectos. Las personas del cliente pueden tener acceso a uno, a los dos o a ninguno, según permisos del proyecto.
 
 ### 3.2 PostgreSQL local, Supabase en producción, y RLS
 
@@ -69,8 +69,8 @@ Consecuencia: un cliente con dos servicios tiene una organización y dos engagem
 
 **Estoy de acuerdo con el principio.** Separar los agentes del negocio y tratar el conocimiento como capa propia es el diseño correcto. Pero hay tres condiciones para que la separación sea real:
 
-1. **Control no lee la base de datos directamente.** Los agentes actúan a través de la misma API del backend que usan las demás apps, con credenciales de corta vida acotadas a un tenant y un engagement. Si control lee tablas de negocio, la separación es solo visual.
-2. **El manual de un caso no se reutiliza entre clientes.** Cada manual pertenece al engagement de un cliente. Lo que puede compartirse entre casos es el marco genérico (Arkanium Framework) y patrones anonimizados, y eso lo decides tú caso por caso. Conviene fijar esta regla ahora, porque es la que protege la confidencialidad de cada cliente.
+1. **Control no lee la base de datos directamente.** Los agentes actúan a través de la misma API del backend que usan las demás apps, con credenciales de corta vida acotadas a un tenant y un proyecto. Si control lee tablas de negocio, la separación es solo visual.
+2. **El manual de un caso no se reutiliza entre clientes.** Cada manual pertenece al proyecto de un cliente. Lo que puede compartirse entre casos es el marco genérico (Arkanium Framework) y patrones anonimizados, y eso lo decides tú caso por caso. Conviene fijar esta regla ahora, porque es la que protege la confidencialidad de cada cliente.
 3. **Hay cinco despliegues, no cuatro.** Contando el backend, son web, app, core, control y API. Para una sola persona operando la plataforma, eso es costo real de mantenimiento. Mi propuesta: el backend es un solo servicio (monolito modular), y las apps frontend pueden compartir un repositorio si prefieres menos frentes abiertos.
 
 ## 6. Preguntas abiertas
@@ -125,7 +125,7 @@ Navegador
       → control (privado)         → arkanium-control (Next.js + worker, contenedor)
 
 API → Supabase (PostgreSQL en producción; PostgreSQL local en desarrollo)
-arkanium-control → API (credenciales acotadas a tenant y engagement)
+arkanium-control → API (credenciales acotadas a tenant y proyecto)
 arkanium-web (estático): por confirmar si sigue en Cloudflare Pages o pasa al VM.
 ```
 

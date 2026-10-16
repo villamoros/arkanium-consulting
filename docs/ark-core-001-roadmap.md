@@ -36,7 +36,7 @@ No tomamos: el módulo financiero (ingresos y gastos), la autenticación propia 
 | **Identidad y acceso** | Inicio de sesión con Clerk, sesión entre subdominios, resolución de identidad verificada. | Identidad externa (Clerk); referencias locales. |
 | **Tenancy** | Organizaciones cliente, membresías, roles y permisos. | Tenants, membresías, roles. |
 | **Captación y pipeline** | Leads del formulario, oportunidades, propuestas, paso a cliente. | Leads, oportunidades. |
-| **Engagement del cliente** | Proyectos, tareas, entregables y documentos visibles para el cliente. | Proyectos, tareas, documentos. |
+| **Proyectos del cliente** | Proyectos, tareas, entregables y documentos visibles para el cliente. | Proyectos, tareas, documentos. |
 | **Agenda** | Solicitudes de reunión, aprobación del owner, sincronización con Google Calendar. | Solicitudes, aprobaciones. |
 | **Orquestación de agentes** | Definición de agentes, herramientas permitidas, colas de aprobación, bitácora de acciones. | Agentes, ejecuciones, auditoría. |
 
@@ -113,7 +113,7 @@ ARK-CORE (un despliegue backend, módulos con fronteras)
 ├─ identity/        Clerk, sesión, identidad verificada
 ├─ tenancy/         tenants, membresías, roles, permisos
 ├─ pipeline/        leads, oportunidades, conversión a cliente
-├─ engagement/      proyectos, tareas, documentos del cliente
+├─ proyectos/        proyectos, tareas, entregables y reuniones del cliente
 ├─ scheduling/      solicitudes de reunión, aprobación, Google Calendar
 ├─ agents/          definiciones, herramientas, aprobaciones, bitácora
 └─ shared-kernel/   tipos comunes, eventos de dominio, utilidades (sin lógica de negocio)
