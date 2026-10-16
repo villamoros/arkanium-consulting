@@ -1,0 +1,56 @@
+import { createClerkClient, verifyToken } from '@clerk/backend';
+
+/** Lo que la API necesita saber de Clerk. Se inyecta para poder probarla sin red. */
+export interface IdentityGateway {
+  /** Verifica el token en el servidor. Devuelve el id del usuario o null si no es válido. */
+  verifyBearer(token: string): Promise<string | null>;
+  /** Organizaciones en las que el usuario es miembro, con su rol. */
+  listOrganizations(userId: string): Promise<Array<{ orgId: string; role: string }>>;
+  /** Crea una organización de cliente en Clerk. Devuelve su identificador (org_…). */
+  createOrganization(input: { name: string; createdBy: string }): Promise<{ orgId: string }>;
+  /** Invita a una persona por correo con un rol de la organización. */
+  inviteMember(input: { orgId: string; email: string; role: "org:admin" | "org:member" }): Promise<{ invitationId: string }>;
+  /** Retira a una persona de la organización. */
+  removeMember(input: { orgId: string; userId: string }): Promise<void>;
+}
+
+export function createClerkGateway(options: { secretKey: string; authorizedParties: string[] }): IdentityGateway {
+  const clerk = createClerkClient({ secretKey: options.secretKey });
+
+  return {
+    async verifyBearer(token) {
+      try {
+        const payload = await verifyToken(token, {
+          secretKey: options.secretKey,
+          authorizedParties: options.authorizedParties,
+        });
+        return payload.sub ?? null;
+      } catch {
+        // Token caducado, firma incorrecta u origen no autorizado: se trata igual, sin dar detalles.
+        return null;
+      }
+    },
+
+    async listOrganizations(userId) {
+      const response = await clerk.users.getOrganizationMembershipList({ userId, limit: 100 });
+      return response.data.map((membership) => ({
+        orgId: membership.organization.id,
+        role: membership.role,
+      }));
+    },
+
+    async createOrganization({ name, createdBy }) {
+      const organization = await clerk.organizations.createOrganization({ name, createdBy });
+      return { orgId: organization.id };
+    },
+
+    async inviteMember({ orgId, email, role }) {
+      const invitation = await clerk.organizations.createOrganizationInvitation({ organizationId: orgId, emailAddress: email, role });
+      return { invitationId: invitation.id };
+    },
+
+    async removeMember({ orgId, userId }) {
+      await clerk.organizations.deleteOrganizationMembership({ organizationId: orgId, userId });
+    },
+  };
+}
