@@ -194,6 +194,20 @@ export const fr: TranslationSchema = {
       },
     },
   },
+  session: {
+    account: "Mon compte",
+    signOut: "Se déconnecter",
+    noOrganization: "Aucune organisation",
+    roleAdmin: "Administrateur",
+    roleMember: "Membre",
+  },
+  access: {
+    title: "Accès",
+    description: "Connexion à Arkanium.",
+    checking: "Vérification de votre accès…",
+    none: "Votre compte n’appartient pas encore à une organisation Arkanium. Demandez une invitation à votre équipe.",
+    error: "Nous n’avons pas pu vérifier votre accès. Réessayez dans un instant.",
+  },
   cookies: {
     bannerTitle: "Cookies sur ce site",
     bannerText: "Nous n’utilisons que des cookies strictement nécessaires. Les cookies d’analyse et de marketing sont désactivés et nous ne les utilisons pas aujourd’hui. Vous pouvez modifier votre choix à tout moment.",

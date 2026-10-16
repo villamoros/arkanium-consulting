@@ -1,0 +1,30 @@
+---
+/**
+ * Entrada única para iniciar sesión. Clerk trae a la persona aquí tras autenticarse,
+ * y el script decide a qué aplicación va según su organización (ver scripts/acceso.ts).
+ * No es una página de contenido: no se indexa.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import { locales, type Locale } from '../../i18n/config';
+import { getTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = getTranslations(locale);
+---
+
+<PageLayout locale={locale} title={t.access.title} description={t.access.description} noindex>
+  <section class="section-band access-page">
+    <h1>{t.access.title}</h1>
+    <p data-access="checking">{t.access.checking}</p>
+    <p data-access="none" hidden>{t.access.none}</p>
+    <p data-access="error" hidden>{t.access.error}</p>
+  </section>
+</PageLayout>
+
+<script>
+  import '../../scripts/acceso';
+</script>

@@ -12,6 +12,7 @@ import '../styles/case-studies.css';
 import '../styles/insights.css';
 import '../styles/consent.css';
 import '../styles/legal.css';
+import '../styles/session.css';
 
 import CookieConsent from '../components/layout/CookieConsent.astro';
 import { siteConfig } from '../content/static/site';
@@ -111,9 +112,11 @@ const xDefault = defaultPath ? absoluteSeoUrl(defaultPath, Astro.site) : undefin
   <body>
     <a class="skip-link" href="#main">{t.ui.skipToContent}</a>
     <slot />
+    <script type="application/json" id="session-strings" set:html={JSON.stringify(t.session)} />
     <CookieConsent content={t.cookies} policyHref={getLocalizedPath(locale, '/legal/cookies/')} />
     <script>
       import '../scripts/reveal';
+      import '../scripts/session';
     </script>
   </body>
 </html>

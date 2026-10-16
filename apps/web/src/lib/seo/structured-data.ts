@@ -7,8 +7,8 @@ export interface BreadcrumbItem { name: string; url: string }
 export function globalSchemas(siteUrl: string): JsonLd[] {
   const url = siteUrl.replace(/\/$/, '');
   return [
-    { '@context': 'https://schema.org', '@type': 'Organization', name: seoConfig.organization.name, url, logo: new URL(seoConfig.organization.logo, `${url}/`).toString(), sameAs: seoConfig.socialProfiles },
-    { '@context': 'https://schema.org', '@type': 'ProfessionalService', name: seoConfig.organization.name, url, description: seoConfig.organization.description, areaServed: 'Worldwide' },
+    { '@context': 'https://schema.org', '@type': 'Organization', name: seoConfig.organization.name, legalName: seoConfig.organization.legalName, url, logo: new URL(seoConfig.organization.logo, `${url}/`).toString(), sameAs: seoConfig.socialProfiles },
+    { '@context': 'https://schema.org', '@type': 'ProfessionalService', name: seoConfig.organization.name, legalName: seoConfig.organization.legalName, url, description: seoConfig.organization.description, areaServed: 'Worldwide' },
     { '@context': 'https://schema.org', '@type': 'WebSite', name: seoConfig.siteName, url },
   ];
 }

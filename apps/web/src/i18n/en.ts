@@ -194,6 +194,20 @@ export const en = {
       },
     },
   },
+  session: {
+    account: "Account",
+    signOut: "Sign out",
+    noOrganization: "No organization",
+    roleAdmin: "Administrator",
+    roleMember: "Member",
+  },
+  access: {
+    title: "Access",
+    description: "Signing you in to Arkanium.",
+    checking: "Checking your access…",
+    none: "Your account does not belong to an Arkanium organization yet. Ask your team for an invitation.",
+    error: "We could not check your access. Please try again in a moment.",
+  },
   cookies: {
     bannerTitle: "Cookies on this site",
     bannerText: "We only use strictly necessary cookies. Analytics and marketing cookies are off, and we do not use them today. You can change your choice at any time.",

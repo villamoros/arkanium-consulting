@@ -10,6 +10,7 @@ export const seoConfig = {
   defaultOgImage: siteConfig.defaultOgImage,
   organization: {
     name: siteConfig.name,
+    legalName: siteConfig.legalName,
     logo: siteConfig.assets.logoMark,
     description: 'Digital infrastructure engineering firm specializing in legacy modernization, software architecture, and fractional CTO services.',
   },

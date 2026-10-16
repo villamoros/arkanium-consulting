@@ -1,0 +1,75 @@
+/* ═══════════════════════════════════════════════
+   SESIÓN — menú de la persona que ya inició sesión (scripts/session.ts)
+═══════════════════════════════════════════════ */
+.session-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.session-trigger {
+  min-height: 44px;
+  padding: 0 14px;
+  background: var(--color-graphite);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-paper);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.session-trigger:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.session-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1150;
+  width: min(300px, 88vw);
+  padding: 16px;
+  background: var(--color-ink-2);
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-paper);
+}
+
+.session-panel[hidden] {
+  display: none;
+}
+
+.session-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.session-email {
+  margin: 2px 0 12px;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+.session-roles {
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.session-roles li {
+  padding: 6px 10px;
+  background: var(--color-graphite);
+  border-radius: var(--radius-sm);
+  color: var(--color-gold-2);
+}
+
+.session-signout {
+  width: 100%;
+  min-height: 44px;
+}
