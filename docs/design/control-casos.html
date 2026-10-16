@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Manual de caso y biblioteca</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="anon" aria-pressed="false">Vista anonimizada</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin casos</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html">Excepciones</a></li>
+      <li><a href="control-calidad.html">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html" aria-current="page">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Manual de caso y biblioteca</h1>
+        <p>Lo que Arkanium aprendió en cada proyecto. Los agentes lo consultan antes de actuar, en modo lectura, como referencia y nunca como ejemplo a copiar.</p>
+      </div>
+    </div>
+
+    <div class="approval" role="note">
+      <span aria-hidden="true">◈</span>
+      <div><strong>Decisión D-11 pendiente.</strong> Todavía no se decide si la biblioteca guarda los casos completos o anonimizados. Hasta que el abogado de Nuevo México lo confirme, esta pantalla muestra las dos vistas y ninguna se usa para guardar datos.</div>
+    </div>
+
+    <div class="filters" role="group" aria-label="Vista de la biblioteca">
+      <button type="button" class="secondary" data-view="full" aria-pressed="true">Vista completa (interna)</button>
+      <button type="button" class="secondary" data-view="anon" aria-pressed="false">Vista anonimizada</button>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis">
+        <div class="kpi"><b id="k-cases">3</b><span>casos en la biblioteca</span></div>
+        <div class="kpi"><b>7</b><span>lecciones vigentes</span></div>
+        <div class="kpi"><b>12</b><span>consultas de agentes esta semana (ejemplo)</span></div>
+        <div class="kpi"><b>0</b><span>casos citados como ejemplo</span></div>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Casos">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Caso</th><th scope="col">Servicio</th><th scope="col" class="hide-sm">Fase</th><th scope="col">Cierre</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del caso"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. "FC-0012" es el caso que citó el agente en la bitácora (L-0531).
+  const CASES = [
+    { id: 'FC-0012', client: 'Cliente de manufactura (ejemplo)', service: 'Evaluación de arquitectura', phase: 'Evaluar', closed: '2026-06', cited: 3,
+      lessons: [
+        { text: 'Cuando dos módulos comparten tablas, pedir el mapa de dependencias antes de estimar.', cited_by: ['Agente de evaluación de arquitectura'], status: 'vigente' },
+        { text: 'Las reglas de impuestos que solo existen en el código son un riesgo alto por defecto.', cited_by: ['Agente de riesgo técnico'], status: 'vigente' },
+      ], anon: 'Cliente industrial mediano · evaluación de arquitectura · dos módulos con tablas compartidas' },
+    { id: 'FC-0009', client: 'Cliente de logística (ejemplo)', service: 'Hoja de ruta de TI', phase: 'Arquitectar', closed: '2026-04', cited: 2,
+      lessons: [{ text: 'Una hoja de ruta sin responsables por etapa se atrasa aunque el alcance esté bien.', cited_by: ['Agente de hoja de ruta de TI'], status: 'vigente' }], anon: 'Operador logístico · hoja de ruta de TI · etapas sin responsables' },
+    { id: 'FC-0004', client: 'Cliente de servicios (ejemplo)', service: 'Chequeo técnico', phase: 'Evaluar', closed: '2026-01', cited: 0,
+      lessons: [{ text: 'Documentar cuando el cliente pide algo fuera de alcance antes de empezar.', cited_by: [], status: 'retirada' }], anon: 'Empresa de servicios · chequeo técnico · alcance no documentado' },
+  ];
+  let selected = 'FC-0012';
+  let view = 'full';
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = CASES.map(c => `
+      <tr tabindex="0" data-id="${c.id}" aria-selected="${c.id === selected}">
+        <td><div class="lead-name mono">${c.id}</div><div class="sub">${view === 'full' ? c.client : 'Cliente anonimizado'}</div></td>
+        <td class="sub">${c.service}</td>
+        <td class="hide-sm sub">${c.phase}</td>
+        <td class="sub">${c.closed}</td>
+      </tr>`).join('');
+    document.getElementById('k-cases').textContent = CASES.length;
+  }
+
+  function renderDetail() {
+    const c = CASES.find(x => x.id === selected);
+    if (!c) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un caso para ver sus lecciones.</p>'; return; }
+    const summary = view === 'full' ? c.client : c.anon;
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${c.id}</h2><div class="sub">${c.service} · ${c.phase}</div></div><span class="badge ${c.cited ? 'b-convertido' : 'b-idle'}">${c.cited} citas</span></div>
+
+      <div class="section"><h3>${view === 'full' ? 'Caso' : 'Resumen anonimizado'}</h3><p style="margin:0">${summary}</p></div>
+
+      <div class="section"><h3>Lecciones del manual</h3>
+        ${c.lessons.map(l => `<div class="step ${l.status === 'vigente' ? 'ok' : 'pending'}"><i aria-hidden="true">${l.status === 'vigente' ? '✓' : '—'}</i><span>${l.text}<br><span class="sub">${l.status === 'vigente' ? 'Vigente' : 'Retirada'}${l.cited_by.length ? ' · citada por ' + l.cited_by.join(', ') : ''}</span></span></div>`).join('')}
+      </div>
+
+      <div class="section decision"><h3>Control</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="retire">Retirar una lección</button>
+        </div>
+        <p class="sub" style="margin:0">Los agentes solo leen. Ninguno puede editar, copiar ni citar un caso como ejemplo. Cada consulta queda en la bitácora.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => {
+    view = b.dataset.view;
+    document.querySelectorAll('[data-view]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    renderRows(); renderDetail();
+  }));
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const c = CASES.find(x => x.id === selected);
+    const l = c.lessons.find(x => x.status === 'vigente');
+    if (l) { l.status = 'retirada'; renderDetail(); toast('Lección retirada. Queda en la bitácora.'); } else toast('No hay lecciones vigentes en este caso.');
+  });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    if (state === 'anon') { view = 'anon'; document.querySelectorAll('[data-view]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.view === 'anon'))); document.getElementById('view-normal').hidden = false; document.getElementById('view-state').hidden = true; renderRows(); renderDetail(); toast('Vista previa anonimizada. Ninguna opción está decidida.'); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>La biblioteca está vacía</h2><p>Se llena al cerrar el primer proyecto (G4). Hasta entonces, los agentes no tienen casos previos que consultar.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar la biblioteca</h2><p>Revisa tu conexión e intenta de nuevo. Ningún caso se ha modificado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Revisión de calidad</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin revisiones</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html">Excepciones</a></li>
+      <li><a href="control-calidad.html" aria-current="page">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Revisión de calidad</h1>
+        <p>Antes de que un entregable llegue a una compuerta, el agente de calidad lo revisa contra su plantilla. Aquí ves qué revisó, qué devolvió y qué pasa a tu aprobación.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis">
+        <div class="kpi"><b id="k-queue">2</b><span>en cola de revisión</span></div>
+        <div class="kpi"><b id="k-returned">1</b><span>devueltos al agente</span></div>
+        <div class="kpi"><b id="k-gate">1</b><span>listos para una compuerta</span></div>
+        <div class="kpi"><b>86%</b><span>aprobados a la primera (ejemplo)</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="f-result">Resultado</label>
+        <select id="f-result">
+          <option value="">Todos los resultados</option>
+          <option>En revisión</option><option>Devuelto</option><option>Listo para compuerta</option><option>Bloqueado</option>
+        </select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Cola de revisión">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Entregable</th><th scope="col">Proyecto y plantilla</th><th scope="col" class="hide-sm">Revisor</th><th scope="col">Resultado</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Revisión de calidad"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const REVIEWS = [
+    { id: 'Q-0212', deliverable: 'Informe de hallazgos, v2', project: 'Modernización ERP (ejemplo) · PL-01', reviewer: 'Agente de calidad', result: 'Listo para compuerta', tone: 'b-activo',
+      checks: [['ok', 'Usa la plantilla PL-01 completa'], ['ok', 'Cada hallazgo cita su evidencia'], ['ok', 'No contiene datos de otros clientes'], ['ok', 'Tono y lenguaje según la guía'], ['pending', 'Falta la confirmación del cliente sobre el alcance (G1)']],
+      note: 'Listo para G1. Solo falta que el owner apruebe el informe.', gate: 'G1 · Evaluar' },
+    { id: 'Q-0211', deliverable: 'Registro de riesgos, v1', project: 'Diagnóstico de arquitectura (ejemplo) · PL-02', reviewer: 'Agente de calidad', result: 'En revisión', tone: 'b-pausado',
+      checks: [['ok', 'Usa la plantilla PL-02'], ['pending', 'Riesgos altos sin mitigación propuesta'], ['pending', 'Responsables sin confirmar']],
+      note: 'En revisión. El agente de riesgo técnico debe completar las mitigaciones.', gate: 'G1 · Evaluar' },
+    { id: 'Q-0209', deliverable: 'Diseño de arquitectura, v1', project: 'Hoja de ruta de TI (ejemplo) · PL-03', reviewer: 'Agente de calidad', result: 'Devuelto', tone: 'b-error',
+      checks: [['ok', 'Usa la plantilla PL-03'], ['bad', 'No cubre el riesgo R-02 de G1 (ver EXC-0007)']],
+      note: 'Devuelto al agente. La excepción EXC-0007 sigue abierta en Excepciones.', gate: 'G2 · Arquitectar' },
+  ];
+  let selected = 'Q-0212';
+
+  function visible() {
+    const r = document.getElementById('f-result').value;
+    return REVIEWS.filter(q => !r || q.result === r);
+  }
+
+  function renderRows() {
+    const rows = visible();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(q => `
+      <tr tabindex="0" data-id="${q.id}" aria-selected="${q.id === selected}">
+        <td><div class="lead-name">${q.deliverable}</div><div class="sub mono">${q.id}</div></td>
+        <td class="sub">${q.project}</td>
+        <td class="hide-sm sub">${q.reviewer}</td>
+        <td><span class="badge ${q.tone}">${q.result}</span></td>
+      </tr>`).join('') : '<tr><td colspan="4" class="muted">No hay revisiones con ese resultado.</td></tr>';
+    document.getElementById('k-queue').textContent = REVIEWS.filter(q => q.result === 'En revisión').length;
+    document.getElementById('k-returned').textContent = REVIEWS.filter(q => q.result === 'Devuelto').length;
+    document.getElementById('k-gate').textContent = REVIEWS.filter(q => q.result === 'Listo para compuerta').length;
+  }
+
+  function renderDetail() {
+    const q = REVIEWS.find(x => x.id === selected);
+    if (!q) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una revisión para ver sus controles.</p>'; return; }
+    const ready = q.result === 'Listo para compuerta';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${q.deliverable}</h2><div class="sub">${q.project}</div></div><span class="badge ${q.tone}">${q.result}</span></div>
+
+      <div class="section"><h3>Controles</h3>
+        <ul class="checks">${q.checks.map(([s, t]) => `<li><span class="${s === 'ok' ? 'ok' : 'pending'}" aria-hidden="true">${s === 'ok' ? '✓' : s === 'bad' ? '✕' : '◷'}</span><span>${t}</span></li>`).join('')}</ul>
+      </div>
+
+      <div class="section"><h3>Nota del revisor</h3><p style="margin:0">${q.note}</p>
+        <p class="sub" style="margin:6px 0 0">Compuerta: ${q.gate}</p>
+      </div>
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="primary" data-act="gate" ${ready ? '' : 'disabled'}>Enviar a la compuerta</button>
+          <button type="button" class="secondary" data-act="return" ${q.result === 'Devuelto' ? 'disabled' : ''}>Devolver al agente</button>
+        </div>
+        <p class="sub" style="margin:0">Enviar a la compuerta no la aprueba: solo la deja lista para tu revisión en Compuertas.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('f-result').addEventListener('input', renderRows);
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const q = REVIEWS.find(x => x.id === selected);
+    if (b.dataset.act === 'gate') toast('Enviado a Compuertas para tu revisión. Queda en la bitácora.');
+    if (b.dataset.act === 'return') { q.result = 'Devuelto'; q.tone = 'b-error'; q.note = 'Devuelto al agente para corregir. Queda en la bitácora.'; renderRows(); renderDetail(); toast('Devuelto al agente.'); }
+  });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>No hay entregables en revisión</h2><p>Cuando un agente termine un entregable, el agente de calidad lo revisará y aparecerá aquí.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar la cola</h2><p>Revisa tu conexión e intenta de nuevo. Ningún entregable cambió de estado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

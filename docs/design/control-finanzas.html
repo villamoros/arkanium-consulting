@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Conciliación con Stripe</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="diff" aria-pressed="false">Con diferencias</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin movimientos</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html">Excepciones</a></li>
+      <li><a href="control-calidad.html">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html" aria-current="page">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Conciliación con Stripe</h1>
+        <p>Cada pago de Stripe contra su factura. Los agentes concilian y te avisan; no mueven dinero. Reembolsos y ajustes siempre pasan por tu aprobación.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Ningún agente mueve dinero.</strong> Un reembolso o un ajuste se propone, aparece en Aprobaciones de core y solo se ejecuta si lo apruebas.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-matched">USD 1,400</b><span>conciliado este mes (ejemplo)</span></div>
+        <div class="kpi"><b id="k-diff">1</b><span>diferencias por revisar</span></div>
+        <div class="kpi"><b>USD 3,800</b><span>vencido sin pago</span></div>
+        <div class="kpi"><b>Hoy 06:00</b><span>última conciliación</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="f-match">Estado de conciliación</label>
+        <select id="f-match">
+          <option value="">Todos los estados</option>
+          <option>Conciliado</option><option>Diferencia</option><option>Sin factura</option><option>Reembolsado</option>
+        </select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Pagos">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Pago</th><th scope="col">Factura</th><th scope="col" class="hide-sm">Fecha</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del pago"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Confirmar</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Los identificadores de pago son ilustrativos, no reales.
+  const PAYMENTS = [
+    { id: 'pay_ex_0101', invoice: 'FAC-1042', client: 'Distribuidora Norte (ejemplo)', amount: 2250, date: '5 oct', match: 'Conciliado', note: 'Importe y factura coinciden.' },
+    { id: 'pay_ex_0102', invoice: 'FAC-1038', client: 'Gerente de TI, logística (ejemplo)', amount: 1500, date: '6 oct', match: 'Conciliado', note: 'Importe y factura coinciden.' },
+    { id: 'pay_ex_0103', invoice: 'FAC-1051', client: 'Distribuidora Norte (ejemplo)', amount: 2950, date: '12 oct', match: 'Diferencia', note: 'Pagó USD 2,950. La factura es USD 3,000: diferencia de USD 50 por comisión de conversión. Decide si se acepta o se cobra.' },
+    { id: 'pay_ex_0104', invoice: '—', client: 'Pago sin factura (ejemplo)', amount: 400, date: '14 oct', match: 'Sin factura', note: 'Pago recibido sin factura asociada. Revisa el cliente antes de emitir.' },
+  ];
+  let selected = 'pay_ex_0103';
+  let pending = null;
+
+  const TAG = { 'Conciliado': 'b-activo', 'Diferencia': 'b-pausado', 'Sin factura': 'b-error', 'Reembolsado': 'b-definido' };
+  const money = n => 'USD ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  function visible() {
+    const m = document.getElementById('f-match').value;
+    return PAYMENTS.filter(p => !m || p.match === m);
+  }
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = visible().map(p => `
+      <tr tabindex="0" data-id="${p.id}" aria-selected="${p.id === selected}">
+        <td><div class="lead-name mono">${p.id}</div><div class="sub">${p.client}</div></td>
+        <td>${p.invoice}<div class="sub">${money(p.amount)}</div></td>
+        <td class="hide-sm sub">${p.date}</td>
+        <td><span class="badge ${TAG[p.match]}">${p.match}</span></td>
+      </tr>`).join('') || '<tr><td colspan="4" class="muted">No hay pagos con ese estado.</td></tr>';
+    document.getElementById('k-diff').textContent = PAYMENTS.filter(p => p.match === 'Diferencia').length;
+  }
+
+  function renderDetail() {
+    const p = PAYMENTS.find(x => x.id === selected);
+    if (!p) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un pago para revisarlo.</p>'; return; }
+    const canResolve = p.match === 'Diferencia' || p.match === 'Sin factura';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${p.id}</h2><div class="sub mono">Stripe · ${p.date}</div></div><span class="badge ${TAG[p.match]}">${p.match}</span></div>
+
+      <div class="section"><h3>Importe</h3>
+        <dl class="kv"><dt>Pagado</dt><dd>${money(p.amount)}</dd><dt>Factura</dt><dd>${p.invoice}</dd><dt>Cliente</dt><dd>${p.client}</dd></dl>
+      </div>
+
+      <div class="section"><h3>Lectura</h3><p style="margin:0">${p.note}</p></div>
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="accept-diff" ${p.match === 'Diferencia' ? '' : 'disabled'}>Aceptar la diferencia (requiere aprobación)</button>
+          <button type="button" class="secondary" data-act="refund" ${p.match === 'Conciliado' ? '' : 'disabled'}>Proponer reembolso (requiere aprobación)</button>
+          <button type="button" class="secondary" data-act="ignore" ${canResolve ? '' : 'disabled'}>Marcar como revisado</button>
+        </div>
+        <p class="sub" style="margin:0">Las propuestas que mueven dinero van a Aprobaciones en core. Nada se ejecuta sin tu decisión.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  const ACT = {
+    'accept-diff': ['Aceptar la diferencia', 'Se registra como ajuste de USD 50 y se propone a Aprobaciones. No se cobra nada hasta que lo apruebes.'],
+    refund: ['Proponer reembolso', 'Se envía a Aprobaciones de core. El reembolso solo se ejecuta si lo apruebas.'],
+    ignore: ['Marcar como revisado', 'Queda como revisado sin cambio de dinero. Queda en la bitácora.'],
+  };
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('f-match').addEventListener('input', renderRows);
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    pending = b.dataset.act;
+    document.getElementById('confirm-title').textContent = ACT[pending][0];
+    document.getElementById('confirm-body').textContent = ACT[pending][1];
+    document.getElementById('confirm-ok').textContent = pending === 'ignore' ? 'Marcar' : 'Enviar a Aprobaciones';
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      const p = PAYMENTS.find(x => x.id === selected);
+      if (pending === 'ignore') p.match = 'Conciliado';
+      document.getElementById('confirm-dialog').classList.remove('open');
+      const msg = pending === 'ignore' ? 'Marcado como revisado. Queda en la bitácora.' : 'Enviado a Aprobaciones de core. Nada se mueve hasta que lo apruebes.';
+      pending = null; renderRows(); renderDetail(); toast(msg);
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    if (state === 'diff') { normal.hidden = false; v.hidden = true; renderRows(); renderDetail(); toast('Vista previa: hay diferencias por revisar.'); return; }
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>No hay movimientos este mes</h2><p>Cuando un cliente pague una factura, el pago aparecerá aquí y se concilia solo.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos conectar con Stripe</h2><p>La conciliación se detuvo. Ningún pago ni factura se ha modificado. Intenta de nuevo más tarde.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Excepciones</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin excepciones</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html" aria-current="page">Excepciones</a></li>
+      <li><a href="control-calidad.html">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Excepciones</h1>
+        <p>Lo que el framework no cubre. Un agente no decide una excepción: la registra, se detiene y la PMO propone una salida. Tú decides.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Regla:</strong> aceptar un riesgo alto nunca se hace por la PMO sola. Requiere tu decisión, un motivo escrito y una fecha de revisión.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-open">1</b><span>abiertas</span></div>
+        <div class="kpi"><b id="k-pmo">1</b><span>en evaluación de la PMO</span></div>
+        <div class="kpi"><b id="k-owner">1</b><span>esperando tu decisión</span></div>
+        <div class="kpi"><b>3</b><span>cerradas este mes (ejemplo)</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="f-status">Estado</label>
+        <select id="f-status">
+          <option value="">Todos los estados</option>
+          <option>Abierta</option><option>En PMO</option><option>Esperando tu decisión</option><option>Cerrada</option>
+        </select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Lista de excepciones">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Excepción</th><th scope="col">Compuerta</th><th scope="col" class="hide-sm">Propuesta por</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la excepción"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Confirmar</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="filters" style="margin:0 0 12px">
+      <label class="sub" style="display:grid;gap:4px;width:100%">Motivo (obligatorio)
+        <textarea id="confirm-reason" placeholder="Por qué se decide esto"></textarea>
+      </label>
+    </div>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="confirm-ok">Confirmar</button>
+    </div>
+    <p id="confirm-error" class="urgent" role="alert" hidden style="margin:10px 0 0"></p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const EXC = [
+    { id: 'EXC-0007', project: 'Hoja de ruta de TI (ejemplo)', gate: 'G2 · Arquitectar', criterion: 'El diseño cubre los riesgos altos de G1', risk: 'alto', agent: 'Agente de hoja de ruta de TI', status: 'Esperando tu decisión', pmo: 'La PMO propone: reabrir G1 para incluir R-02 en el diseño, o aceptar R-02 con mitigación parcial. Recomienda reabrir.', evidence: ['Bitácora L-0528', 'Registro de riesgos v1 (R-02)', 'Diseño de arquitectura v1'], reason: null },
+    { id: 'EXC-0006', project: 'Modernización ERP (ejemplo)', gate: 'G1 · Evaluar', criterion: 'Cada hallazgo tiene evidencia', risk: 'medio', agent: 'Agente de evaluación de arquitectura', status: 'En PMO', pmo: 'Un hallazgo cita una entrevista sin acta. La PMO revisa si la evidencia alterna es suficiente.', evidence: ['Bitácora L-0519'], reason: null },
+    { id: 'EXC-0005', project: 'Diagnóstico de arquitectura (ejemplo)', gate: 'G1 · Evaluar', criterion: 'Plazo de entrevistas', risk: 'bajo', agent: 'Agente administrativo', status: 'Cerrada', pmo: 'Se aceptó extender el plazo con registro de cambio. Cerrada el 8 oct.', evidence: ['Bitácora L-0490'], reason: 'Plazo extendido de común acuerdo con el cliente. Sin impacto en riesgos.' },
+  ];
+  let selected = 'EXC-0007';
+  let pending = null;
+
+  const STATUS_TAG = { 'Abierta': 'b-definido', 'En PMO': 'b-pausado', 'Esperando tu decisión': 'b-pausado', 'Cerrada': 'b-activo' };
+
+  function visible() {
+    const s = document.getElementById('f-status').value;
+    return EXC.filter(e => !s || e.status === s);
+  }
+
+  function renderKpis() {
+    document.getElementById('k-open').textContent = EXC.filter(e => e.status === 'Abierta').length;
+    document.getElementById('k-pmo').textContent = EXC.filter(e => e.status === 'En PMO').length;
+    document.getElementById('k-owner').textContent = EXC.filter(e => e.status === 'Esperando tu decisión').length;
+  }
+
+  function renderRows() {
+    const rows = visible();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(e => `
+      <tr tabindex="0" data-id="${e.id}" aria-selected="${e.id === selected}">
+        <td><div class="lead-name mono">${e.id}</div><div class="sub">${e.project}</div></td>
+        <td class="sub">${e.gate}</td>
+        <td class="hide-sm sub">${e.agent}</td>
+        <td><span class="badge ${STATUS_TAG[e.status]}">${e.status}</span></td>
+      </tr>`).join('') : '<tr><td colspan="4" class="muted">No hay excepciones con ese estado.</td></tr>';
+    renderKpis();
+  }
+
+  function renderDetail() {
+    const e = EXC.find(x => x.id === selected);
+    if (!e) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una excepción para verla.</p>'; return; }
+    const closed = e.status === 'Cerrada';
+    const highRisk = e.risk === 'alto';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${e.id}</h2><div class="sub">${e.project} · ${e.gate}</div></div><span class="badge ${STATUS_TAG[e.status]}">${e.status}</span></div>
+
+      <div class="section"><h3>Criterio que no se cumple</h3>
+        <p style="margin:0">${e.criterion}</p>
+        <p class="sub" style="margin:6px 0 0">Riesgo: ${e.risk}. Propuesta por ${e.agent}.</p>
+      </div>
+
+      <div class="section"><h3>Propuesta de la PMO</h3>
+        <p style="margin:0">${e.pmo}</p>
+      </div>
+
+      <div class="section"><h3>Evidencia enlazada</h3>
+        <div class="refs">${e.evidence.map(x => `<span>${x}</span>`).join('')}</div>
+      </div>
+
+      ${e.reason ? `<div class="section"><h3>Decisión registrada</h3><p style="margin:0">${e.reason}</p></div>` : ''}
+
+      <div class="section decision"><h3>Tu decisión</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="reopen" ${closed ? 'disabled' : ''}>Reabrir la compuerta</button>
+          <button type="button" class="secondary" data-act="accept" ${closed || highRisk ? 'disabled' : ''}>Aceptar el riesgo</button>
+          <button type="button" class="secondary" data-act="change" ${closed ? 'disabled' : ''}>Proponer cambio al framework</button>
+        </div>
+        <p class="sub" style="margin:0">${highRisk ? 'Riesgo alto: no se puede aceptar aquí. Solo se reabre la compuerta o se propone un cambio al framework.' : 'Cada decisión queda en la bitácora con tu nombre, el motivo y la hora.'}</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  const LABEL = { reopen: ['Reabrir la compuerta', 'La compuerta vuelve a en curso y el proyecto no avanza hasta cumplir el criterio.'], accept: ['Aceptar el riesgo', 'Queda como riesgo aceptado con motivo y fecha de revisión.'], change: ['Proponer cambio al framework', 'Se abre una propuesta en Framework. Ningún proyecto en curso cambia de versión.'] };
+
+  function ask(act) {
+    pending = act;
+    document.getElementById('confirm-title').textContent = LABEL[act][0];
+    document.getElementById('confirm-body').textContent = LABEL[act][1];
+    document.getElementById('confirm-reason').value = '';
+    document.getElementById('confirm-error').hidden = true;
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-reason').focus();
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    ask(b.dataset.act);
+  });
+  document.getElementById('f-status').addEventListener('input', renderRows);
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      const reason = document.getElementById('confirm-reason').value.trim();
+      if (!reason) { const err = document.getElementById('confirm-error'); err.textContent = 'Escribe el motivo para registrar la decisión.'; err.hidden = false; return; }
+      const e2 = EXC.find(x => x.id === selected);
+      if (pending === 'reopen') e2.status = 'Abierta';
+      if (pending === 'accept') { e2.status = 'Cerrada'; e2.reason = 'Riesgo aceptado: ' + reason; }
+      if (pending === 'change') e2.status = 'En PMO';
+      document.getElementById('confirm-dialog').classList.remove('open');
+      pending = null; renderRows(); renderDetail();
+      toast('Decisión registrada en la bitácora.');
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>No hay excepciones abiertas</h2><p>Cuando un agente encuentre algo que el framework no cubre, aparecerá aquí antes de cualquier salida.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar las excepciones</h2><p>Revisa tu conexión e intenta de nuevo. Ninguna decisión se ha cambiado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

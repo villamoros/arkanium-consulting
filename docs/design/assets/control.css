@@ -53,3 +53,10 @@
 
 @media (max-width: 1024px) { .gates-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 760px) { .gates-row, .phase-track { grid-template-columns: 1fr; } }
+
+/* Indicadores de estado de servicios */
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: middle; }
+.dot-ok { color: var(--ok); }
+.dot-warn { color: var(--warn); }
+.dot-bad { color: var(--bad); }
+.dot-idle { color: var(--muted); }

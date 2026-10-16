@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Infraestructura de agentes</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="degraded" aria-pressed="false">Degradado</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html">Excepciones</a></li>
+      <li><a href="control-calidad.html">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html" aria-current="page">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Infraestructura de agentes</h1>
+        <p>Si los servicios que ejecutan a los agentes están arriba, cuánto cuestan y qué límites tiene cada uno. Lo que ves aquí es el estado real, no una promesa.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Orquestador: por decidir.</strong> La elección entre Hermes y OpenClaw queda pendiente (ARK-INF-001). Hasta entonces, ningún agente se ejecuta.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-up">3</b><span>servicios arriba de 6</span></div>
+        <div class="kpi"><b>USD 0</b><span>gasto de proveedores de IA hoy (ejemplo)</span></div>
+        <div class="kpi"><b>0</b><span>llamadas de agentes en curso</span></div>
+        <div class="kpi"><b id="k-errors">0</b><span>errores en 24 h</span></div>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Servicios">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Servicio</th><th scope="col">Estado</th><th scope="col" class="hide-sm">Último chequeo</th><th scope="col">Detalle</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del servicio"></aside>
+      </div>
+
+      <section class="panel" style="padding:18px;margin-top:16px" aria-label="Límites por proveedor">
+        <h2 style="font-size:1rem">Límites de uso</h2>
+        <p class="sub" style="margin:4px 0 12px">Cada agente tiene un tope de llamadas por hora y de gasto por día. Si se alcanza, se pausa solo y te avisa.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Proveedor o modelo</th><th scope="col">Llamadas por hora</th><th scope="col">Gasto del día</th><th scope="col">Estado</th></tr></thead>
+            <tbody id="limits"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Los servicios y su estado son ilustrativos.
+  const SERVICES = [
+    { id: 'api', name: 'API (backend)', state: 'ok', checked: 'hace 1 min', detail: 'Responde en 120 ms. Todas las rutas de agentes pasan por aquí.', error: null },
+    { id: 'db', name: 'Base de datos', state: 'ok', checked: 'hace 1 min', detail: 'PostgreSQL local. Migraciones al día.', error: null },
+    { id: 'gw', name: 'Puerta de entrada (API Gateway)', state: 'ok', checked: 'hace 2 min', detail: 'Limita el tráfico y valida credenciales de corta vida.', error: null },
+    { id: 'orq', name: 'Orquestador', state: 'idle', checked: '—', detail: 'Pendiente de decisión: Hermes u OpenClaw, en servidor separado (ARK-INF-001).', error: null },
+    { id: 'agsrv', name: 'Servidor de agentes', state: 'idle', checked: '—', detail: 'Sin proveedor elegido. No hay ejecuciones.', error: null },
+    { id: 'queue', name: 'Cola de tareas', state: 'warn', checked: 'hace 5 min', detail: 'Lista, con una tarea reintentada.', error: 'Tarea C-02 reintentada 2 veces. Sin salida externa.' },
+  ];
+  const LIMITS = [
+    { name: 'Modelo claude (principal)', hourly: '120 de 200', spent: 'USD 14 de 40 (ejemplo)', state: 'Dentro del límite' },
+    { name: 'Modelo claude (ligero)', hourly: '45 de 200', spent: 'USD 3 de 15 (ejemplo)', state: 'Dentro del límite' },
+  ];
+  let selected = 'orq';
+
+  const DOT = { ok: ['Arriba', 'dot-ok'], warn: ['Atención', 'dot-warn'], bad: ['Caído', 'dot-bad'], idle: ['Sin operar', 'dot-idle'] };
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = SERVICES.map(s => {
+      const [label, cls] = DOT[s.state];
+      return `<tr tabindex="0" data-id="${s.id}" aria-selected="${s.id === selected}">
+        <td><div class="lead-name">${s.name}</div></td>
+        <td><span class="badge"><span class="dot ${cls}" aria-hidden="true"></span>${label}</span></td>
+        <td class="hide-sm sub">${s.checked}</td>
+        <td class="sub">${s.error ? 'Hay un aviso' : 'Sin avisos'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('k-up').textContent = SERVICES.filter(s => s.state === 'ok').length;
+    document.getElementById('k-errors').textContent = SERVICES.filter(s => s.error).length;
+    document.getElementById('limits').innerHTML = LIMITS.map(l => `<tr><td><b>${l.name}</b></td><td>${l.hourly}</td><td>${l.spent}</td><td><span class="badge b-activo">${l.state}</span></td></tr>`).join('');
+  }
+
+  function renderDetail() {
+    const s = SERVICES.find(x => x.id === selected);
+    const [label, cls] = DOT[s.state];
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${s.name}</h2><div class="sub">Último chequeo: ${s.checked}</div></div><span class="badge"><span class="dot ${cls}" aria-hidden="true"></span>${label}</span></div>
+      <div class="section"><h3>Estado</h3><p style="margin:0">${s.detail}</p></div>
+      ${s.error ? `<div class="section"><h3>Aviso</h3><p style="margin:0">${s.error}</p></div>` : ''}
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="check">Volver a comprobar</button>
+          <button type="button" class="secondary" data-act="logs">Ver bitácora del servicio</button>
+        </div>
+        <p class="sub" style="margin:0">Comprobar no cambia nada. Pausar agentes se hace en Pausas de emergencia.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    if (b.dataset.act === 'check') { const s = SERVICES.find(x => x.id === selected); s.checked = 'ahora'; renderRows(); renderDetail(); toast('Comprobado. Sin cambios.'); }
+    if (b.dataset.act === 'logs') toast('Abre la bitácora filtrada por este servicio.');
+  });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    if (state === 'degraded') { SERVICES.find(x => x.id === 'db').state = 'warn'; SERVICES.find(x => x.id === 'db').error = 'Latencia alta en la última hora (ejemplo).'; SERVICES.find(x => x.id === 'db').detail = 'Responde lento. Los agentes en curso esperan; ninguno envía salidas.'; selected = 'db'; normal.hidden = false; v.hidden = true; renderRows(); renderDetail(); toast('Vista previa: servicio degradado.'); return; }
+    normal.hidden = true; v.hidden = false;
+    if (state === 'error') v.innerHTML = '<h2>No pudimos comprobar los servicios</h2><p>El panel no alcanza la red de control. Los servicios pueden estar bien; revisa tu conexión e intenta de nuevo.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

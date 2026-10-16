@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Versiones del framework</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin cambios propuestos</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html">Excepciones</a></li>
+      <li><a href="control-calidad.html">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html" aria-current="page">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Versiones del framework</h1>
+        <p>Qué versión de ARK-FW-001 sigue cada proyecto y qué cambios se proponen. La PMO evalúa; tú apruebas. Un cambio nunca altera un proyecto en curso.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Regla:</strong> cada proyecto queda ligado a la versión vigente al iniciarlo. Un cambio nuevo solo aplica a proyectos que empiecen después de aprobarlo.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b>v1.0</b><span>versión vigente</span></div>
+        <div class="kpi"><b id="k-proposed">1</b><span>cambios propuestos</span></div>
+        <div class="kpi"><b>2</b><span>proyectos en v1.0</span></div>
+        <div class="kpi"><b>0</b><span>proyectos cambiados a mitad de camino</span></div>
+      </div>
+
+      <div class="layout">
+        <section class="panel" style="padding:18px" aria-label="Cambios propuestos">
+          <h2 style="font-size:1rem">Cambios propuestos</h2>
+          <div class="table-wrap" style="margin-top:10px">
+            <table>
+              <thead><tr><th scope="col">Cambio</th><th scope="col" class="hide-sm">Sección</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+
+          <h2 style="font-size:1rem;margin-top:22px">Versiones</h2>
+          <div class="table-wrap" style="margin-top:10px">
+            <table>
+              <thead><tr><th scope="col">Versión</th><th scope="col">Vigente desde</th><th scope="col">Proyectos</th></tr></thead>
+              <tbody>
+                <tr><td><b>v1.0</b></td><td class="sub">15 oct (ejemplo)</td><td class="sub">Modernización ERP, Hoja de ruta de TI</td></tr>
+                <tr><td class="sub">v0.9</td><td class="sub">Archivo</td><td class="sub">Ninguno. Versión de prueba.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del cambio"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Los cambios son propuestas, no decisiones tomadas.
+  const CHANGES = [
+    { id: 'CHG-0003', title: 'Añadir criterio de evidencia para entrevistas sin acta', section: '§3 Fase 1, criterios de G1', origin: 'EXC-0006', status: 'En PMO',
+      before: 'Cada hallazgo tiene una evidencia que lo respalda.', after: 'Cada hallazgo tiene una evidencia que lo respalda. Si la evidencia es una entrevista sin acta, se registra un resumen firmado por quien la realizó.',
+      impact: 'Ningún proyecto en curso cambia. Aplica a proyectos nuevos desde v1.1.', pmo: 'La PMO recomienda aceptarlo, con revisión en 60 días.' },
+  ];
+  let selected = 'CHG-0003';
+  let pending = null;
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = CHANGES.length ? CHANGES.map(c => `
+      <tr tabindex="0" data-id="${c.id}" aria-selected="${c.id === selected}">
+        <td><div class="lead-name">${c.title}</div><div class="sub mono">${c.id} · desde ${c.origin}</div></td>
+        <td class="hide-sm sub">${c.section}</td>
+        <td><span class="badge b-pausado">${c.status}</span></td>
+      </tr>`).join('') : '<tr><td colspan="3" class="muted">No hay cambios propuestos.</td></tr>';
+    document.getElementById('k-proposed').textContent = CHANGES.filter(c => c.status !== 'Aprobado' && c.status !== 'Rechazado').length;
+  }
+
+  function renderDetail() {
+    const c = CHANGES.find(x => x.id === selected);
+    if (!c) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un cambio para revisarlo.</p>'; return; }
+    const open = c.status === 'En PMO' || c.status === 'Propuesto';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${c.title}</h2><div class="sub">${c.section}</div></div><span class="badge b-pausado">${c.status}</span></div>
+
+      <div class="section"><h3>Antes</h3><div class="preview">${c.before}</div></div>
+      <div class="section"><h3>Después</h3><div class="preview">${c.after}</div></div>
+
+      <div class="section"><h3>Impacto</h3><p style="margin:0">${c.impact}</p></div>
+      <div class="section"><h3>Recomendación de la PMO</h3><p style="margin:0">${c.pmo}</p></div>
+
+      <div class="section decision"><h3>Tu decisión</h3>
+        <div class="actions">
+          <button type="button" class="primary" data-act="approve" ${open ? '' : 'disabled'}>Aprobar como versión nueva</button>
+          <button type="button" class="danger" data-act="reject" ${open ? '' : 'disabled'}>Rechazar</button>
+        </div>
+        <p class="sub" style="margin:0">Aprobar crea una versión nueva. Los agentes no modifican el framework.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    pending = b.dataset.act;
+    const c = CHANGES.find(x => x.id === selected);
+    document.getElementById('confirm-body').textContent = pending === 'approve'
+      ? `Se crea una versión nueva con este cambio. Solo aplica a proyectos que empiecen después. Los proyectos en curso se quedan en su versión.`
+      : `${c.title} se rechaza. Queda en la bitácora con el motivo.`;
+    document.getElementById('confirm-title').textContent = pending === 'approve' ? 'Aprobar cambio' : 'Rechazar cambio';
+    document.getElementById('confirm-ok').textContent = pending === 'approve' ? 'Aprobar versión' : 'Rechazar';
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      const c = CHANGES.find(x => x.id === selected);
+      c.status = pending === 'approve' ? 'Aprobado' : 'Rechazado';
+      document.getElementById('confirm-dialog').classList.remove('open');
+      const msg = pending === 'approve' ? 'Versión nueva creada. Queda en la bitácora.' : 'Cambio rechazado. Queda en la bitácora.';
+      pending = null; renderRows(); renderDetail(); toast(msg);
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>No hay cambios propuestos</h2><p>El framework está como lo aprobaste. Cuando la PMO proponga un cambio desde una excepción, aparecerá aquí.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar el framework</h2><p>Revisa tu conexión e intenta de nuevo. La versión vigente no cambió.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

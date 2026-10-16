@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Accesos de agentes</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="alert" aria-pressed="false">Con alerta</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin credenciales</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html">Excepciones</a></li>
+      <li><a href="control-calidad.html">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html" aria-current="page">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Accesos de agentes</h1>
+        <p>Qué credencial tiene cada agente, para qué proyecto y hasta cuándo. Las credenciales son de corta vida y se revocan con un clic.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Ninguna credencial vive en la app, en el repositorio ni en el sitio.</strong> Cada agente la recibe solo mientras trabaja en su proyecto, y solo puede llamar a la API.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-active">0</b><span>credenciales activas</span></div>
+        <div class="kpi"><b id="k-alerts">1</b><span>alertas sin revisar</span></div>
+        <div class="kpi"><b>0</b><span>accesos fuera de alcance, confirmados</span></div>
+        <div class="kpi"><b>8 h</b><span>vida máxima de cada credencial</span></div>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Credenciales">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Agente</th><th scope="col">Alcance</th><th scope="col" class="hide-sm">Vence</th><th scope="col">Estado</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la credencial"></aside>
+      </div>
+
+      <section class="panel" style="padding:18px;margin-top:16px" aria-label="Alertas">
+        <h2 style="font-size:1rem">Alertas de acceso</h2>
+        <ul class="checks" id="alerts" style="margin-top:12px"></ul>
+      </section>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Revocar credencial</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="danger" id="confirm-ok">Revocar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Los identificadores de credencial son ilustrativos, no reales.
+  const CREDS = [
+    { id: 'cred-ex-01', agent: 'Agente de evaluación de arquitectura', scope: 'Distribuidora Norte · Modernización ERP', issued: '09:10', expires: 'hoy 17:10', state: 'Activa' },
+    { id: 'cred-ex-02', agent: 'Agente de hoja de ruta de TI', scope: 'Gerente de TI, logística · Hoja de ruta', issued: 'ayer 09:00', expires: 'hoy 01:00', state: 'Vencida' },
+    { id: 'cred-ex-03', agent: 'Agente administrativo', scope: 'Interno · Arkanium', issued: 'hoy 08:00', expires: 'hoy 16:00', state: 'Revocada' },
+  ];
+  const ALERTS = [
+    { text: 'Intento de leer otro proyecto (Diagnóstico de arquitectura) con la credencial de Modernización ERP. Bloqueado por la API.', when: 'hace 40 min', reviewed: false },
+    { text: 'Credencial revocada manualmente a las 08:20. Motivo: prueba de revocación.', when: 'hoy', reviewed: true },
+  ];
+  let selected = 'cred-ex-01';
+  let pendingId = null;
+
+  const TAG = { 'Activa': 'b-activo', 'Vencida': 'b-definido', 'Revocada': 'b-error' };
+
+  function renderKpis() {
+    document.getElementById('k-active').textContent = CREDS.filter(c => c.state === 'Activa').length;
+    document.getElementById('k-alerts').textContent = ALERTS.filter(a => !a.reviewed).length;
+  }
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = CREDS.length ? CREDS.map(c => `
+      <tr tabindex="0" data-id="${c.id}" aria-selected="${c.id === selected}">
+        <td><div class="lead-name">${c.agent}</div><div class="sub mono">${c.id}</div></td>
+        <td class="sub">${c.scope}</td>
+        <td class="hide-sm sub">${c.expires}</td>
+        <td><span class="badge ${TAG[c.state]}">${c.state}</span></td>
+      </tr>`).join('') : '<tr><td colspan="4" class="muted">No hay credenciales emitidas.</td></tr>';
+    document.getElementById('alerts').innerHTML = ALERTS.map((a, i) => `
+      <li><span class="${a.reviewed ? 'ok' : 'pending'}" aria-hidden="true">${a.reviewed ? '✓' : '◷'}</span>
+        <span style="flex:1">${a.text}<br><span class="sub">${a.when}</span></span>
+        ${a.reviewed ? '' : `<button type="button" class="secondary" data-review="${i}">Marcar revisada</button>`}</li>`).join('');
+    renderKpis();
+  }
+
+  function renderDetail() {
+    const c = CREDS.find(x => x.id === selected);
+    if (!c) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una credencial para verla.</p>'; return; }
+    const active = c.state === 'Activa';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${c.agent}</h2><div class="sub mono">${c.id}</div></div><span class="badge ${TAG[c.state]}">${c.state}</span></div>
+
+      <div class="section"><h3>Alcance</h3>
+        <dl class="kv"><dt>Organización y proyecto</dt><dd>${c.scope}</dd><dt>Emitida</dt><dd>${c.issued}</dd><dt>Vence</dt><dd>${c.expires}</dd></dl>
+        <p class="sub" style="margin:8px 0 0">Solo puede llamar a la API con este alcance. Cualquier otro intento se bloquea y aparece en Alertas.</p>
+      </div>
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="danger" data-act="revoke" ${active ? '' : 'disabled'}>Revocar ahora</button>
+        </div>
+        <p class="sub" style="margin:0">Revocar corta el acceso de inmediato. El agente se detiene en su siguiente paso seguro.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    pendingId = selected;
+    const c = CREDS.find(x => x.id === selected);
+    document.getElementById('confirm-body').textContent = `${c.agent} pierde acceso a ${c.scope} de inmediato. Queda en la bitácora.`;
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  });
+  document.getElementById('alerts').addEventListener('click', e => {
+    const b = e.target.closest('[data-review]'); if (!b) return;
+    ALERTS[Number(b.dataset.review)].reviewed = true; renderRows(); toast('Alerta marcada como revisada.');
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pendingId) {
+      const c = CREDS.find(x => x.id === pendingId); c.state = 'Revocada';
+      document.getElementById('confirm-dialog').classList.remove('open');
+      pendingId = null; renderRows(); renderDetail(); toast('Credencial revocada. Queda en la bitácora.');
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    if (state === 'alert') { ALERTS.forEach(a => { a.reviewed = false; }); document.getElementById('view-state').hidden = true; document.getElementById('view-normal').hidden = false; renderRows(); toast('Vista previa: hay alertas sin revisar.'); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>No hay credenciales emitidas</h2><p>Los agentes no operan. Cuando se autoricen en un proyecto, su credencial aparecerá aquí.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar los accesos</h2><p>Revisa tu conexión e intenta de nuevo. Ninguna credencial cambió.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

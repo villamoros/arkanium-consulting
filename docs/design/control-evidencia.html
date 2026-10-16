@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Control · Evidencia y ficha de caso</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/control.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="failing" aria-pressed="false">Pruebas fallando</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin evidencia</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CONTROL</div>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="control-excepciones.html">Excepciones</a></li>
+      <li><a href="control-calidad.html">Revisión de calidad</a></li>
+      <li><a href="control-compuertas.html">Compuertas</a></li>
+      <li><a href="control-framework.html">Versiones del framework</a></li>
+      <li><a href="control-evidencia.html" aria-current="page">Evidencia y ficha de caso</a></li>
+    </ul>
+    <div class="side-group">Agentes</div>
+    <ul>
+      <li><a href="control-agentes.html">Fichas de agente</a></li>
+      <li><a href="control-equipos.html">Equipos por proyecto</a></li>
+      <li><a href="control-accesos.html">Accesos</a></li>
+      <li><a href="control-bitacora.html">Bitácora</a></li>
+    </ul>
+    <div class="side-group">Conocimiento</div>
+    <ul>
+      <li><a href="control-casos.html">Manual de caso</a></li>
+    </ul>
+    <div class="side-group">Sistema</div>
+    <ul>
+      <li><a href="control-infra.html">Infraestructura</a></li>
+    </ul>
+    <div class="side-group">Finanzas</div>
+    <ul>
+      <li><a href="control-finanzas.html">Conciliación Stripe</a></li>
+    </ul>
+    <div class="side-group">Desde core</div>
+    <ul>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto de agentes</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Evidencia y ficha de caso</h1>
+        <p>Lo que respalda las compuertas G3 y G4: resultados de pruebas por etapa y la ficha de caso completa. Sin evidencia registrada, la compuerta no se cierra.</p>
+      </div>
+    </div>
+
+    <div class="project-pick" role="group" aria-label="Elegir proyecto" id="projects"></div>
+
+    <div id="view-normal">
+      <div class="layout" style="margin-top:16px">
+        <section class="panel" style="padding:18px" aria-label="Pruebas por etapa">
+          <h2 style="font-size:1rem">Pruebas por etapa (G3)</h2>
+          <div class="table-wrap" style="margin-top:10px">
+            <table>
+              <thead><tr><th scope="col">Etapa</th><th scope="col">Pruebas</th><th scope="col" class="hide-sm">Última ejecución</th><th scope="col">Resultado</th></tr></thead>
+              <tbody id="tests"></tbody>
+            </table>
+          </div>
+          <p class="sub" style="margin:10px 0 0">Cada ejecución queda en la bitácora con su salida completa. Lo que se muestra aquí es el resumen.</p>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Ficha de caso"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const PROJECTS = [
+    { id: 'erp', name: 'Modernización ERP', client: 'Distribuidora Norte (ejemplo)',
+      stages: [
+        { name: 'Etapa 1 · Módulo de cuentas por cobrar', suite: 'pruebas de integración', total: 42, passed: 42, run: 'hoy 07:12', log: 'L-0533' },
+        { name: 'Etapa 2 · Facturación', suite: 'pruebas de integración', total: 58, passed: 55, run: 'ayer 18:40', log: 'L-0517' },
+      ],
+      caseCard: { 'Contexto del cliente': true, 'Problema y alcance': true, 'Decisiones y alternativas descartadas': true, 'Resultados medidos (no solo esperados)': false, 'Lecciones para el manual de caso': false, 'Enlace a plantillas PL usadas': true } },
+    { id: 'hoja', name: 'Hoja de ruta de TI', client: 'Gerente de TI, logística (ejemplo)', stages: [], caseCard: null },
+  ];
+  let current = 'erp';
+  let stage = 0;
+
+  const proj = () => PROJECTS.find(p => p.id === current);
+
+  function renderProjects() {
+    document.getElementById('projects').innerHTML = PROJECTS.map(p => `
+      <button type="button" class="project-card" data-id="${p.id}" aria-pressed="${p.id === current}" style="${p.id === current ? 'border-color:var(--gold)' : ''}">
+        <h3>${p.name}</h3><p>${p.client}</p>
+        <span class="pending-count">${p.stages.length ? p.stages.length + ' etapa(s) con pruebas' : 'Aún sin etapas'}</span>
+      </button>`).join('');
+  }
+
+  function renderTests() {
+    const p = proj();
+    document.getElementById('tests').innerHTML = p.stages.length ? p.stages.map((s, i) => {
+      const ok = s.passed === s.total;
+      return `<tr tabindex="0" data-i="${i}" aria-selected="${i === stage}">
+        <td><div class="lead-name">${s.name}</div><div class="sub">${s.suite} · ${s.log}</div></td>
+        <td>${s.passed} de ${s.total}</td>
+        <td class="hide-sm sub">${s.run}</td>
+        <td><span class="badge ${ok ? 'b-activo' : 'b-error'}">${ok ? 'Todas pasan' : (s.total - s.passed) + ' fallando'}</span></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="4" class="muted">Este proyecto aún no tiene etapas de construcción. G3 no aplica todavía.</td></tr>';
+  }
+
+  function renderDetail() {
+    const p = proj();
+    if (!p.caseCard) { document.getElementById('detail').innerHTML = '<p class="muted">La ficha de caso se crea al cerrar el proyecto (G4).</p>'; return; }
+    const items = Object.entries(p.caseCard);
+    const done = items.filter(([, v]) => v).length;
+    const s = p.stages[stage];
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>Ficha de caso (PL-10)</h2><div class="sub">${p.name}</div></div><span class="badge ${done === items.length ? 'b-activo' : 'b-pausado'}">${done} de ${items.length}</span></div>
+
+      <div class="section"><h3>Campos</h3>
+        <ul class="checks">${items.map(([t, ok]) => `<li><span class="${ok ? 'ok' : 'pending'}" aria-hidden="true">${ok ? '✓' : '◷'}</span><span>${t}</span></li>`).join('')}</ul>
+      </div>
+
+      ${s ? `<div class="section"><h3>Etapa seleccionada</h3><p style="margin:0">${s.name}: ${s.passed} de ${s.total} pruebas pasan.</p></div>` : ''}
+
+      <div class="section decision"><h3>Compuerta G4</h3>
+        <p class="sub" style="margin:0">${done === items.length ? 'La ficha está completa. G4 puede pasar a tu revisión.' : 'G4 no se puede cerrar: faltan campos de la ficha de caso.'}</p>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="send" ${done === items.length ? '' : 'disabled'}>Enviar a G4</button>
+        </div>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('projects').addEventListener('click', e => {
+    const b = e.target.closest('[data-id]'); if (!b) return;
+    current = b.dataset.id; stage = 0; renderProjects(); renderTests(); renderDetail();
+  });
+  document.getElementById('tests').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-i]'); if (!row) return;
+    stage = Number(row.dataset.i); renderTests(); renderDetail();
+  });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    toast('Enviada a Compuertas para tu revisión de G4. Queda en la bitácora.');
+  });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal'); const v = document.getElementById('view-state');
+    if (state === 'failing') { current = 'erp'; PROJECTS[0].stages[0].passed = 40; renderProjects(); renderTests(); renderDetail(); normal.hidden = false; v.hidden = true; toast('Vista previa: pruebas fallando. G3 no se cierra.'); return; }
+    normal.hidden = true; v.hidden = false;
+    if (state === 'empty') { current = 'hoja'; renderProjects(); normal.hidden = false; v.hidden = true; renderTests(); renderDetail(); toast('Vista previa: sin evidencia todavía.'); return; }
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar la evidencia</h2><p>Revisa tu conexión e intenta de nuevo. Ningún resultado se ha modificado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderProjects(); renderTests(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>
