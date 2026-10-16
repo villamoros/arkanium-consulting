@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Proyectos</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin proyectos</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html" aria-current="page">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Proyectos</h1>
+        <p>Servicios contratados e internos, con su fase del framework, sus compuertas y su equipo de agentes.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis" aria-label="Resumen">
+        <div class="kpi"><b>4</b><span>proyectos activos</span></div>
+        <div class="kpi"><b>1</b><span>interno, sin facturar</span></div>
+        <div class="kpi"><b>2</b><span>compuertas esperando tu aprobación</span></div>
+        <div class="kpi"><b>3</b><span>entregables en revisión</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="q">Buscar proyectos</label>
+        <input id="q" type="search" placeholder="Buscar por proyecto u organización" />
+        <label class="sr" for="f-family">Familia</label>
+        <select id="f-family"><option value="">Todas las familias</option><option>Arquitectura</option><option>Estrategia</option><option>Producto</option></select>
+        <label class="sr" for="f-kind">Tipo</label>
+        <select id="f-kind"><option value="">Contratados e internos</option><option>Contratado</option><option>Interno</option></select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Lista de proyectos">
+          <table>
+            <thead><tr><th scope="col">Proyecto</th><th scope="col">Fase</th><th scope="col" class="hide-sm">Compuertas</th><th scope="col" class="hide-sm">Cobro</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del proyecto"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const PHASES = ['Evaluar', 'Arquitectar', 'Modernizar', 'Escalar'];
+  const PROJECTS = [
+    {
+      id: 'P-0021', name: 'Modernización ERP', org: 'Distribuidora Norte (ejemplo)', family: 'Arquitectura', kind: 'Contratado', billing: 'Precio fijo por hitos',
+      phase: 1, gates: ['passed', 'review', 'pending', 'pending'],
+      deliverables: [['PL-01 Informe de hallazgos', 'Publicado'], ['PL-02 Registro de riesgos', 'En revisión'], ['PL-03 Diseño de arquitectura', 'En borrador']],
+      team: [['Agente de evaluación de arquitectura', 'Asignado · sin operación'], ['Agente de diseño de arquitectura de solución', 'Asignado · sin operación']],
+      log: ['Compuerta G1 aprobada por ti, hace 4 días', 'Informe de hallazgos publicado para el cliente', 'Diseño en borrador, pendiente de revisión de calidad'],
+    },
+    {
+      id: 'P-0024', name: 'Diagnóstico de arquitectura', org: 'Empresa Demo (ejemplo)', family: 'Arquitectura', kind: 'Interno', billing: 'Sin facturar',
+      phase: 0, gates: ['pending', 'pending', 'pending', 'pending'],
+      deliverables: [['PL-01 Informe de hallazgos', 'En borrador']],
+      team: [['Agente de evaluación de arquitectura', 'Asignado · sin operación']],
+      log: ['Proyecto interno creado por ti', 'Sin publicar: no cruza al cliente (D-08)'],
+    },
+    {
+      id: 'P-0019', name: 'CTO fraccional, nivel crecimiento', org: 'Fintech Puente (ejemplo)', family: 'Arquitectura', kind: 'Contratado', billing: 'Retainer mensual',
+      phase: 3, gates: ['passed', 'passed', 'passed', 'review'],
+      deliverables: [['PL-08 Informe final', 'En revisión'], ['PL-09 Guía de operación', 'Publicado']],
+      team: [['Agente de CTO fraccional, nivel crecimiento', 'Asignado · sin operación']],
+      log: ['Transferencia confirmada por el cliente', 'Informe final pendiente de tu revisión'],
+    },
+    {
+      id: 'P-0017', name: 'Hoja de ruta de TI', org: 'Logística Andina (ejemplo)', family: 'Estrategia', kind: 'Contratado', billing: 'Precio fijo, anticipo al inicio',
+      phase: 1, gates: ['passed', 'pending', 'pending', 'pending'],
+      deliverables: [['PL-05 Hoja de ruta por etapas', 'En borrador']],
+      team: [['Agente de hoja de ruta de TI', 'Asignado · sin operación']],
+      log: ['Anticipo pagado', 'Esperando que el cliente confirme el alcance de la etapa 2'],
+    },
+  ];
+
+  let selected = 'P-0021';
+  const GATE_TEXT = { passed: 'Aprobada', review: 'En revisión', pending: 'Pendiente' };
+
+  function filtered() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const fam = document.getElementById('f-family').value;
+    const kind = document.getElementById('f-kind').value;
+    return PROJECTS.filter(p => (!q || (p.name + ' ' + p.org).toLowerCase().includes(q)) && (!fam || p.family === fam) && (!kind || p.kind === kind));
+  }
+
+  function renderRows() {
+    const rows = filtered();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(p => `
+      <tr tabindex="0" data-id="${p.id}" aria-selected="${p.id === selected}">
+        <td><div class="lead-name">${p.name}</div><div class="sub">${p.org} · ${p.family}</div>
+          <div style="margin-top:6px"><span class="badge ${p.kind === 'Interno' ? 'b-internal' : 'b-nuevo'}">${p.kind}</span></div></td>
+        <td><div>${PHASES[p.phase]}</div><div class="sub">Fase ${p.phase + 1} de 4</div></td>
+        <td class="hide-sm"><div class="gates">${p.gates.map((g, i) => `<span class="gate ${g}">G${i + 1} ${GATE_TEXT[g]}</span>`).join('')}</div></td>
+        <td class="hide-sm sub">${p.billing}</td>
+      </tr>`).join('') : '<tr><td colspan="4" class="muted">No hay proyectos con esos filtros.</td></tr>';
+  }
+
+  function renderDetail() {
+    const p = PROJECTS.find(x => x.id === selected);
+    if (!p) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un proyecto.</p>'; return; }
+    document.getElementById('detail').innerHTML = `
+      <div class="head">
+        <div><h2>${p.name}</h2><div class="sub">${p.org}</div></div>
+        <span class="badge ${p.kind === 'Interno' ? 'b-internal' : 'b-nuevo'}">${p.kind}</span>
+      </div>
+
+      <div class="section">
+        <h3>Fase del framework</h3>
+        <div class="phases" role="list">
+          ${PHASES.map((name, i) => `<div role="listitem" class="phase ${i < p.phase ? 'done' : i === p.phase ? 'current' : ''}">${name}<small>${i < p.phase ? 'Completada' : i === p.phase ? 'En curso' : 'Pendiente'}</small></div>`).join('')}
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Compuertas</h3>
+        <div class="gates">${p.gates.map((g, i) => `<span class="gate ${g}">G${i + 1} · ${GATE_TEXT[g]}</span>`).join('')}</div>
+        <div class="actions"><button type="button" class="secondary" data-act="gate">Avanzar compuerta (requiere tu aprobación)</button></div>
+      </div>
+
+      <div class="section">
+        <h3>Entregables</h3>
+        <ul class="checks">${p.deliverables.map(([name, st]) => `<li><span>${name}</span><span class="sub" style="margin-left:auto">${st}</span></li>`).join('')}</ul>
+        <div class="actions"><button type="button" class="secondary" data-act="publish">Publicar entregable (requiere tu aprobación)</button></div>
+      </div>
+
+      <div class="section">
+        <h3>Equipo de agentes</h3>
+        ${p.team.map(([name, st]) => `<div class="agent-row"><span>${name}</span><span class="idle-tag">${st}</span></div>`).join('')}
+        <div class="actions"><button type="button" class="secondary" data-act="assign">Asignar agente (requiere tu aprobación)</button></div>
+        <p class="sub" style="margin:8px 0 0">Los agentes están definidos pero no operan. Activarlos es una decisión tuya por proyecto.</p>
+      </div>
+
+      <div class="section">
+        <h3>Bitácora reciente</h3>
+        <ul class="checks">${p.log.map(t => `<li><span class="sub" aria-hidden="true">·</span><span>${t}</span></li>`).join('')}</ul>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    document.getElementById('view-normal').hidden = state !== 'normal';
+    const view = document.getElementById('view-state');
+    view.hidden = state === 'normal';
+    if (state === 'loading') view.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando proyectos…</p>';
+    if (state === 'empty') view.innerHTML = '<h2>Todavía no hay proyectos</h2><p>Cuando conviertas un lead calificado o crees un proyecto interno, aparecerá aquí.</p>';
+    if (state === 'error') view.innerHTML = '<h2>No pudimos cargar los proyectos</h2><p>Revisa tu conexión e intenta de nuevo. Nada se ha modificado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+
+  document.getElementById('rows').addEventListener('click', e => { const r = e.target.closest('tr[data-id]'); if (r) { selected = r.dataset.id; renderRows(); renderDetail(); } });
+  document.getElementById('rows').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); } });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    toast('Esta acción se envía a Aprobaciones. Nada cambia hasta que la apruebes.');
+  });
+  ['q', 'f-family', 'f-kind'].forEach(id => document.getElementById(id).addEventListener('input', renderRows));
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Insights</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin artículos</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html" aria-current="page">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Insights</h1>
+        <p>Artículos del blog en los cuatro idiomas. Cada artículo se publica con su caso relacionado.</p>
+      </div>
+      <button type="button" class="primary">Nuevo artículo</button>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis">
+        <div class="kpi"><b>3</b><span>en borrador</span></div>
+        <div class="kpi"><b>1</b><span>en revisión</span></div>
+        <div class="kpi"><b>4</b><span>publicados</span></div>
+        <div class="kpi"><b>0</b><span>sin caso relacionado</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="q">Buscar artículos</label>
+        <input id="q" type="search" placeholder="Buscar por título" />
+        <label class="sr" for="f-status">Estado</label>
+        <select id="f-status"><option value="">Todos los estados</option><option>Borrador</option><option>En revisión</option><option>Publicado</option></select>
+        <label class="sr" for="f-lang">Idioma</label>
+        <select id="f-lang"><option value="">Los cuatro idiomas</option><option>ES</option><option>EN</option><option>FR</option><option>PT</option></select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Lista de artículos">
+          <table>
+            <thead><tr><th scope="col">Artículo</th><th scope="col">Estado</th><th scope="col" class="hide-sm">Caso relacionado</th><th scope="col" class="hide-sm">Idiomas</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Vista previa del artículo"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const ARTICLES = [
+    { id: 'A1', title: 'Modernizar un ERP de doce años antes de tocarlo', status: 'Publicado', caseRef: 'Modernización ERP · Manufactura (caso representativo)', langs: ['ES', 'EN', 'FR', 'PT'], updated: 'hace 3 días', checks: ['ok', 'ok', 'ok'], excerpt: 'Cómo se ordena un sistema acoplado y sin documentación antes de cambiarlo.' },
+    { id: 'A2', title: 'Escalar un SaaS antes de añadir servidores', status: 'En revisión', caseRef: 'Escalabilidad SaaS (caso representativo)', langs: ['ES', 'EN'], updated: 'ayer', checks: ['ok', 'pending', 'ok'], excerpt: 'Qué medir antes de comprar más infraestructura.' },
+    { id: 'A3', title: 'Cuándo un pago pasa por demasiados caminos', status: 'Borrador', caseRef: 'Plataforma de pagos (caso representativo)', langs: ['ES'], updated: 'hoy', checks: ['pending', 'pending', 'ok'], excerpt: 'Dueños claros para cada dato de una transacción.' },
+  ];
+  let selected = 'A2';
+
+  function badge(s) { return `<span class="badge ${s === 'Publicado' ? 'b-convertido' : s === 'En revisión' ? 'b-pospuesto' : 'b-nuevo'}">${s}</span>`; }
+
+  function renderRows() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const st = document.getElementById('f-status').value;
+    const lang = document.getElementById('f-lang').value;
+    const rows = ARTICLES.filter(a => (!q || a.title.toLowerCase().includes(q)) && (!st || a.status === st) && (!lang || a.langs.includes(lang)));
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(a => `
+      <tr tabindex="0" data-id="${a.id}" aria-selected="${a.id === selected}">
+        <td><div class="lead-name">${a.title}</div><div class="sub">Actualizado ${a.updated}</div></td>
+        <td>${badge(a.status)}</td>
+        <td class="hide-sm sub">${a.caseRef}</td>
+        <td class="hide-sm sub">${a.langs.join(' · ')}</td>
+      </tr>`).join('') : '<tr><td colspan="4" class="muted">No hay artículos con esos filtros.</td></tr>';
+  }
+
+  function renderDetail() {
+    const a = ARTICLES.find(x => x.id === selected);
+    if (!a) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un artículo.</p>'; return; }
+    const canPublish = a.status === 'En revisión' && a.checks.every(c => c === 'ok');
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${a.title}</h2><div class="sub">${a.updated}</div></div>${badge(a.status)}</div>
+      <div class="section"><h3>Extracto</h3><p style="margin:0">${a.excerpt}</p></div>
+      <div class="section"><h3>Caso relacionado</h3><p style="margin:0">${a.caseRef}</p><p class="sub" style="margin:6px 0 0">Obligatorio para publicar.</p></div>
+      <div class="section"><h3>Idiomas</h3><div class="refs">${['ES', 'EN', 'FR', 'PT'].map(l => `<span class="gate ${a.langs.includes(l) ? 'passed' : 'pending'}">${l} ${a.langs.includes(l) ? 'listo' : 'pendiente'}</span>`).join('')}</div></div>
+      <div class="section"><h3>Revisiones</h3><ul class="checks">
+        <li><span class="${a.checks[0]}">${a.checks[0] === 'ok' ? '✓' : '◷'}</span><span>Datos del caso verificados</span></li>
+        <li><span class="${a.checks[1]}">${a.checks[1] === 'ok' ? '✓' : '◷'}</span><span>Sin datos de clientes identificables</span></li>
+        <li><span class="${a.checks[2]}">${a.checks[2] === 'ok' ? '✓' : '◷'}</span><span>Lenguaje sin promesas de resultados</span></li>
+      </ul></div>
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="review" ${a.status === 'Borrador' ? '' : 'disabled'}>Enviar a revisión</button>
+          <button type="button" class="primary" data-act="publish" ${canPublish ? '' : 'disabled'}>Publicar (requiere tu aprobación)</button>
+        </div>
+        <p class="sub" style="margin:0">Publicar en el sitio es una salida externa: pasa por Aprobaciones.</p>
+      </div>`;
+  }
+
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+
+  document.getElementById('rows').addEventListener('click', e => { const r = e.target.closest('tr[data-id]'); if (r) { selected = r.dataset.id; renderRows(); renderDetail(); } });
+  document.getElementById('rows').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); } });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    if (b.dataset.act === 'review') { const a = ARTICLES.find(x => x.id === selected); a.status = 'En revisión'; renderRows(); renderDetail(); toast('Artículo enviado a revisión.'); }
+    if (b.dataset.act === 'publish') toast('La publicación se envía a Aprobaciones. Nada sale al sitio hasta que la apruebes.');
+  });
+  ['q', 'f-status', 'f-lang'].forEach(id => document.getElementById(id).addEventListener('input', renderRows));
+
+  function setState(s) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    if (s === 'normal') { location.reload(); return; }
+    document.getElementById('view-normal').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (s === 'empty') v.innerHTML = '<h2>Todavía no hay artículos</h2><p>Crea el primero. Cada artículo necesita un caso relacionado para publicarse.</p>';
+    if (s === 'loading') v.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando artículos…</p>';
+    if (s === 'error') v.innerHTML = '<h2>No pudimos cargar los artículos</h2><p>Revisa tu conexión e intenta de nuevo.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

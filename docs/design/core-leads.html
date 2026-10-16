@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Leads</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin leads</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html" aria-current="page">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Leads</h1>
+        <p>Personas y empresas que llegaron por el sitio o por campañas. Tú decides qué pasa con cada una.</p>
+      </div>
+      <button type="button" class="secondary">Exportar</button>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Las propuestas de los agentes son solo sugerencias.</strong> Calificar, posponer, descartar o convertir en organización es decisión tuya. Ninguna acción sale hacia el lead sin tu aprobación.</div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="q">Buscar leads</label>
+        <input id="q" type="search" placeholder="Buscar por nombre, empresa o correo" />
+        <label class="sr" for="f-status">Filtrar por estado</label>
+        <select id="f-status"><option value="">Todos los estados</option><option>Nuevo</option><option>Calificado</option><option>Pospuesto</option><option>Descartado</option><option>Convertido</option></select>
+        <label class="sr" for="f-campaign">Filtrar por campaña</label>
+        <select id="f-campaign"><option value="">Todas las campañas</option><option>Modernización ERP</option><option>CTO fraccional</option></select>
+        <label class="sr" for="f-sort">Ordenar</label>
+        <select id="f-sort"><option>Más recientes</option><option>Mayor prioridad sugerida</option></select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Lista de leads">
+          <table>
+            <thead><tr><th scope="col">Lead</th><th scope="col">Estado</th><th scope="col" class="hide-sm">Campaña y buyer persona</th><th scope="col" class="hide-sm">Propuesta del agente</th><th scope="col" class="hide-sm">Recibido</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del lead"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="convert-dialog" role="dialog" aria-modal="true" aria-labelledby="convert-title">
+  <div class="dialog">
+    <h2 id="convert-title">Convertir en organización</h2>
+    <p class="muted">Esto crea la organización y el contacto principal. Confirma lo que se va a crear:</p>
+    <ul id="convert-summary"></ul>
+    <p class="muted" style="font-size:14px">Después de convertir, la persona recibe una invitación para entrar como administradora de su organización. La envías tú desde esta pantalla.</p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="convert-confirm">Confirmar conversión</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. No corresponden a personas ni empresas reales.
+  const LEADS = [
+    { id: 'L-1041', name: 'Lucía Romero', company: 'Distribuidora Norte', email: 'lucia@ejemplo.test', status: 'nuevo', campaign: 'Modernización ERP', persona: 'Director de operaciones, manufactura', proposal: 'Arquitectura', reason: 'Menciona ERP con más de diez años y despliegues lentos.', received: 'hace 2 h', context: 'Nuestro ERP tiene doce años y cada cambio tarda semanas en salir.', interest: 'Arquitectura' },
+    { id: 'L-1040', name: 'Marcos Vidal', company: 'Fintech Puente', email: 'marcos@ejemplo.test', status: 'calificado', campaign: 'CTO fraccional', persona: 'Fundador técnico, startup', proposal: 'Liderazgo tecnológico', reason: 'Equipo de 6 personas sin CTO; busca liderazgo por meses.', received: 'ayer', context: 'Necesitamos alguien que tome decisiones técnicas de forma continua.', interest: 'Arquitectura' },
+    { id: 'L-1039', name: 'Sofía Ibarra', company: '', email: 'sofia@ejemplo.test', status: 'nuevo', campaign: '—', persona: 'Sin asignar', proposal: 'Sin propuesta', reason: 'Contenido insuficiente para proponer una familia.', received: 'ayer', context: '', interest: 'No estoy seguro' },
+    { id: 'L-1036', name: 'Carlos Medina', company: 'Logística Andina', email: 'carlos@ejemplo.test', status: 'pospuesto', campaign: 'Modernización ERP', persona: 'Gerente de TI', proposal: 'Estrategia', reason: 'Interés en hoja de ruta; pidió retomar en el próximo trimestre.', received: 'hace 3 días', context: 'Queremos saber por dónde empezar.', interest: 'Estrategia' },
+    { id: 'L-1031', name: 'Ana Pérez', company: 'Empresa Demo', email: 'ana@ejemplo.test', status: 'convertido', campaign: 'Modernización ERP', persona: 'Directora de tecnología', proposal: 'Arquitectura', reason: 'Convertido en organización.', received: 'hace 2 semanas', context: '', interest: 'Arquitectura' },
+  ];
+  const LABEL = { nuevo: 'Nuevo', calificado: 'Calificado', pospuesto: 'Pospuesto', descartado: 'Descartado', convertido: 'Convertido' };
+
+  let selected = 'L-1041';
+
+  function badge(status) { return `<span class="badge b-${status}">${LABEL[status]}</span>`; }
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = LEADS.map(l => `
+      <tr tabindex="0" data-id="${l.id}" aria-selected="${l.id === selected}">
+        <td><div class="lead-name">${l.name}</div><div class="sub">${l.company || 'Sin empresa indicada'}</div></td>
+        <td>${badge(l.status)}</td>
+        <td class="hide-sm"><div>${l.campaign}</div><div class="sub">${l.persona}</div></td>
+        <td class="hide-sm proposal"><b>${l.proposal}</b><br>${l.reason}</td>
+        <td class="hide-sm sub">${l.received}</td>
+      </tr>`).join('');
+  }
+
+  function renderDetail() {
+    const l = LEADS.find(x => x.id === selected);
+    const canDecide = l.status !== 'convertido';
+    const canConvert = l.status === 'calificado';
+    document.getElementById('detail').innerHTML = `
+      <div class="head">
+        <div><h2>${l.name}</h2><div class="sub">${l.company || 'Sin empresa indicada'} · ${l.email}</div></div>
+        ${badge(l.status)}
+      </div>
+
+      <div class="section">
+        <h3>Propuesta del agente de calificación</h3>
+        <div class="agent-box">
+          <div class="tag">Sugerencia, no decisión</div>
+          <p style="margin:6px 0 0"><b>Familia sugerida:</b> ${l.proposal}</p>
+          <p style="margin:4px 0 0" class="muted">${l.reason}</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Datos</h3>
+        <dl class="kv">
+          <dt>Campaña</dt><dd>${l.campaign}</dd>
+          <dt>Buyer persona</dt><dd>${l.persona}</dd>
+          <dt>Interés</dt><dd>${l.interest}</dd>
+          <dt>Recibido</dt><dd>${l.received}</dd>
+        </dl>
+      </div>
+
+      <div class="section">
+        <h3>Mensaje del formulario</h3>
+        <p style="margin:0">${l.context || '<span class="muted">Sin mensaje.</span>'}</p>
+      </div>
+
+      <div class="section">
+        <h3>Tu decisión</h3>
+        <label class="sr" for="reason">Motivo de la decisión</label>
+        <textarea id="reason" placeholder="Motivo (obligatorio para calificar, posponer o descartar)"></textarea>
+        <div class="actions">
+          <button type="button" class="primary" data-decide="calificar" ${canDecide ? '' : 'disabled'}>Calificar</button>
+          <button type="button" class="secondary" data-decide="posponer" ${canDecide ? '' : 'disabled'}>Posponer</button>
+          <button type="button" class="danger" data-decide="descartar" ${canDecide ? '' : 'disabled'}>Descartar</button>
+        </div>
+        <div class="actions">
+          <button type="button" class="secondary" id="open-convert" ${canConvert ? '' : 'disabled'} aria-describedby="convert-help">Convertir en organización</button>
+        </div>
+        <p id="convert-help" class="sub" style="margin-top:8px">${canConvert ? 'Disponible porque el lead está calificado.' : 'Solo se puede convertir un lead calificado.'}</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    const normal = document.getElementById('view-normal');
+    const view = document.getElementById('view-state');
+    normal.hidden = state !== 'normal';
+    view.hidden = state === 'normal';
+    if (state === 'loading') {
+      view.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando leads…</p>';
+    } else if (state === 'empty') {
+      view.innerHTML = '<h2>Todavía no hay leads</h2><p>Cuando alguien complete el formulario del sitio o responda una campaña, aparecerá aquí.</p>';
+    } else if (state === 'error') {
+      view.innerHTML = '<h2>No pudimos cargar los leads</h2><p>Revisa tu conexión e intenta de nuevo. Tus datos no se han perdido.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+    }
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('detail').addEventListener('click', e => {
+    const decide = e.target.closest('[data-decide]');
+    if (decide) {
+      const reason = document.getElementById('reason').value.trim();
+      if (!reason) { toast('Escribe un motivo para registrar la decisión.'); document.getElementById('reason').focus(); return; }
+      const l = LEADS.find(x => x.id === selected);
+      const map = { calificar: 'calificado', posponer: 'pospuesto', descartar: 'descartado' };
+      l.status = map[decide.dataset.decide];
+      renderRows(); renderDetail();
+      toast(`Lead ${LABEL[l.status].toLowerCase()}. Queda registrado en la bitácora.`);
+    }
+    if (e.target.closest('#open-convert')) {
+      const l = LEADS.find(x => x.id === selected);
+      document.getElementById('convert-summary').innerHTML = `
+        <li>Organización: <b>${l.company || l.name}</b> (cliente)</li>
+        <li>Contacto principal: <b>${l.name}</b>, ${l.email}</li>
+        <li>Invitación pendiente de envío por ti, con rol de administradora</li>`;
+      document.getElementById('convert-dialog').classList.add('open');
+      document.getElementById('convert-confirm').focus();
+    }
+  });
+  document.getElementById('convert-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'convert-dialog') { document.getElementById('convert-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'convert-confirm') {
+      const l = LEADS.find(x => x.id === selected);
+      l.status = 'convertido';
+      document.getElementById('convert-dialog').classList.remove('open');
+      renderRows(); renderDetail();
+      toast('Organización creada. Ahora puedes invitar a su administradora.');
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('convert-dialog').classList.remove('open');
+  });
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+  document.getElementById('count-new').textContent = LEADS.filter(l => l.status === 'nuevo').length;
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

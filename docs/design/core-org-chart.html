@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Organigrama de agentes</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html" aria-current="page">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Organigrama</h1>
+        <p>Áreas administrativas, áreas transversales y departamentos de servicio. Cada departamento tiene sus agentes especialistas.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis" aria-label="Resumen">
+        <div class="kpi"><b>42</b><span>agentes definidos</span></div>
+        <div class="kpi"><b>0</b><span>agentes operando</span></div>
+        <div class="kpi"><b>3</b><span>departamentos de servicio</span></div>
+        <div class="kpi"><b>100%</b><span>de salidas con tu aprobación</span></div>
+      </div>
+
+      <div class="org-level">
+        <h2>Administración</h2>
+        <div class="area-grid" id="admin"></div>
+      </div>
+
+      <div class="org-level">
+        <h2>Transversal</h2>
+        <div class="area-grid" id="transversal"></div>
+      </div>
+
+      <div class="org-level">
+        <h2>Departamentos de servicio</h2>
+        <div class="dept-grid" id="depts"></div>
+      </div>
+
+      <section class="panel dept-detail" id="detail" aria-live="polite" aria-label="Detalle del departamento" style="padding:18px; margin-top:6px"></section>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<script>
+  // Áreas: responsable humano y agentes (ARK-ARCH-003, secciones 2 y 3.1). Datos de ejemplo de estructura.
+  const ADMIN = [
+    ['Dirección', 'Owner · aprueba todo lo que sale', 0],
+    ['Ventas', 'Captación y calificación de leads', 2],
+    ['Mercadeo', 'Campañas, buyer personas e Insights', 2],
+    ['Operaciones comerciales', 'De propuesta a proyecto', 2],
+    ['Finanzas', 'Facturación y conciliación de pagos', 2],
+    ['Legal y cumplimiento', 'Revisión de términos, con asesor externo', 1],
+    ['Administración', 'Calendario, actas y documentación', 1],
+    ['Éxito del cliente', 'Seguimiento de avances y reuniones', 1],
+  ];
+  const TRANSVERSAL = [
+    ['Oficina de proyectos (PMO)', 'Framework, fases y registro de casos', 1],
+    ['Calidad', 'Revisión de cada entregable antes de tu aprobación', 1],
+    ['Biblioteca de casos', 'Fichas de casos cerrados, en lectura', 1],
+    ['Seguridad y acceso', 'Permisos de agentes y de clientes', 1],
+  ];
+  const DEPTS = [
+    { key: 'architecture', name: 'Arquitectura', cats: ['Consultoría de arquitectura', 'Gobierno tecnológico', 'Liderazgo tecnológico'] },
+    { key: 'strategy', name: 'Estrategia', cats: ['Diagnóstico tecnológico', 'Estrategia digital', 'Estrategia tecnológica', 'Hoja de ruta de TI'] },
+    { key: 'product', name: 'Producto', cats: ['Descubrimiento de producto', 'Definición de producto', 'Estrategia de MVP', 'Gestión de producto'] },
+  ];
+  const AGENTS = [{"dept":"architecture","cat":"Consultoría de arquitectura","name":"Agente de evaluación de arquitectura","service":"Evaluación de arquitectura","deliverable":"Informe de hallazgos y riesgos","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Consultoría de arquitectura","name":"Agente de hoja de ruta de modernización","service":"Hoja de ruta de modernización de arquitectura","deliverable":"Roadmap por fases con criterios de avance","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Consultoría de arquitectura","name":"Agente de diseño de arquitectura de solución","service":"Diseño de arquitectura de solución","deliverable":"Componentes, flujos e integraciones","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Consultoría de arquitectura","name":"Agente de due diligence técnica","service":"Due diligence técnica","deliverable":"Informe de riesgo técnico para inversión o compra","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Consultoría de arquitectura","name":"Agente de arquitecto fraccional","service":"Arquitecto fraccional","deliverable":"Revisiones periódicas y decisiones documentadas","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Gobierno tecnológico","name":"Agente de comité de arquitectura","service":"Comité de revisión de arquitectura (como servicio)","deliverable":"Actas de decisiones de arquitectura","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Gobierno tecnológico","name":"Agente de marco de gobierno","service":"Diseño del marco de gobierno","deliverable":"Marco de decisiones, roles y criterios","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Gobierno tecnológico","name":"Agente de retainer de gobierno","service":"Retainer de gobierno","deliverable":"Revisión mensual de decisiones y riesgos","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Gobierno tecnológico","name":"Agente de riesgo técnico","service":"Monitoreo de riesgo técnico","deliverable":"Registro de riesgos con responsables","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Liderazgo tecnológico","name":"Agente de asesoría de CTO ligera","service":"Asesoría de CTO (ligera)","deliverable":"Recomendaciones trimestrales","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Liderazgo tecnológico","name":"Agente de liderazgo técnico integrado","service":"Liderazgo técnico integrado","deliverable":"Plan de liderazgo y decisiones por sprint","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Liderazgo tecnológico","name":"Agente de CTO fraccional, nivel crecimiento","service":"CTO fraccional — nivel crecimiento","deliverable":"Plan técnico anual y revisiones mensuales","status":"definido","op":"sin_operacion"},{"dept":"architecture","cat":"Liderazgo tecnológico","name":"Agente de CTO fraccional, nivel startup","service":"CTO fraccional — nivel startup","deliverable":"Plan técnico inicial y revisiones quincenales","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Diagnóstico tecnológico","name":"Agente de diagnóstico tecnológico completo","service":"Diagnóstico tecnológico completo","deliverable":"Diagnóstico integral con prioridades","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Diagnóstico tecnológico","name":"Agente de sprint de descubrimiento pagado","service":"Sprint de descubrimiento pagado","deliverable":"Hallazgos y recomendación de siguiente paso","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Diagnóstico tecnológico","name":"Agente de chequeo técnico","service":"Chequeo técnico","deliverable":"Resumen de salud técnica y riesgos principales","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia digital","name":"Agente de portafolio de iniciativas","service":"Portafolio de iniciativas digitales","deliverable":"Portafolio priorizado de iniciativas","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia digital","name":"Agente de madurez digital","service":"Evaluación de madurez digital","deliverable":"Evaluación por dimensiones y brechas","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia digital","name":"Agente de taller de oportunidades","service":"Taller de oportunidades digitales","deliverable":"Lista de oportunidades evaluadas","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia digital","name":"Agente de blueprint de estrategia digital","service":"Blueprint de estrategia digital","deliverable":"Estrategia digital con hitos","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia tecnológica","name":"Agente de construir vs. comprar","service":"Análisis de construir vs. comprar","deliverable":"Recomendación con costo total y riesgos","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia tecnológica","name":"Agente de caso de inversión en deuda técnica","service":"Caso de inversión en deuda técnica","deliverable":"Caso financiero y priorización de deuda","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia tecnológica","name":"Agente de blueprint de estrategia tecnológica","service":"Blueprint de estrategia tecnológica","deliverable":"Estrategia tecnológica con hitos","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Estrategia tecnológica","name":"Agente de sprint de estrategia tecnológica","service":"Sprint de estrategia tecnológica","deliverable":"Estrategia tecnológica acotada a un sprint","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Hoja de ruta de TI","name":"Agente de hoja de ruta de TI","service":"Hoja de ruta de TI (12-24 meses)","deliverable":"Hoja de ruta por trimestres","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Hoja de ruta de TI","name":"Agente de sprint de hoja de ruta","service":"Sprint de hoja de ruta de TI","deliverable":"Hoja de ruta acotada a un sprint","status":"definido","op":"sin_operacion"},{"dept":"strategy","cat":"Hoja de ruta de TI","name":"Agente de actualización trimestral","service":"Actualización trimestral de la hoja de ruta","deliverable":"Hoja de ruta actualizada y cambios justificados","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Descubrimiento de producto","name":"Agente de taller de descubrimiento","service":"Taller de descubrimiento","deliverable":"Hallazgos del taller y preguntas abiertas","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Descubrimiento de producto","name":"Agente de evaluación de oportunidad","service":"Evaluación de oportunidad y viabilidad","deliverable":"Análisis de viabilidad con criterios de decisión","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Descubrimiento de producto","name":"Agente de sprint de descubrimiento","service":"Sprint de descubrimiento de producto","deliverable":"Hallazgos y recomendación de siguiente paso","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Descubrimiento de producto","name":"Agente de experimentos de validación","service":"Experimentos de validación de producto","deliverable":"Diseño y resultados de experimentos","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Definición de producto","name":"Agente de paquete de definición","service":"Paquete de definición de producto","deliverable":"Definición de producto aprobable","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Definición de producto","name":"Agente de requisitos y backlog","service":"Requisitos de producto y backlog","deliverable":"Requisitos priorizados y backlog","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Definición de producto","name":"Agente de visión y alcance","service":"Taller de visión y alcance de producto","deliverable":"Visión y alcance firmados por el cliente","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Definición de producto","name":"Agente de especificación técnica","service":"Especificación técnica de producto","deliverable":"Especificación lista para construcción","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Estrategia de MVP","name":"Agente de taller de alcance de MVP","service":"Taller de definición de alcance del MVP","deliverable":"Alcance del MVP con exclusiones","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Estrategia de MVP","name":"Agente de estrategia y hoja de ruta de MVP","service":"Estrategia y hoja de ruta del MVP","deliverable":"Hoja de ruta del MVP por etapas","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Estrategia de MVP","name":"Agente de revisión de preparación","service":"Revisión de preparación para construir el MVP","deliverable":"Informe de preparación con condiciones","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Gestión de producto","name":"Agente de director de producto fraccional","service":"Director de producto fraccional","deliverable":"Plan de producto y revisiones periódicas","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Gestión de producto","name":"Agente de product manager fraccional","service":"Product Manager fraccional","deliverable":"Backlog gestionado y revisiones de sprint","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Gestión de producto","name":"Agente de asesoría de producto ligera","service":"Asesoría de producto (ligera)","deliverable":"Recomendaciones periódicas","status":"definido","op":"sin_operacion"},{"dept":"product","cat":"Gestión de producto","name":"Agente de modelo operativo de producto","service":"Diseño del modelo operativo de producto","deliverable":"Modelo operativo y roles de producto","status":"definido","op":"sin_operacion"}];
+
+  let selected = 'architecture';
+  const GATE = ['Operación: sin activar'];
+
+  function areaCard([name, desc, count]) {
+    return `<div class="area"><h3>${name}</h3><p>${desc}</p><div class="meta" style="margin-top:10px">${count ? `<span class="idle-tag">${count} agente${count > 1 ? 's' : ''}</span>` : '<span class="idle-tag">Sin agentes</span>'}</div></div>`;
+  }
+
+  function renderAreas() {
+    document.getElementById('admin').innerHTML = ADMIN.map(areaCard).join('');
+    document.getElementById('transversal').innerHTML = TRANSVERSAL.map(areaCard).join('');
+    document.getElementById('depts').innerHTML = DEPTS.map(d => {
+      const n = AGENTS.filter(a => a.dept === d.key).length;
+      return `<button type="button" class="dept" data-dept="${d.key}" aria-pressed="${d.key === selected}">
+        <h3>${d.name}</h3><p>${d.cats.length} categorías de servicio</p>
+        <div class="meta"><span class="idle-tag">${n} agentes</span><span class="idle-tag">0 operando</span></div></button>`;
+    }).join('');
+  }
+
+  function renderDetail() {
+    const d = DEPTS.find(x => x.key === selected);
+    const list = AGENTS.filter(a => a.dept === d.key);
+    document.getElementById('detail').innerHTML = `
+      <div class="dept-detail">
+        <h2>${d.name}</h2>
+        <p class="sub">Responsable humano: owner, hasta asignar un responsable de departamento.</p>
+        ${d.cats.map(cat => {
+          const rows = list.filter(a => a.cat === cat);
+          if (!rows.length) return '';
+          return `<div class="section"><h3>${cat}</h3>
+            <div class="table-wrap">
+            <table class="service-table"><thead><tr><th scope="col">Agente especialista</th><th scope="col">Servicio del catálogo</th><th scope="col" class="hide-sm">Entregable principal</th><th scope="col">Estado</th><th scope="col" class="num">Costo del mes</th></tr></thead>
+            <tbody>${rows.map(a => `<tr><td><div class="lead-name">${a.name}</div></td><td class="sub">${a.service}</td><td class="hide-sm sub">${a.deliverable}</td><td><span class="idle-tag">Definido · sin operación</span></td><td class="num">Pendiente de datos</td></tr>`).join('')}</tbody></table>
+            </div></div>`;
+        }).join('')}
+        <p class="sub" style="margin-top:14px">El costo y el margen aparecen cuando los agentes operen. Mientras tanto, el departamento muestra su estructura y nada más.</p>
+      </div>`;
+  }
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    document.getElementById('view-normal').hidden = state !== 'normal';
+    const view = document.getElementById('view-state');
+    view.hidden = state === 'normal';
+    if (state === 'loading') view.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando el organigrama…</p>';
+    if (state === 'error') view.innerHTML = '<h2>No pudimos cargar el organigrama</h2><p>Revisa tu conexión e intenta de nuevo.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+
+  document.getElementById('depts').addEventListener('click', e => {
+    const b = e.target.closest('[data-dept]'); if (!b) return;
+    selected = b.dataset.dept; renderAreas(); renderDetail();
+  });
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderAreas(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

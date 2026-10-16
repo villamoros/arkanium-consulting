@@ -1,0 +1,28 @@
+/* Menú deslizable para pantallas menores de 1100 px. El botón replica el del sitio (apps/web components.css). */
+.nav-bar { display: none; align-items: center; gap: 12px; margin-bottom: 14px; }
+
+.nav-toggle { display: none; position: relative; z-index: 2; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 6px; background: rgba(230, 232, 235, 0.04); cursor: pointer; flex-direction: column; align-items: center; justify-content: center; transition: border-color 160ms ease, background 160ms ease; flex-shrink: 0; }
+.nav-toggle:hover { border-color: var(--line-strong); background: rgba(230, 232, 235, 0.08); }
+.nav-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.nav-toggle span { display: block; width: 18px; height: 2px; margin: 4px 0; background: var(--paper); transition: transform 240ms ease, opacity 200ms ease; }
+.nav-toggle[aria-expanded="true"] span:first-child { transform: translateY(6px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:last-child { transform: translateY(-6px) rotate(-45deg); }
+
+.nav-scrim { position: fixed; inset: 0; background: rgba(5, 8, 14, 0.6); opacity: 0; pointer-events: none; transition: opacity 300ms ease; z-index: 40; }
+
+@media (max-width: 1099px) {
+  .shell, .client-shell { grid-template-columns: 1fr; }
+  .nav-bar, .nav-toggle { display: flex; }
+  nav.side, .client-nav {
+    position: fixed; top: 0; bottom: 0; left: 0; z-index: 50;
+    width: min(300px, 86vw); overflow-y: auto; margin: 0;
+    background: var(--ink-2); border-right: 1px solid var(--line); border-bottom: 0;
+    padding: 20px 14px;
+    transform: translateX(-104%); visibility: hidden;
+    transition: transform 300ms ease, visibility 300ms ease;
+  }
+  nav.side ul, .client-nav ul { grid-auto-flow: row; overflow: visible; }
+  body.nav-open nav.side, body.nav-open .client-nav { transform: none; visibility: visible; }
+  body.nav-open { overflow: hidden; }
+  body.nav-open .nav-scrim { opacity: 1; pointer-events: auto; }
+}

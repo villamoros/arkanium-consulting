@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Reuniones y actas</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin reuniones</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<header class="topbar">
+  <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span class="role">Miembro</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta" style="text-decoration:none;color:inherit">LR</a>
+    <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <ul>
+      <li><a href="app-projects.html">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html">Entregables</a></li>
+      <li><a href="app-meetings.html" aria-current="page">Reuniones</a></li>
+      <li><a href="app-invoices.html">Facturas</a></li>
+      <li><a href="app-decisions.html">Decisiones</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Reuniones</h1>
+        <p>Próximas, pasadas y tus solicitudes. Cada reunión tiene su acta, visible para todos los participantes.</p>
+      </div>
+      <button type="button" class="primary" id="new-request">Pedir una reunión</button>
+    </div>
+
+    <div id="view-main">
+      <div class="refs" role="tablist" aria-label="Filtrar reuniones" style="margin-bottom:14px">
+        <button type="button" role="tab" aria-selected="true" class="gate" data-tab="upcoming" style="cursor:pointer">Próximas</button>
+        <button type="button" role="tab" aria-selected="false" class="gate" data-tab="past" style="cursor:pointer">Pasadas</button>
+        <button type="button" role="tab" aria-selected="false" class="gate" data-tab="requests" style="cursor:pointer">Mis solicitudes</button>
+      </div>
+
+      <section class="panel" style="padding:18px" id="list" aria-live="polite"></section>
+
+      <section class="panel" style="padding:18px;margin-top:14px" id="request-form" hidden aria-label="Pedir una reunión">
+        <h2 style="font-size:1rem">Pedir una reunión</h2>
+        <label class="sub" for="reason">Motivo</label>
+        <select id="reason" style="width:100%;margin:4px 0 12px;background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px">
+          <option>Revisar un entregable</option><option>Avance del proyecto</option><option>Decidir el siguiente paso</option><option>Cierre del proyecto</option>
+        </select>
+        <label class="sub" for="slots">Horarios que te convienen (hasta tres)</label>
+        <textarea id="slots" placeholder="Por ejemplo: martes 21 oct en la mañana, jueves 23 oct después de las 15:00" style="width:100%;min-height:70px;margin:4px 0 12px;background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px"></textarea>
+        <p class="notice" style="margin:0 0 12px">Tu solicitud queda pendiente hasta que Arkanium la confirme. Te avisamos por correo con el horario final.</p>
+        <div class="actions"><button type="button" class="secondary" id="cancel-request">Cancelar</button><button type="button" class="primary" id="send-request">Enviar solicitud</button></div>
+      </section>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const MEETINGS = {
+    upcoming: [
+      { when: 'Martes 21 oct, 10:00', what: 'Revisión del informe preliminar', who: 'Owner de Arkanium y tu equipo', state: 'Confirmada' },
+      { when: 'Jueves 30 oct, 15:00', what: 'Avance de la etapa 1', who: 'Owner de Arkanium y tu equipo', state: 'Confirmada' },
+    ],
+    past: [
+      { when: 'Jueves 9 oct, 11:00', what: 'Avance de entrevistas', who: 'Owner de Arkanium y tu equipo', state: 'Realizada', acta: { agreements: ['Cerrar las entrevistas pendientes con finanzas antes del 14 oct.', 'El equipo cliente valida el listado de sistemas.'], owners: ['Tu equipo: validar el listado (fecha: 16 oct)', 'Arkanium: enviar el borrador del informe (fecha: 14 oct)'] } },
+    ],
+    requests: [
+      { when: 'Solicitada hoy', what: 'Revisar un entregable', who: 'Pendiente de confirmación', state: 'Pendiente' },
+      { when: 'Solicitada el 8 oct', what: 'Cierre del proyecto', who: 'Rechazada: fuera del calendario de este trimestre', state: 'Rechazada' },
+    ],
+  };
+  let tab = 'upcoming';
+  let current = 'normal';
+
+  function stateClass(s) { return s === 'Confirmada' || s === 'Realizada' ? 'approved' : s === 'Rechazada' ? 'corrections' : 'review'; }
+
+  function render() {
+    const list = document.getElementById('list');
+    const items = MEETINGS[tab];
+    if (!items.length) { list.innerHTML = '<p class="muted" style="margin:0">No tienes reuniones en esta lista.</p>'; return; }
+    list.innerHTML = '<ul class="checks">' + items.map(m => `
+      <li style="display:block;padding:12px 0;border-bottom:1px solid var(--line)">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${m.when}</b><span class="doc-status ${stateClass(m.state)}">${m.state}</span></div>
+        <div>${m.what}</div>
+        <div class="sub">${m.who}</div>
+        ${m.acta ? `<details style="margin-top:8px"><summary style="cursor:pointer;color:var(--gold-2)">Ver acta</summary>
+          <div class="preview" style="margin-top:8px;white-space:normal">
+            <p style="margin:0 0 8px"><b>Acuerdos</b></p><ol style="margin:0 0 10px;padding-left:18px">${m.acta.agreements.map(a => `<li>${a}</li>`).join('')}</ol>
+            <p style="margin:0 0 8px"><b>Responsables y fechas</b></p><ul style="margin:0;padding-left:18px">${m.acta.owners.map(o => `<li>${o}</li>`).join('')}</ul>
+          </div></details>` : ''}
+      </li>`).join('') + '</ul>';
+  }
+
+  function setTab(t) {
+    tab = t;
+    document.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+    render();
+  }
+
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+
+  document.getElementById('new-request').addEventListener('click', () => {
+    const f = document.getElementById('request-form'); f.hidden = !f.hidden; if (!f.hidden) f.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+  document.getElementById('cancel-request').addEventListener('click', () => { document.getElementById('request-form').hidden = true; });
+  document.getElementById('send-request').addEventListener('click', () => {
+    if (!document.getElementById('slots').value.trim()) { toast('Escribe al menos un horario que te convenga.'); return; }
+    MEETINGS.requests.unshift({ when: 'Solicitada ahora', what: document.getElementById('reason').value, who: 'Pendiente de confirmación', state: 'Pendiente' });
+    document.getElementById('request-form').hidden = true;
+    document.getElementById('slots').value = '';
+    setTab('requests');
+    toast('Solicitud enviada. Te avisaremos cuando Arkanium confirme el horario.');
+  });
+  document.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+
+  function setState(s) {
+    current = s;
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    const main = document.getElementById('view-main'); const v = document.getElementById('view-state');
+    main.hidden = s !== 'normal' && s !== 'empty';
+    v.hidden = s === 'normal' || s === 'empty';
+    if (s === 'empty') { MEETINGS.upcoming = []; MEETINGS.past = []; MEETINGS.requests = []; render(); }
+    if (s === 'normal') { location.reload(); return; }
+    if (s === 'loading') v.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando reuniones…</p>';
+    if (s === 'error') v.innerHTML = '<h2>No pudimos cargar tus reuniones</h2><p>Revisa tu conexión e intenta de nuevo.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  render();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

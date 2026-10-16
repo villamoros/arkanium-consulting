@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Campañas</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin campañas</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html" aria-current="page">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Campañas</h1>
+        <p>Cómo responde cada audiencia a la publicidad en cada red. Las landing pages entregan los leads al equipo de marketing.</p>
+      </div>
+      <button type="button" class="secondary">Nueva landing page</button>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis">
+        <div class="kpi"><b>48,200</b><span>impresiones esta semana</span></div>
+        <div class="kpi"><b>3.1%</b><span>clics a landing</span></div>
+        <div class="kpi"><b>12.4%</b><span>formularios enviados</span></div>
+        <div class="kpi"><b>9</b><span>leads nuevos esta semana</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="f-period">Periodo</label>
+        <select id="f-period"><option>Últimos 7 días</option><option>Últimos 30 días</option><option>Este trimestre</option></select>
+        <label class="sr" for="f-campaign">Campaña</label>
+        <select id="f-campaign"><option value="">Todas las campañas</option><option>Modernización ERP</option><option>CTO fraccional</option></select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" style="padding:18px" aria-label="Comportamiento por red">
+          <h2 style="font-size:1rem">Comportamiento por red</h2>
+          <p class="sub" style="margin:4px 0 14px">Embudo de cada red: de la impresión al lead.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Red</th><th scope="col">Impresiones</th><th scope="col">Clics</th><th scope="col">Formularios</th><th scope="col">Leads</th><th scope="col" class="hide-sm">Costo por lead</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+          <p class="sub" style="margin:12px 0 0">Los costos se calculan con los gastos reales de cada red. Hasta tener gasto, aparecen como pendientes.</p>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la red"></aside>
+      </div>
+
+      <section class="panel" style="padding:18px;margin-top:18px" aria-label="Landing pages">
+        <h2 style="font-size:1rem">Landing pages</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Landing</th><th scope="col">Campaña</th><th scope="col">Visitas</th><th scope="col">Formularios</th><th scope="col">Estado</th></tr></thead>
+            <tbody>
+              <tr><td>Diagnóstico de arquitectura</td><td class="sub">Modernización ERP</td><td>2,140</td><td>286</td><td><span class="badge b-convertido">Activa</span></td></tr>
+              <tr><td>CTO fraccional para startups</td><td class="sub">CTO fraccional</td><td>980</td><td>96</td><td><span class="badge b-convertido">Activa</span></td></tr>
+              <tr><td>Hoja de ruta de TI</td><td class="sub">Sin campaña</td><td>0</td><td>0</td><td><span class="badge b-nuevo">Borrador</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="sub" style="margin:10px 0 0">El formulario de cada landing envía el lead a Leads. El equipo de marketing lo contacta según la política de la sección de Buyer personas.</p>
+      </section>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const NETWORKS = [
+    { name: 'LinkedIn', impr: 14200, clicks: 510, forms: 74, leads: 4, cost: 38.5, spent: 1960 },
+    { name: 'YouTube', impr: 11800, clicks: 240, forms: 18, leads: 1, cost: 112, spent: 112 },
+    { name: 'Facebook', impr: 9400, clicks: 260, forms: 22, leads: 2, cost: 66, spent: 132 },
+    { name: 'Instagram', impr: 7300, clicks: 210, forms: 15, leads: 1, cost: 84, spent: 84 },
+    { name: 'TikTok', impr: 3600, clicks: 105, forms: 4, leads: 0, cost: null, spent: 60 },
+    { name: 'X', impr: 1900, clicks: 38, forms: 1, leads: 1, cost: 41, spent: 41 },
+  ];
+  let selected = 'LinkedIn';
+
+  const fmt = n => n.toLocaleString('es-MX');
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = NETWORKS.map(n => `
+      <tr tabindex="0" data-name="${n.name}" aria-selected="${n.name === selected}">
+        <td><b>${n.name}</b></td>
+        <td>${fmt(n.impr)}</td>
+        <td>${fmt(n.clicks)} <span class="sub">${((n.clicks / n.impr) * 100).toFixed(1)}%</span></td>
+        <td>${fmt(n.forms)}</td>
+        <td>${n.leads}</td>
+        <td class="hide-sm">${n.cost === null ? '<span class="sub">Sin leads aún</span>' : 'USD ' + n.cost.toFixed(2)}</td>
+      </tr>`).join('');
+  }
+
+  function renderDetail() {
+    const n = NETWORKS.find(x => x.name === selected);
+    const steps = [['Impresiones', n.impr], ['Clics', n.clicks], ['Formularios', n.forms], ['Leads', n.leads]];
+    const max = n.impr;
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${n.name}</h2><div class="sub">Gasto: USD ${n.spent.toFixed(2)}</div></div></div>
+      <div class="section"><h3>Embudo</h3>
+        ${steps.map(([label, v]) => `<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:14px"><span>${label}</span><span>${fmt(v)}</span></div>
+          <div style="height:8px;background:var(--graphite);border-radius:4px;overflow:hidden"><div style="height:100%;width:${Math.max((v / max) * 100, 1.5)}%;background:linear-gradient(90deg,var(--gold),var(--gold-2))"></div></div></div>`).join('')}
+      </div>
+      <div class="section"><h3>Lectura</h3>
+        <p style="margin:0">${n.leads ? `Esta red trae leads a un costo de USD ${n.cost.toFixed(2)}.` : 'Esta red todavía no ha producido leads con el gasto actual.'} Revisa el mensaje de la campaña antes de aumentar el presupuesto.</p>
+      </div>
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="budget">Ajustar presupuesto (requiere tu aprobación)</button>
+          <button type="button" class="secondary" data-act="pause">Pausar anuncios</button>
+        </div>
+      </div>`;
+  }
+
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+
+  document.getElementById('rows').addEventListener('click', e => { const r = e.target.closest('tr[data-name]'); if (r) { selected = r.dataset.name; renderRows(); renderDetail(); } });
+  document.getElementById('rows').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-name]')) { e.preventDefault(); e.target.click(); } });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    toast(b.dataset.act === 'budget' ? 'El cambio de presupuesto se envía a Aprobaciones.' : 'Pausar anuncios: la acción queda registrada en la bitácora.');
+  });
+
+  function setState(s) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    if (s === 'normal') { location.reload(); return; }
+    document.getElementById('view-normal').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (s === 'empty') v.innerHTML = '<h2>Todavía no hay campañas</h2><p>Crea la primera campaña y su landing page. Las métricas aparecerán cuando haya tráfico.</p>';
+    if (s === 'loading') v.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando métricas…</p>';
+    if (s === 'error') v.innerHTML = '<h2>No pudimos cargar las métricas</h2><p>Revisa tu conexión e intenta de nuevo.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

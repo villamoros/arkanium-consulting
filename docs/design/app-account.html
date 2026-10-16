@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Mi cuenta</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-state="admin" aria-pressed="true">Administrador</button>
+  <button type="button" data-state="member" aria-pressed="false">Miembro</button>
+  <button type="button" data-state="saved" aria-pressed="false">Cambios guardados</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<header class="topbar">
+  <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span id="role" class="role">Administrador</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta" aria-current="page">LR</a>
+    <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <ul>
+      <li><a href="app-projects.html">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html">Entregables</a></li>
+      <li><a href="app-meetings.html">Reuniones</a></li>
+      <li><a href="app-invoices.html">Facturas</a></li>
+      <li><a href="app-decisions.html">Decisiones</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Mi cuenta</h1>
+        <p>Tu perfil, idioma, avisos y tus datos. Lo que decides aquí no cambia lo que ya quedó registrado con tu nombre.</p>
+      </div>
+    </div>
+
+    <div id="view-main">
+      <div class="layout">
+        <div>
+          <section class="panel" style="padding:18px;margin-bottom:16px" aria-label="Perfil e idioma">
+            <h2 style="font-size:1rem">Perfil e idioma</h2>
+            <div class="filters" style="margin:12px 0 0">
+              <label class="sub" style="display:grid;gap:4px;flex:1;min-width:220px">Nombre
+                <input type="text" value="Lucía Romero (ejemplo)" />
+              </label>
+              <label class="sub" style="display:grid;gap:4px;flex:1;min-width:220px">Correo
+                <input type="email" value="lucia@ejemplo.test" />
+              </label>
+              <label class="sub" style="display:grid;gap:4px;min-width:180px">Idioma de la app
+                <select id="lang">
+                  <option value="en">English</option>
+                  <option value="es" selected>Español</option>
+                  <option value="pt">Português</option>
+                  <option value="fr">Français</option>
+                </select>
+              </label>
+            </div>
+            <p class="sub" style="margin:10px 0 0">El idioma cambia solo la interfaz. Los entregables, las facturas y las actas salen en el idioma acordado en cada proyecto.</p>
+          </section>
+
+          <section class="panel" style="padding:18px;margin-bottom:16px" aria-label="Notificaciones">
+            <h2 style="font-size:1rem">Avisos</h2>
+            <p class="sub" style="margin:4px 0 12px">Elige qué te avisamos y por dónde. Las decisiones pendientes y las facturas siempre llegan; no se pueden silenciar.</p>
+            <table class="mini-table">
+              <thead><tr><th scope="col">Aviso</th><th scope="col">Correo</th><th scope="col">En la app</th></tr></thead>
+              <tbody id="notif-rows"></tbody>
+            </table>
+            <div class="filters" style="margin:12px 0 0">
+              <label class="sub" style="display:grid;gap:4px;min-width:220px">Frecuencia de los avisos por correo
+                <select id="freq">
+                  <option value="now">Al momento</option>
+                  <option value="daily">Resumen diario (9:00, hora de tu organización)</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <section class="panel" style="padding:18px" aria-label="Avisos recientes">
+            <h2 style="font-size:1rem">Avisos recientes</h2>
+            <ul class="checks" style="margin-top:12px">
+              <li><span style="flex:1"><b>Entregable publicado</b><br><span class="sub">Informe preliminar de hallazgos · hoy 09:14</span></span><span class="doc-status ready">Nuevo</span></li>
+              <li><span style="flex:1"><b>Factura por pagar</b><br><span class="sub">FAC-1051 · vence el 5 oct · hace 10 días</span></span><span class="doc-status review">Vencida</span></li>
+              <li><span style="flex:1"><b>Reunión confirmada</b><br><span class="sub">Martes 21 oct, 10:00</span></span><span class="doc-status approved">Leído</span></li>
+            </ul>
+          </section>
+        </div>
+
+        <aside class="panel" style="padding:18px;align-self:start" aria-label="Tus datos">
+          <h2 style="font-size:1rem">Tus datos</h2>
+          <p class="sub" style="margin:8px 0 12px">Exporta todo lo que tienes en la plataforma: perfil, descargas, decisiones y facturas, en un archivo ZIP.</p>
+          <div class="actions" style="margin-top:0"><button type="button" class="secondary" id="btn-export">Exportar mis datos</button></div>
+
+          <div class="section" id="exit-member">
+            <h3>Salir de la organización</h3>
+            <p style="margin:0">Pierdes acceso a sus proyectos. Tus decisiones y descargas quedan registradas con tu nombre.</p>
+            <div class="actions"><button type="button" class="danger" id="btn-leave">Salir de la organización</button></div>
+          </div>
+
+          <div class="section" id="exit-admin" hidden>
+            <h3>Dar de baja la organización</h3>
+            <p style="margin:0">La baja la confirma Arkanium. Facturas, entregables y el registro de decisiones se conservan por obligación contable; no se borran.</p>
+            <div class="actions"><button type="button" class="danger" id="btn-close">Pedir la baja a Arkanium</button></div>
+          </div>
+
+          <p class="sub" style="margin:14px 0 0">Plazos de conservación pendientes de revisión legal.</p>
+        </aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Confirmar</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="danger" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const NOTIFS = [
+    { id: 'deliverable', label: 'Entregable publicado para revisar', mail: true, app: true, locked: false },
+    { id: 'decision', label: 'Decisión que te toca tomar', mail: true, app: true, locked: true },
+    { id: 'invoice', label: 'Factura emitida o vencida', mail: true, app: true, locked: true },
+    { id: 'meeting', label: 'Reunión confirmada o cambiada', mail: true, app: true, locked: false },
+    { id: 'minutes', label: 'Acta publicada', mail: false, app: true, locked: false },
+    { id: 'milestone', label: 'Hito cambió de fecha prevista', mail: true, app: true, locked: false },
+  ];
+  let isAdmin = true;
+
+  function renderNotifs() {
+    document.getElementById('notif-rows').innerHTML = NOTIFS.map(n => `
+      <tr>
+        <td>${n.label}${n.locked ? ' <span class="sub">· obligatorio</span>' : ''}</td>
+        <td><input type="checkbox" aria-label="${n.label}, por correo" data-n="${n.id}" data-ch="mail" ${n.mail ? 'checked' : ''} ${n.locked ? 'disabled' : ''} /></td>
+        <td><input type="checkbox" aria-label="${n.label}, en la app" data-n="${n.id}" data-ch="app" ${n.app ? 'checked' : ''} ${n.locked ? 'disabled' : ''} /></td>
+      </tr>`).join('');
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  function applyRole() {
+    document.getElementById('role').textContent = isAdmin ? 'Administrador' : 'Miembro';
+    document.getElementById('exit-admin').hidden = !isAdmin;
+    document.getElementById('exit-member').hidden = isAdmin;
+  }
+
+  document.getElementById('notif-rows').addEventListener('change', e => {
+    const n = NOTIFS.find(x => x.id === e.target.dataset.n); if (!n) return;
+    n[e.target.dataset.ch] = e.target.checked;
+    toast('Preferencia guardada.');
+  });
+  document.getElementById('lang').addEventListener('change', () => toast('Idioma cambiado. Los documentos siguen en el idioma acordado en cada proyecto.'));
+  document.getElementById('freq').addEventListener('change', () => toast('Frecuencia guardada.'));
+  document.getElementById('btn-export').addEventListener('click', () => toast('Preparando tu archivo. Te avisamos cuando esté listo para descargar.'));
+
+  let pending = null;
+  function ask(title, body, ok, action) {
+    pending = action;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-body').textContent = body;
+    document.getElementById('confirm-ok').textContent = ok;
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  }
+  document.getElementById('btn-leave').addEventListener('click', () => ask('Salir de la organización', 'Perderás acceso a sus proyectos. Tus decisiones y descargas quedan registradas con tu nombre.', 'Salir', 'leave'));
+  document.getElementById('btn-close').addEventListener('click', () => ask('Pedir la baja', 'Se envía la solicitud a Arkanium. Nada se elimina: los documentos y facturas se conservan.', 'Enviar solicitud', 'close'));
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pending) {
+      document.getElementById('confirm-dialog').classList.remove('open');
+      toast(pending === 'leave' ? 'Saliste de la organización. Queda registrado.' : 'Solicitud enviada a Arkanium. Te confirmaremos por correo.');
+      pending = null;
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    const main = document.getElementById('view-main');
+    const v = document.getElementById('view-state');
+    main.hidden = state === 'error';
+    v.hidden = state !== 'error';
+    if (state === 'admin') { isAdmin = true; applyRole(); }
+    if (state === 'member') { isAdmin = false; applyRole(); }
+    if (state === 'saved') { main.hidden = false; v.hidden = true; toast('Cambios guardados.'); }
+    if (state === 'error') v.innerHTML = '<h2>No pudimos guardar tus cambios</h2><p>Revisa tu conexión e intenta de nuevo. Tus preferencias anteriores siguen activas.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="admin">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderNotifs(); applyRole();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

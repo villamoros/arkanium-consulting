@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Presupuesto de agentes</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="limit" aria-pressed="false">Tope alcanzado</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin gasto aún</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html" aria-current="page">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Presupuesto de agentes</h1>
+        <p>Cuánto gasta cada agente en modelos y herramientas, frente al tope que tú fijas. Los costos son solo para ti; los clientes no los ven.</p>
+      </div>
+      <button type="button" class="secondary" id="btn-cap">Ajustar topes (requiere tu aprobación)</button>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Tope de seguridad:</strong> cuando un agente llega a su tope del mes, se pausa solo y te avisa. No sigue gastando hasta que lo reanudes.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b>USD 1,305</b><span>gasto del mes (ejemplo)</span></div>
+        <div class="kpi"><b>USD 2,300</b><span>suma de topes mensuales</span></div>
+        <div class="kpi"><b id="k-alert">2</b><span>agentes con alerta</span></div>
+        <div class="kpi"><b>Pendiente</b><span>costo por hora de agente</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="f-family">Familia</label>
+        <select id="f-family">
+          <option value="">Todas las familias</option>
+          <option>Arquitectura</option><option>Estrategia</option><option>Producto</option>
+        </select>
+        <label class="sr" for="f-period">Periodo</label>
+        <select id="f-period"><option>Este mes</option><option>Últimos 30 días</option><option>Este trimestre</option></select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Gasto por agente">
+          <table>
+            <thead><tr><th scope="col">Agente</th><th scope="col">Proyecto</th><th scope="col" class="hide-sm">Gasto / tope</th><th scope="col">Estado</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del agente"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Las cifras son ilustrativas; el costo por hora queda pendiente hasta tener gasto real.
+  const AGENTS = [
+    { id: 'G1', name: 'Agente de evaluación de arquitectura', family: 'Arquitectura', project: 'Modernización ERP (ejemplo)', spent: 620, cap: 800, paused: false, hours: 41, model: 'Modelo principal' },
+    { id: 'G2', name: 'Agente de captación', family: 'Producto', project: 'Campaña de leads (ejemplo)', spent: 380, cap: 400, paused: false, hours: 22, model: 'Modelo ligero' },
+    { id: 'G3', name: 'Agente de hoja de ruta', family: 'Estrategia', project: 'Diagnóstico de arquitectura (ejemplo)', spent: 210, cap: 600, paused: false, hours: 14, model: 'Modelo principal' },
+    { id: 'G4', name: 'Agente administrativo', family: 'Producto', project: 'Interno (sin facturar)', spent: 95, cap: 200, paused: false, hours: 9, model: 'Modelo ligero' },
+    { id: 'G5', name: 'Agente de propuestas', family: 'Estrategia', project: 'Propuesta Distribuidora Norte (ejemplo)', spent: 0, cap: 300, paused: true, hours: 0, model: 'Modelo principal' },
+  ];
+  let selected = 'G2';
+
+  function status(a) {
+    const pct = a.spent / a.cap;
+    if (a.paused) return { label: 'Pausado por tope', cls: 'b-pospuesto' };
+    if (pct >= 0.9) return { label: 'Cerca del tope', cls: 'b-pospuesto' };
+    return { label: 'Dentro del tope', cls: 'b-convertido' };
+  }
+
+  function bar(a) {
+    const pct = Math.min(a.spent / a.cap, 1) * 100;
+    const cls = a.paused ? 'bad' : pct >= 90 ? 'warn' : '';
+    return `<div class="meter"><i class="${cls}" style="width:${pct}%"></i></div>`;
+  }
+
+  function visible() {
+    const fam = document.getElementById('f-family').value;
+    return AGENTS.filter(a => !fam || a.family === fam);
+  }
+
+  function renderRows() {
+    const rows = visible();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(a => {
+      const s = status(a);
+      return `<tr tabindex="0" data-id="${a.id}" aria-selected="${a.id === selected}">
+        <td><div class="lead-name">${a.name}</div><div class="sub">${a.family}</div></td>
+        <td class="sub">${a.project}</td>
+        <td class="hide-sm">USD ${a.spent} / ${a.cap}${bar(a)}</td>
+        <td><span class="badge ${s.cls}">${s.label}</span></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="4" class="muted">No hay agentes en esa familia.</td></tr>';
+    document.getElementById('k-alert').textContent = AGENTS.filter(a => a.paused || a.spent / a.cap >= 0.9).length;
+  }
+
+  function renderDetail() {
+    const a = AGENTS.find(x => x.id === selected);
+    if (!a) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un agente para ver su gasto.</p>'; return; }
+    const s = status(a);
+    const remaining = Math.max(a.cap - a.spent, 0);
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${a.name}</h2><div class="sub">${a.project}</div></div><span class="badge ${s.cls}">${s.label}</span></div>
+
+      <div class="section"><h3>Gasto del mes</h3>
+        ${bar(a)}
+        <p class="sub" style="margin:6px 0 0">USD ${a.spent} de USD ${a.cap}. Quedan USD ${remaining}.</p>
+      </div>
+
+      <div class="section"><h3>Uso</h3>
+        <dl class="kv">
+          <dt>Modelo</dt><dd>${a.model}</dd>
+          <dt>Horas de trabajo</dt><dd>${a.hours} h este mes</dd>
+          <dt>Costo por hora</dt><dd>${a.hours ? 'Pendiente de cerrar el periodo' : 'Sin trabajo aún'}</dd>
+        </dl>
+      </div>
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="${a.paused ? 'resume' : 'pause'}">${a.paused ? 'Reanudar agente' : 'Pausar agente'}</button>
+          <button type="button" class="secondary" data-act="cap">Pedir cambio de tope (requiere tu aprobación)</button>
+        </div>
+        <p class="sub" style="margin:0">Subir un tope pasa por Aprobaciones. Bajarlo se aplica de inmediato.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+
+  document.getElementById('detail').addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    const a = AGENTS.find(x => x.id === selected);
+    if (btn.dataset.act === 'pause') { a.paused = true; renderRows(); renderDetail(); toast('Agente pausado. Queda en la bitácora.'); }
+    if (btn.dataset.act === 'resume') { a.paused = false; renderRows(); renderDetail(); toast('Agente reanudado. Queda en la bitácora.'); }
+    if (btn.dataset.act === 'cap') toast('El cambio de tope se envía a Aprobaciones.');
+  });
+  document.getElementById('btn-cap').addEventListener('click', () => toast('El cambio de topes se envía a Aprobaciones.'));
+  ['f-family', 'f-period'].forEach(id => document.getElementById(id).addEventListener('input', renderRows));
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    const normal = document.getElementById('view-normal');
+    const v = document.getElementById('view-state');
+    normal.hidden = true; v.hidden = false;
+    if (state === 'limit') {
+      AGENTS.forEach(a => { a.spent = a.cap; a.paused = true; });
+      normal.hidden = false; v.hidden = true;
+      renderRows(); renderDetail();
+      toast('Vista previa: topes alcanzados. Los agentes están en pausa.');
+    }
+    if (state === 'empty') v.innerHTML = '<h2>Todavía no hay gasto</h2><p>Cuando los agentes empiecen a trabajar, verás aquí su gasto frente al tope de cada uno.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar el gasto</h2><p>Revisa tu conexión e intenta de nuevo. Ningún tope se ha cambiado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

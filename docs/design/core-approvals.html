@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Aprobaciones</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-approvals.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin pendientes</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html" aria-current="page">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Aprobaciones</h1>
+        <p>Todo lo que los agentes proponen hacia fuera. Aquí apruebas, devuelves o rechazas. Nada sale sin tu decisión.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis" aria-label="Resumen">
+        <div class="kpi"><b id="kpi-pending">6</b><span>pendientes</span></div>
+        <div class="kpi"><b id="kpi-urgent">2</b><span>con fecha límite hoy</span></div>
+        <div class="kpi"><b id="kpi-returned">1</b><span>devueltas, esperando corrección</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="q">Buscar en la cola</label>
+        <input id="q" type="search" placeholder="Buscar por proyecto, lead o agente" />
+        <label class="sr" for="f-type">Tipo de acción</label>
+        <select id="f-type">
+          <option value="">Todas las acciones</option>
+          <option>Enviar correo</option><option>Agendar reunión</option><option>Publicar entregable</option>
+          <option>Emitir factura</option><option>Invitar miembro</option><option>Publicar acta</option>
+        </select>
+        <label class="sr" for="f-urgency">Urgencia</label>
+        <select id="f-urgency"><option value="">Cualquier urgencia</option><option>Con fecha límite hoy</option></select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Cola de aprobaciones">
+          <table>
+            <thead><tr><th scope="col">Acción</th><th scope="col">Propuesta por</th><th scope="col" class="hide-sm">Pertenece a</th><th scope="col">Límite</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la aprobación"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Confirmar salida</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="primary" id="confirm-ok">Aprobar y enviar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. No corresponden a personas, empresas ni montos reales.
+  const ITEMS = [
+    {
+      id: 'A-0148', type: 'Publicar entregable', agent: 'Agente de evaluación de arquitectura', belongs: 'Proyecto: Modernización ERP (ejemplo)', due: 'Hoy 18:00', urgent: true, age: 'hace 3 h', status: 'pendiente',
+      summary: 'Informe preliminar de hallazgos para el cliente.',
+      preview: 'Informe preliminar · Modernización ERP (ejemplo)\n\nResumen: el sistema de facturación depende de tres módulos sin dueño claro. Se recomienda definir fronteras antes de cualquier cambio.\n\nHallazgos: 7 (2 de impacto alto).\nRiesgos altos: 2, con responsable asignado.',
+      checks: [['ok', 'Cumple la plantilla PL-01'], ['ok', 'Cada hallazgo tiene evidencia'], ['pending', 'Revisión de calidad: pendiente de confirmar']],
+      refs: ['PL-01', 'PL-02', 'Caso FC-0012 (consultado)'],
+      recipient: 'Cliente: contacto principal del proyecto (ejemplo)',
+    },
+    {
+      id: 'A-0147', type: 'Enviar correo', agent: 'Agente de captación', belongs: 'Lead: Lucía Romero (ejemplo)', due: 'Hoy 12:00', urgent: true, age: 'hace 2 h', status: 'pendiente',
+      summary: 'Respuesta al lead con propuesta de reunión demo.',
+      preview: 'Asunto: Gracias por escribirnos, Lucía\n\nHola Lucía,\n\nGracias por contarnos sobre el ERP de Distribuidora Norte. ¿Te parece una llamada de 30 minutos la próxima semana? Podemos entender tu contexto y definir juntos los siguientes pasos.\n\nSaludos,\nArkanium Consulting',
+      checks: [['ok', 'Tono y datos verificados contra el formulario'], ['ok', 'No promete resultados'], ['ok', 'Sin datos de otros clientes']],
+      refs: ['Plantilla de respuesta inicial'],
+      recipient: 'Lucía Romero (lucia@ejemplo.test)',
+    },
+    {
+      id: 'A-0146', type: 'Agendar reunión', agent: 'Agente administrativo', belongs: 'Lead: Marcos Vidal (ejemplo)', due: 'Mañana', urgent: false, age: 'hace 5 h', status: 'pendiente',
+      summary: 'Reunión demo con tres horarios propuestos.',
+      preview: 'Reunión demo · 30 minutos · Videollamada\n\nHorarios propuestos (hora de Ciudad de México):\n· martes 21 oct, 10:00\n· miércoles 22 oct, 16:00\n· jueves 23 oct, 11:30',
+      checks: [['ok', 'Horarios sin conflictos en el calendario'], ['pending', 'Enlace de videollamada por generar']],
+      refs: ['Demo estándar'],
+      recipient: 'Marcos Vidal (marcos@ejemplo.test)',
+    },
+    {
+      id: 'A-0145', type: 'Emitir factura', agent: 'Agente de facturación', belongs: 'Proyecto: Diagnóstico de arquitectura (ejemplo)', due: 'Viernes', urgent: false, age: 'ayer', status: 'pendiente',
+      summary: 'Factura de anticipo al inicio del diagnóstico.',
+      preview: 'Factura · Anticipo 50% · Diagnóstico de arquitectura (ejemplo)\n\nConcepto: anticipo de inicio, según SOW aprobado.\nMonto: USD 2,250.00 (ejemplo)\nVencimiento: 15 días\nPago: página segura de Stripe',
+      checks: [['ok', 'Coincide con el SOW firmado'], ['ok', 'Impuestos según el estado del cliente'], ['pending', 'Número de factura por asignar']],
+      refs: ['SOW firmado (ejemplo)'],
+      recipient: 'Organización cliente (ejemplo)',
+    },
+    {
+      id: 'A-0144', type: 'Invitar miembro', agent: 'Agente de cuentas', belongs: 'Organización: Empresa Demo (ejemplo)', due: 'Sin fecha', urgent: false, age: 'hace 1 día', status: 'pendiente',
+      summary: 'Propuesta de un administrador del cliente para añadir a una persona.',
+      preview: 'Propuesta de invitación\n\nPropone: persona@ejemplo.test\nRol solicitado: Miembro\n\nLa invitación la envías tú (D-03). Este registro solo informa de la propuesta.',
+      checks: [['ok', 'Solicitud hecha por un administrador de la organización']],
+      refs: ['ARK-ARCH-001 § 3.3'],
+      recipient: 'Persona propuesta (persona@ejemplo.test)',
+    },
+    {
+      id: 'A-0143', type: 'Publicar acta', agent: 'Agente administrativo', belongs: 'Reunión: avance del proyecto (ejemplo)', due: 'Hoy 20:00', urgent: true, age: 'hace 6 h', status: 'devuelta',
+      summary: 'Acta de la reunión de avance, con acuerdos y responsables.',
+      preview: 'Acta · Reunión de avance (ejemplo)\n\nAcuerdos:\n1. Cerrar la revisión de frontera del módulo de facturación.\n2. El cliente valida el alcance de la etapa 2.\n\nResponsables y fechas: pendientes de completar.',
+      checks: [['pending', 'Responsables sin completar'], ['ok', 'Acuerdos verificados contra la grabación']],
+      refs: ['PL-06'],
+      recipient: 'Participantes de la organización (ejemplo)',
+      returnNote: 'Completar responsables y fechas antes de publicar.',
+    },
+  ];
+  const TYPE_LABEL = { pendiente: 'Pendiente', devuelta: 'Devuelta', aprobada: 'Aprobada', rechazada: 'Rechazada' };
+
+  let selected = 'A-0148';
+
+  function badgeFor(status) {
+    const cls = status === 'devuelta' ? 'b-pospuesto' : 'b-nuevo';
+    return `<span class="badge ${cls}">${TYPE_LABEL[status]}</span>`;
+  }
+
+  function renderRows() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const type = document.getElementById('f-type').value;
+    const urg = document.getElementById('f-urgency').value;
+    const rows = ITEMS.filter(i => i.status !== 'aprobada' && i.status !== 'rechazada')
+      .filter(i => !type || i.type === type)
+      .filter(i => !urg || i.urgent)
+      .filter(i => !q || (i.belongs + ' ' + i.agent + ' ' + i.summary).toLowerCase().includes(q));
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(i => `
+      <tr tabindex="0" data-id="${i.id}" aria-selected="${i.id === selected}">
+        <td><div class="type">${i.type}</div><div class="sub">${i.summary}</div><div style="margin-top:6px">${badgeFor(i.status)}</div></td>
+        <td><div>${i.agent}</div><div class="sub">${i.age}</div></td>
+        <td class="hide-sm">${i.belongs}</td>
+        <td>${i.urgent ? `<div class="urgent">${i.due}</div>` : `<div class="due">${i.due}</div>`}</td>
+      </tr>`).join('') : '';
+    if (!rows.length) {
+      document.getElementById('rows').innerHTML = '<tr><td colspan="4" class="muted">No hay acciones con esos filtros.</td></tr>';
+    }
+    const pending = ITEMS.filter(i => i.status === 'pendiente' || i.status === 'devuelta').length;
+    document.getElementById('count-pending').textContent = pending;
+    document.getElementById('kpi-pending').textContent = pending;
+    document.getElementById('kpi-urgent').textContent = ITEMS.filter(i => i.urgent && (i.status === 'pendiente' || i.status === 'devuelta')).length;
+    document.getElementById('kpi-returned').textContent = ITEMS.filter(i => i.status === 'devuelta').length;
+  }
+
+  function renderDetail() {
+    const i = ITEMS.find(x => x.id === selected);
+    if (!i) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una acción para revisarla.</p>'; return; }
+    const closed = i.status === 'aprobada' || i.status === 'rechazada';
+    document.getElementById('detail').innerHTML = `
+      <div class="head">
+        <div><h2>${i.type}</h2><div class="sub">${i.id} · ${i.belongs}</div></div>
+        ${badgeFor(i.status)}
+      </div>
+
+      <div class="section">
+        <h3>Vista previa de lo que saldría</h3>
+        <div class="preview-head">${i.recipient}</div>
+        <div class="preview">${i.preview}</div>
+      </div>
+
+      <div class="section">
+        <h3>Propuesta de</h3>
+        <p style="margin:0"><b>${i.agent}</b><br><span class="sub">${i.age}</span></p>
+        <p style="margin:8px 0 0" class="muted">${i.summary}</p>
+      </div>
+
+      <div class="section">
+        <h3>Revisiones</h3>
+        <ul class="checks">${i.checks.map(([s, t]) => `<li><span class="${s}" aria-hidden="true">${s === 'ok' ? '✓' : '◷'}</span><span>${t}</span></li>`).join('')}</ul>
+        <p class="sr">${i.checks.map(([s, t]) => (s === 'ok' ? 'Cumplido: ' : 'Pendiente: ') + t).join('. ')}</p>
+      </div>
+
+      <div class="section">
+        <h3>Referencias</h3>
+        <div class="refs">${i.refs.map(r => `<span>${r}</span>`).join('')}</div>
+      </div>
+
+      ${i.returnNote ? `<div class="section"><h3>Devuelta con comentario</h3><p style="margin:0">${i.returnNote}</p></div>` : ''}
+
+      <div class="section decision">
+        <h3>Tu decisión</h3>
+        <label for="note">Comentario (obligatorio para devolver o rechazar)</label>
+        <textarea id="note" ${closed ? 'disabled' : ''} placeholder="Qué debe cambiar, o por qué se rechaza"></textarea>
+        <div class="actions">
+          <button type="button" class="primary" data-act="aprobar" ${closed ? 'disabled' : ''}>Aprobar</button>
+          <button type="button" class="secondary" data-act="devolver" ${closed ? 'disabled' : ''}>Devolver con comentario</button>
+          <button type="button" class="danger" data-act="rechazar" ${closed ? 'disabled' : ''}>Rechazar</button>
+        </div>
+        <p class="sub" style="margin:0">Cada decisión queda registrada en la bitácora con tu nombre y la hora.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    const normal = document.getElementById('view-normal');
+    const view = document.getElementById('view-state');
+    normal.hidden = state !== 'normal';
+    view.hidden = state === 'normal';
+    if (state === 'loading') {
+      view.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando la cola…</p>';
+    } else if (state === 'empty') {
+      view.innerHTML = '<h2>No hay nada que aprobar</h2><p>Los agentes no tienen propuestas pendientes. Cuando haya una, aparecerá aquí con su vista previa completa.</p>';
+    } else if (state === 'error') {
+      view.innerHTML = '<h2>No pudimos cargar la cola</h2><p>Revisa tu conexión e intenta de nuevo. Ninguna acción se ha ejecutado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+    }
+  }
+
+  let pendingAction = null;
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+
+  document.getElementById('detail').addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    const i = ITEMS.find(x => x.id === selected);
+    const note = (document.getElementById('note').value || '').trim();
+    const act = btn.dataset.act;
+
+    if ((act === 'devolver' || act === 'rechazar') && !note) {
+      toast('Escribe un comentario para registrar la decisión.');
+      document.getElementById('note').focus();
+      return;
+    }
+    pendingAction = { act, i, note };
+    const body = {
+      aprobar: `Esto saldrá hacia: ${i.recipient}. Después de enviarlo no se puede retirar.`,
+      devolver: 'El agente recibe tu comentario y prepara una nueva versión. Nada sale hacia fuera.',
+      rechazar: 'La acción se cierra sin enviarse. El motivo queda en la bitácora.',
+    }[act];
+    document.getElementById('confirm-title').textContent = { aprobar: 'Confirmar salida', devolver: 'Devolver la propuesta', rechazar: 'Rechazar la propuesta' }[act];
+    document.getElementById('confirm-body').textContent = body;
+    document.getElementById('confirm-ok').textContent = { aprobar: 'Aprobar y enviar', devolver: 'Devolver', rechazar: 'Rechazar' }[act];
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') {
+      document.getElementById('confirm-dialog').classList.remove('open'); return;
+    }
+    if (e.target.id === 'confirm-ok' && pendingAction) {
+      const { act, i } = pendingAction;
+      i.status = { aprobar: 'aprobada', devolver: 'devuelta', rechazar: 'rechazada' }[act];
+      document.getElementById('confirm-dialog').classList.remove('open');
+      selected = ITEMS.find(x => x.status === 'pendiente' || x.status === 'devuelta')?.id || null;
+      renderRows(); renderDetail();
+      toast({ aprobar: 'Aprobada. Queda registrada en la bitácora.', devolver: 'Devuelta al agente con tu comentario.', rechazar: 'Rechazada. Queda registrada en la bitácora.' }[act]);
+      pendingAction = null;
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open');
+  });
+
+  ['q', 'f-type', 'f-urgency'].forEach(id => document.getElementById(id).addEventListener('input', renderRows));
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

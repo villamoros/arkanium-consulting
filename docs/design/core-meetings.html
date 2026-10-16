@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Reuniones</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin reuniones</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html" aria-current="page">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Reuniones</h1>
+        <p>Demos, avances y cierres. Cada reunión se aprueba por ti y termina con su acta.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="kpis">
+        <div class="kpi"><b id="k-req">2</b><span>solicitudes esperando tu respuesta</span></div>
+        <div class="kpi"><b>2</b><span>confirmadas esta semana</span></div>
+        <div class="kpi"><b>1</b><span>acta por publicar</span></div>
+        <div class="kpi"><b>0</b><span>sin acta</span></div>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Solicitudes y reuniones">
+          <table>
+            <thead><tr><th scope="col">Reunión</th><th scope="col">Con</th><th scope="col">Estado</th><th scope="col" class="hide-sm">Horario</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la reunión"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  let MEETINGS = [
+    { id: 'R1', with: 'Marcos Vidal · Fintech Puente (ejemplo)', kind: 'Demo', status: 'Solicitud', slots: ['martes 21 oct 10:00', 'miércoles 22 oct 16:00', 'jueves 23 oct 11:30'], note: 'Quiere entender el modelo de CTO fraccional.', acta: null },
+    { id: 'R2', with: 'Lucía Romero · Distribuidora Norte (ejemplo)', kind: 'Avance', status: 'Solicitud', slots: ['lunes 20 oct 09:00'], note: 'Quiere revisar el informe preliminar antes de la siguiente etapa.', acta: null },
+    { id: 'R3', with: 'Carlos Medina · Logística Andina (ejemplo)', kind: 'Avance', status: 'Confirmada', slots: ['jueves 16 oct 15:00'], note: '', acta: 'Por publicar' },
+    { id: 'R4', with: 'Ana Pérez · Empresa Demo (ejemplo)', kind: 'Cierre', status: 'Confirmada', slots: ['viernes 17 oct 10:00'], note: '', acta: null },
+  ];
+  let selected = 'R1';
+
+  function badge(s) { return `<span class="badge ${s === 'Confirmada' ? 'b-convertido' : 'b-nuevo'}">${s}</span>`; }
+
+  function renderRows() {
+    document.getElementById('rows').innerHTML = MEETINGS.map(m => `
+      <tr tabindex="0" data-id="${m.id}" aria-selected="${m.id === selected}">
+        <td><div class="lead-name">${m.kind}</div><div class="sub">${m.with}</div></td>
+        <td class="sub">${m.with.split(' · ')[0]}</td>
+        <td>${badge(m.status)}${m.acta ? `<div class="sub" style="margin-top:4px">Acta: ${m.acta}</div>` : ''}</td>
+        <td class="hide-sm sub">${m.slots[0]}</td>
+      </tr>`).join('');
+    document.getElementById('k-req').textContent = MEETINGS.filter(m => m.status === 'Solicitud').length;
+  }
+
+  function renderDetail() {
+    const m = MEETINGS.find(x => x.id === selected);
+    if (!m) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una reunión.</p>'; return; }
+    const pending = m.status === 'Solicitud';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${m.kind}</h2><div class="sub">${m.with}</div></div>${badge(m.status)}</div>
+      <div class="section"><h3>Horarios propuestos</h3>
+        <ul class="checks">${m.slots.map(s => `<li><span>${s}</span></li>`).join('')}</ul>
+      </div>
+      ${m.note ? `<div class="section"><h3>Motivo</h3><p style="margin:0">${m.note}</p></div>` : ''}
+      <div class="section decision"><h3>Tu decisión</h3>
+        <div class="actions">
+          <button type="button" class="primary" data-act="confirm" ${pending ? '' : 'disabled'}>Aprobar un horario</button>
+          <button type="button" class="secondary" data-act="propose" ${pending ? '' : 'disabled'}>Proponer otro</button>
+        </div>
+        <p class="sub" style="margin:0">La invitación al contacto sale por Aprobaciones.</p>
+      </div>
+      <div class="section"><h3>Acta</h3>
+        ${m.acta ? `<p style="margin:0">Estado: ${m.acta}. Se publica al cliente cuando la revises.</p>` : '<p class="sub" style="margin:0">Se genera al terminar la reunión.</p>'}
+        ${m.status === 'Confirmada' ? '<div class="actions"><button type="button" class="secondary" data-act="acta">Revisar acta</button></div>' : ''}
+      </div>`;
+  }
+
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2600); }
+
+  document.getElementById('rows').addEventListener('click', e => { const r = e.target.closest('tr[data-id]'); if (r) { selected = r.dataset.id; renderRows(); renderDetail(); } });
+  document.getElementById('rows').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); } });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    if (b.dataset.act === 'confirm') { const m = MEETINGS.find(x => x.id === selected); m.status = 'Confirmada'; m.slots = [m.slots[0]]; renderRows(); renderDetail(); toast('Horario aprobado. La invitación queda en Aprobaciones.'); }
+    if (b.dataset.act === 'propose') toast('Propón un horario nuevo. Quedará como propuesta pendiente de envío.');
+    if (b.dataset.act === 'acta') toast('Abrirá el acta para revisión antes de publicarla.');
+  });
+
+  function setState(s) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    if (s === 'normal') { location.reload(); return; }
+    document.getElementById('view-normal').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (s === 'empty') v.innerHTML = '<h2>No hay reuniones</h2><p>Cuando un lead pida una demo o un cliente solicite un avance, aparecerá aquí.</p>';
+    if (s === 'loading') v.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando reuniones…</p>';
+    if (s === 'error') v.innerHTML = '<h2>No pudimos cargar las reuniones</h2><p>Revisa tu conexión e intenta de nuevo.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

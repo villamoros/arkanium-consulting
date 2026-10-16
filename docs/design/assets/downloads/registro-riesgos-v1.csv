@@ -1,0 +1,3 @@
+id,riesgo,impacto,probabilidad,responsable
+R-01,Dependencia de dos personas para la integración bancaria,alto,media,Lucía Romero (ejemplo)
+R-02,Reglas de impuestos solo en el código,medio,alta,Equipo de arquitectura (ejemplo)

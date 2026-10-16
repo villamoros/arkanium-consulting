@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Mis proyectos</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-state="home" aria-pressed="true">Mis proyectos</button>
+  <button type="button" data-state="detail" aria-pressed="false">Detalle (administrador)</button>
+  <button type="button" data-state="member" aria-pressed="false">Detalle (miembro)</button>
+  <button type="button" data-state="none" aria-pressed="false">Sin proyectos</button>
+</div>
+
+<header class="topbar">
+  <div class="org">
+    <strong>Distribuidora Norte</strong>
+    <span>Organización cliente (ejemplo)</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span id="role" class="role">Administrador</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta" style="text-decoration:none;color:inherit">LR</a>
+    <button type="button" class="secondary" id="signout">Cerrar sesión</button>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <ul>
+      <li><a href="app-projects.html" aria-current="page">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html">Entregables</a></li>
+      <li><a href="app-meetings.html">Reuniones</a></li>
+      <li><a href="app-invoices.html">Facturas</a></li>
+      <li><a href="app-decisions.html">Decisiones</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div id="view-home">
+      <div class="page-head">
+        <div>
+          <h1>Mis proyectos</h1>
+          <p>Lo que está en marcha para tu organización, con lo que necesitamos de ti.</p>
+        </div>
+      </div>
+      <div class="project-grid" id="cards"></div>
+    </div>
+
+    <div id="view-detail" hidden></div>
+
+    <div id="view-none" class="panel state" hidden>
+      <h2>Todavía no tienes proyectos asignados</h2>
+      <p>Pide a tu administrador que te invite a un proyecto. Si ya te invitaron, revisa tu correo.</p>
+    </div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<script>
+  // Datos de ejemplo ficticios. Solo contiene lo que el owner publicó para el cliente.
+  const ROLE = 'admin'; // 'admin' | 'member' (lo decide la sesión, no la pantalla)
+  const PROJECTS = [
+    {
+      id: 'P-0021', name: 'Modernización del ERP', next: 'Revisar el informe preliminar y enviar tus correcciones antes del viernes.', progress: 'Etapa 1 de 3 · Evaluación completada',
+      hitos: [['Evaluación completada', 'Completado', 'Terminado el 14 oct'], ['Arquitectura de la solución', 'En curso', 'Fecha prevista: 28 oct'], ['Modernización por etapas', 'Pendiente', 'Fecha prevista: 18 nov']],
+      updates: [['14 oct', 'Publicamos el informe preliminar de hallazgos.'], ['9 oct', 'Terminamos las entrevistas con las áreas de operación y finanzas.'], ['2 oct', 'Arrancó el proyecto. Confirmamos el alcance de la evaluación.']],
+      deliverables: [['Informe preliminar de hallazgos', 'ready'], ['Registro de riesgos', 'review'], ['Diseño de la solución', 'review']],
+      meetings: [['Martes 21 oct, 10:00', 'Próxima · revisión del informe', null], ['Jueves 9 oct, 11:00', 'Pasada · avance de entrevistas', 'Acta disponible']],
+      invoices: [['FAC-1042', 'Anticipo de inicio', 'USD 2,250.00', 'Pagada', 'paid'], ['FAC-1051', 'Hito 1 · Evaluación aprobada', 'USD 3,000.00', 'Pendiente', 'due']],
+    },
+    {
+      id: 'P-0017', name: 'Hoja de ruta de TI', next: 'Confirmar el alcance de la etapa 2.', progress: 'Etapa 1 de 2 · Diagnóstico completado',
+      updates: [['11 oct', 'Entregamos el borrador de la hoja de ruta por etapas.'], ['4 oct', 'Arrancó el proyecto.']],
+      deliverables: [['Hoja de ruta por etapas', 'corrections']],
+      meetings: [['Lunes 20 oct, 15:00', 'Próxima · confirmar alcance', null]],
+      invoices: [['FAC-1038', 'Anticipo de inicio', 'USD 1,500.00', 'Pagada', 'paid']],
+    },
+  ];
+  const STATUS = { review: ['En revisión por Arkanium', 'review'], ready: ['Listo para tu revisión', 'ready'], corrections: ['Con correcciones enviadas', 'corrections'], approved: ['Aprobado', 'approved'] };
+  const INVOICE = { paid: 'Pagada', due: 'Pendiente' };
+  const INVOICE_FILES = {
+    'FAC-1051': 'assets/downloads/factura-FAC-1051.pdf',
+    'FAC-1042': 'assets/downloads/factura-FAC-1042.pdf',
+    'FAC-1038': 'assets/downloads/factura-FAC-1038.pdf',
+  };
+  // Archivos de ejemplo descargables, por nombre de entregable publicado.
+  const FILES = {
+    'Informe preliminar de hallazgos': 'assets/downloads/informe-preliminar-hallazgos-v2.pdf',
+    'Registro de riesgos': 'assets/downloads/registro-riesgos-v1.csv',
+    'Hoja de ruta por etapas': 'assets/downloads/hoja-ruta-por-etapas-v1.pdf',
+  };
+
+  function homeView() {
+    document.getElementById('view-home').hidden = false;
+    document.getElementById('view-detail').hidden = true;
+    document.getElementById('cards').innerHTML = PROJECTS.map(p => {
+      const pending = p.deliverables.filter(([, s]) => s === 'ready' || s === 'corrections').length;
+      return `<button type="button" class="project-card" data-id="${p.id}">
+        <h3>${p.name}</h3>
+        <p>${p.progress}</p>
+        <p class="next-step">${p.next}</p>
+        <span class="pending-count">${pending ? pending + ' entregable' + (pending > 1 ? 's' : '') + ' esperando tu revisión' : 'Sin pendientes de tu parte'}</span>
+      </button>`;
+    }).join('');
+  }
+
+  function detailView(id) {
+    const p = PROJECTS.find(x => x.id === id);
+    const isAdmin = ROLE === 'admin';
+    const el = document.getElementById('view-detail');
+    el.hidden = false;
+    document.getElementById('view-home').hidden = true;
+    el.innerHTML = `
+      <button type="button" class="back" data-back>← Mis proyectos</button>
+      <div class="page-head"><div><h1>${p.name}</h1><p>${p.progress}</p></div></div>
+
+      <div class="layout">
+        <div>
+          <section class="panel" style="padding:18px;margin-bottom:16px" aria-label="Hitos">
+            <h2 style="font-size:1rem">Hitos</h2>
+            <ul class="checks" style="margin-top:12px">${p.hitos.map(([name, st, when]) => `<li><span style="flex:1"><b>${name}</b><br><span class="sub">${when}</span></span><span class="doc-status ${st === 'Completado' ? 'approved' : st === 'En curso' ? 'ready' : 'review'}">${st}</span></li>`).join('')}</ul>
+            <p class="sub" style="margin:10px 0 0">Las fechas previstas pueden cambiar. Te avisamos cuando eso ocurra.</p>
+          </section>
+
+          <section class="panel" style="padding:18px;margin-bottom:16px">
+            <h2 style="font-size:1rem">Avances</h2>
+            <ul class="timeline" style="margin-top:12px">${p.updates.map(([d, t]) => `<li><time>${d}</time><div>${t}</div></li>`).join('')}</ul>
+          </section>
+
+          <section class="panel" style="padding:18px;margin-bottom:16px" aria-label="Entregables">
+            <h2 style="font-size:1rem">Entregables</h2>
+            <ul class="checks" style="margin-top:12px">${p.deliverables.map(([name, s]) => `<li><span style="flex:1">${name}</span><span class="doc-status ${s}">${STATUS[s][0]}</span>${s === 'review' || !FILES[name] ? '' : `<a class="btn-link" href="${FILES[name]}" download style="margin-left:8px">Descargar</a>`}</li>`).join('')}</ul>
+            <p class="sub" style="margin:8px 0 0">Se descarga lo que Arkanium ya publicó. Lo que está en revisión interna aparece cuando se publique.</p>
+            ${isAdmin
+              ? `<div class="actions"><button type="button" class="primary" data-act="approve">Aprobar el entregable listo</button><button type="button" class="secondary" data-act="correct">Dejar correcciones</button></div>`
+              : `<p class="notice" style="margin-top:12px">Puedes dejar correcciones. La aprobación la hace el administrador de tu organización.</p><div class="actions"><button type="button" class="secondary" data-act="correct">Dejar correcciones</button></div>`}
+          </section>
+
+          <section class="panel" style="padding:18px" aria-label="Reuniones">
+            <h2 style="font-size:1rem">Reuniones</h2>
+            <ul class="checks" style="margin-top:12px">${p.meetings.map(([when, what, acta]) => `<li><span style="flex:1"><b>${when}</b><br><span class="sub">${what}</span></span>${acta ? `<button type="button" class="secondary" data-act="acta">${acta}</button>` : ''}</li>`).join('')}</ul>
+            <div class="actions"><button type="button" class="secondary" data-act="meet">Pedir una reunión</button></div>
+            <p class="sub" style="margin:8px 0 0">La reunión queda pendiente hasta que Arkanium la confirme.</p>
+          </section>
+        </div>
+
+        <aside class="panel" style="padding:18px;align-self:start" aria-label="Facturas">
+          <h2 style="font-size:1rem">Facturas del proyecto</h2>
+          <ul class="checks" style="margin-top:12px">${p.invoices.map(([num, concept, amount, label, st]) => `
+            <li style="display:block">
+              <div style="display:flex;justify-content:space-between;gap:8px"><b>${num}</b><span class="doc-status ${st === 'paid' ? 'approved' : 'review'}">${label}</span></div>
+              <div class="sub">${concept}</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><span>${amount}</span><a class="btn-link" href="${INVOICE_FILES[num]}" download>PDF</a>${st === 'due' ? `<button type="button" class="primary" data-act="pay">Pagar</button>` : ''}</div>
+            </li>`).join('')}</ul>
+          <p class="sub" style="margin:10px 0 0">El pago se hace en la página segura de Stripe. Arkanium no recibe datos de tu tarjeta.</p>
+        </aside>
+      </div>`;
+  }
+
+  function noneView() {
+    document.getElementById('view-home').hidden = true;
+    document.getElementById('view-detail').hidden = true;
+    document.getElementById('view-none').hidden = false;
+  }
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    document.getElementById('view-none').hidden = true;
+    if (state === 'home') homeView();
+    if (state === 'detail') detailView('P-0021');
+    if (state === 'member') detailView('P-0021');
+    if (state === 'none') noneView();
+    document.getElementById('role').textContent = state === 'member' ? 'Miembro' : 'Administrador';
+  }
+
+  document.getElementById('cards').addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) detailView(b.dataset.id); });
+  document.getElementById('view-detail').addEventListener('click', e => {
+    if (e.target.closest('[data-back]')) homeView();
+  });
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  homeView();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

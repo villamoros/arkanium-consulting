@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Revisar entregable</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-state="review" aria-pressed="true">Para revisar (administrador)</button>
+  <button type="button" data-state="member" aria-pressed="false">Para revisar (miembro)</button>
+  <button type="button" data-state="sent" aria-pressed="false">Correcciones enviadas</button>
+  <button type="button" data-state="approved" aria-pressed="false">Aprobado</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<header class="topbar">
+  <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span id="role" class="role">Administrador</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta" style="text-decoration:none;color:inherit">LR</a>
+    <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <ul>
+      <li><a href="app-projects.html">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html" aria-current="page">Entregables</a></li>
+      <li><a href="app-meetings.html">Reuniones</a></li>
+      <li><a href="app-invoices.html">Facturas</a></li>
+      <li><a href="app-decisions.html">Decisiones</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <a class="back" href="app-projects.html" style="display:inline-block;margin-bottom:10px;color:var(--gold-2)">← Modernización del ERP</a>
+    <div class="page-head">
+      <div>
+        <h1>Informe preliminar de hallazgos</h1>
+        <p>Versión 2 · publicado el 14 oct</p>
+      </div>
+      <span id="status" class="doc-status ready">Listo para tu revisión</span>
+    </div>
+
+    <div id="view-main" class="layout">
+      <div>
+        <nav aria-label="Secciones del documento" class="panel" style="padding:12px 16px;margin-bottom:14px">
+          <div class="sub" style="margin-bottom:6px">Secciones</div>
+          <div class="refs">
+            <a href="#s1" class="gate">Resumen</a><a href="#s2" class="gate">Hallazgos</a><a href="#s3" class="gate">Riesgos</a><a href="#s4" class="gate">Qué no sabemos</a>
+          </div>
+        </nav>
+
+        <article class="panel" style="padding:24px;line-height:1.7">
+          <h2 id="s1">Resumen</h2>
+          <p>El sistema de facturación depende de tres módulos sin un responsable claro. Cada cambio en uno de ellos obliga a revisar los otros dos, por eso los despliegues tardan semanas. Recomendamos definir primero las fronteras entre módulos y después decidir qué reemplazar.</p>
+
+          <h2 id="s2" style="margin-top:24px">Hallazgos</h2>
+          <ol>
+            <li><b>Módulos acoplados.</b> Facturación, inventario y cuentas por cobrar comparten tablas. Impacto alto.</li>
+            <li><b>Documentación incompleta.</b> Las reglas de cálculo de impuestos existen solo en el código. Impacto medio.</li>
+            <li><b>Dependencia de dos personas.</b> Dos empleados conocen la integración con el banco. Impacto alto.</li>
+          </ol>
+
+          <h2 id="s3" style="margin-top:24px">Riesgos</h2>
+          <p>Hay dos riesgos altos, cada uno con responsable asignado. El detalle está en el registro de riesgos que te compartimos junto con este informe.</p>
+
+          <h2 id="s4" style="margin-top:24px">Qué no sabemos</h2>
+          <p>No tuvimos acceso al ambiente de pruebas de la integración bancaria. Las conclusiones sobre ese módulo son preliminares.</p>
+        </article>
+      </div>
+
+      <aside class="panel" style="padding:18px;align-self:start;position:sticky;top:18px" aria-label="Correcciones y aprobación">
+        <section id="download-zone" aria-label="Descargas">
+          <h2 style="font-size:1rem">Descargar</h2>
+          <ul class="checks" style="margin-top:10px">
+            <li><span style="flex:1"><b>Informe preliminar de hallazgos</b><br><span class="sub">PDF · versión 2</span></span><a class="btn-link" href="assets/downloads/informe-preliminar-hallazgos-v2.pdf" download data-download="Informe preliminar de hallazgos v2.pdf">Descargar</a></li>
+            <li><span style="flex:1"><b>Registro de riesgos (anexo)</b><br><span class="sub">CSV · versión 1</span></span><a class="btn-link" href="assets/downloads/registro-riesgos-v1.csv" download data-download="Registro de riesgos v1.csv">Descargar</a></li>
+          </ul>
+          <p class="sub" style="margin:10px 0 0">Cada descarga queda registrada con tu nombre y la hora. El archivo solo incluye lo que te corresponde, sin costos internos.</p>
+        </section>
+
+        <div style="border-top:1px solid var(--line);margin:16px 0"></div>
+
+        <h2 style="font-size:1rem">Tus correcciones</h2>
+        <div id="corrections-list" style="margin-top:10px"></div>
+
+        <div id="correction-form" style="margin-top:12px">
+          <label for="section" class="sub">Sección</label>
+          <select id="section" style="width:100%;margin:4px 0 10px;background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px">
+            <option>Resumen</option><option>Hallazgos</option><option>Riesgos</option><option>Qué no sabemos</option>
+          </select>
+          <label for="correction" class="sub">Tu corrección</label>
+          <textarea id="correction" placeholder="Qué debe cambiar y por qué" style="width:100%;min-height:90px;margin-top:4px;background:var(--ink);color:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px"></textarea>
+          <p class="sub" style="margin:8px 0">Tu corrección llega a Arkanium para revisión. No se aplica sola.</p>
+          <div class="actions"><button type="button" class="secondary" id="send-correction">Enviar corrección</button></div>
+        </div>
+
+        <div id="approve-zone" style="margin-top:18px;border-top:1px solid var(--line);padding-top:14px">
+          <div id="approve-admin">
+            <p style="margin:0 0 10px">Si el informe está bien, apruébalo para cerrar esta revisión.</p>
+            <div class="actions"><button type="button" class="primary" id="approve">Aprobar entregable</button></div>
+          </div>
+          <div id="approved-note" hidden><p class="notice" style="margin:0">Aprobaste este entregable. Queda registrado con tu nombre y la fecha.</p></div>
+          <div id="approve-member" hidden>
+            <p class="notice" style="margin:0">La aprobación la hace el administrador de tu organización. Tú puedes dejar correcciones.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const STATUS = { review: ['En revisión por Arkanium', 'review'], ready: ['Listo para tu revisión', 'ready'], sent: ['Con correcciones enviadas', 'corrections'], approved: ['Aprobado', 'approved'] };
+  let state = 'review';
+  let corrections = [];
+
+  function renderCorrections() {
+    const el = document.getElementById('corrections-list');
+    el.innerHTML = corrections.length
+      ? '<ul class="checks">' + corrections.map(c => `<li><span style="flex:1"><b>${c.section}</b><br><span class="sub">${c.text}</span></span><span class="doc-status review">Enviada</span></li>`).join('') + '</ul>'
+      : '<p class="sub" style="margin:0">Todavía no has dejado correcciones.</p>';
+  }
+
+  function applyState(s) {
+    state = s;
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    const isMember = s === 'member';
+    document.getElementById('role').textContent = isMember ? 'Miembro' : 'Administrador';
+    document.getElementById('approve-admin').hidden = isMember || s === 'approved';
+    document.getElementById('approve-member').hidden = !isMember || s === 'approved';
+    document.getElementById('correction-form').hidden = s === 'approved';
+    const label = STATUS[s === 'member' ? 'review' : s] || STATUS.review;
+    const st = document.getElementById('status');
+    st.textContent = label[0]; st.className = 'doc-status ' + label[1];
+    document.getElementById('approved-note').hidden = s !== 'approved';
+    if (s === 'sent') corrections = [{ section: 'Hallazgos', text: 'Confirmar el impacto del módulo de cuentas por cobrar.' }];
+    if (s === 'review' || s === 'member') corrections = [];
+    renderCorrections();
+    document.getElementById('view-main').hidden = false;
+    document.getElementById('view-state').hidden = true;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  document.getElementById('send-correction').addEventListener('click', () => {
+    const text = document.getElementById('correction').value.trim();
+    if (!text) { toast('Escribe la corrección antes de enviarla.'); return; }
+    corrections.push({ section: document.getElementById('section').value, text });
+    document.getElementById('correction').value = '';
+    const st = document.getElementById('status'); st.textContent = STATUS.sent[0]; st.className = 'doc-status corrections';
+    renderCorrections();
+    toast('Corrección enviada. Arkanium la revisará antes de cambiar el informe.');
+  });
+
+  document.getElementById('approve').addEventListener('click', () => applyState('approved'));
+
+  document.getElementById('download-zone').addEventListener('click', e => {
+    const b = e.target.closest('[data-download]'); if (!b) return;
+    toast('Descarga iniciada: ' + b.dataset.download + '. Queda registrada.');
+  });
+
+  function setLoading() {
+    document.getElementById('view-main').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    v.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando el entregable…</p>';
+  }
+  function setError() {
+    document.getElementById('view-main').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    v.innerHTML = '<h2>No pudimos cargar el entregable</h2><p>Revisa tu conexión e intenta de nuevo. Tus correcciones pendientes no se han perdido.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="review">Reintentar</button></div>';
+  }
+
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => {
+    if (b.dataset.state === 'loading') { setLoading(); document.querySelectorAll('[data-state]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); return; }
+    if (b.dataset.state === 'error') { setError(); document.querySelectorAll('[data-state]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); return; }
+    applyState(b.dataset.state);
+  }));
+
+  applyState('review');
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

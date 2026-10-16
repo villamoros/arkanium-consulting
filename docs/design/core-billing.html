@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Cobros y facturas</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin facturas</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html" aria-current="page">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Cobros y facturas</h1>
+        <p>Qué está emitido, pagado o vencido. Cada factura se emite desde Aprobaciones y el pago se confirma en la página segura de Stripe.</p>
+      </div>
+      <button type="button" class="primary" id="btn-new">Nueva factura</button>
+    </div>
+
+    <div id="view-normal">
+      <section class="panel" id="new-invoice" aria-label="Nueva factura" hidden style="padding:18px;margin-bottom:16px">
+        <h2 style="font-size:1rem">Nueva factura</h2>
+        <p class="sub" style="margin:4px 0 14px">Se crea como borrador. Solo sale cuando la apruebas en Aprobaciones. La emite Arkanium Consulting LLC, como vendedora.</p>
+        <form id="invoice-form" novalidate>
+          <div class="filters" style="margin:0">
+            <label class="sub" style="display:grid;gap:4px;flex:1;min-width:220px">Cliente
+              <select id="nf-client" required>
+                <option value="">Elige la organización</option>
+                <option>Distribuidora Norte (ejemplo)</option><option>Comercial Sur (ejemplo)</option><option>Empresa Demo (ejemplo)</option>
+              </select>
+            </label>
+            <label class="sub" style="display:grid;gap:4px;flex:1;min-width:220px">Proyecto
+              <select id="nf-project" required>
+                <option value="">Elige el proyecto</option>
+                <option>Modernización ERP (ejemplo)</option><option>Diagnóstico de arquitectura (ejemplo)</option><option>Hoja de ruta de TI (ejemplo)</option>
+              </select>
+            </label>
+            <label class="sub" style="display:grid;gap:4px;min-width:160px">Tipo
+              <select id="nf-type">
+                <option>Anticipo</option><option>Hito</option><option>Pago único</option>
+              </select>
+            </label>
+            <label class="sub" style="display:grid;gap:4px;min-width:140px">Monto (USD)
+              <input id="nf-amount" type="number" min="1" step="0.01" required placeholder="0.00" />
+            </label>
+            <label class="sub" style="display:grid;gap:4px;min-width:160px">Vence en
+              <select id="nf-due"><option value="15">15 días</option><option value="30" selected>30 días</option></select>
+            </label>
+          </div>
+          <label class="sub" style="display:grid;gap:4px;margin-top:12px">Concepto que verá el cliente
+            <input id="nf-concept" type="text" maxlength="140" required placeholder="Ej.: Hito 2, arquitectura de la solución, según SOW" />
+          </label>
+          <p class="sub" style="margin:10px 0 0">Impuesto sobre ventas: pendiente de definir con el contador. Por ahora la factura se marca como provisional.</p>
+          <div class="actions">
+            <button type="submit" class="primary">Guardar borrador</button>
+            <button type="button" class="secondary" id="nf-cancel">Cancelar</button>
+          </div>
+          <p id="nf-error" class="urgent" role="alert" hidden style="margin:10px 0 0"></p>
+        </form>
+      </section>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-open">USD 6,050</b><span>por cobrar</span></div>
+        <div class="kpi"><b id="k-overdue">USD 3,800</b><span>vencido</span></div>
+        <div class="kpi"><b>USD 1,400</b><span>cobrado este mes (ejemplo)</span></div>
+        <div class="kpi"><b id="k-draft">1</b><span>borradores en aprobación</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="q">Buscar factura</label>
+        <input id="q" type="search" placeholder="Buscar por número, cliente o proyecto" />
+        <label class="sr" for="f-status">Estado</label>
+        <select id="f-status">
+          <option value="">Todos los estados</option>
+          <option>Borrador</option><option>Enviada</option><option>Vencida</option><option>Pagada</option><option>Anulada</option>
+        </select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Facturas">
+          <table>
+            <thead><tr><th scope="col">Factura</th><th scope="col">Cliente</th><th scope="col" class="hide-sm">Vence</th><th scope="col">Monto</th><th scope="col">Estado</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la factura"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Anular factura</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="danger" id="confirm-ok">Anular</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. No corresponden a clientes ni montos reales.
+  const INVOICES = [
+    { id: 'F-2026-0032', client: 'Organización Ejemplo A', project: 'Diagnóstico de arquitectura (ejemplo)', amount: 900, due: '30 oct', status: 'Borrador', concept: 'Anticipo 20%, según SOW (ejemplo)', note: 'Pendiente de tu aprobación en Aprobaciones.' },
+    { id: 'F-2026-0031', client: 'Empresa Demo (ejemplo)', project: 'Diagnóstico de arquitectura (ejemplo)', amount: 2250, due: '30 oct', status: 'Enviada', concept: 'Anticipo 50% al inicio, según SOW firmado (ejemplo)', note: 'Enviada el 15 oct. Pago en la página segura de Stripe.' },
+    { id: 'F-2026-0030', client: 'Distribuidora Norte (ejemplo)', project: 'Modernización ERP (ejemplo)', amount: 1400, due: '9 oct', status: 'Pagada', concept: 'Hito 1: evaluación completada (ejemplo)', note: 'Pago confirmado por Stripe el 9 oct.' },
+    { id: 'F-2026-0029', client: 'Comercial Sur (ejemplo)', project: 'Modernización ERP (ejemplo)', amount: 3800, due: '5 oct', status: 'Vencida', concept: 'Hito 2: arquitectura de la solución (ejemplo)', note: 'Vencida desde el 5 oct. Recordatorio pendiente de tu aprobación.' },
+  ];
+  const BADGE = { 'Borrador': 'b-idle', 'Enviada': 'b-nuevo', 'Vencida': 'b-descartado', 'Pagada': 'b-convertido', 'Anulada': 'b-descartado' };
+  let selected = 'F-2026-0029';
+  let pendingId = null;
+
+  const money = n => 'USD ' + n.toLocaleString('en-US', { minimumFractionDigits: 0 });
+
+  function visible() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const st = document.getElementById('f-status').value;
+    return INVOICES.filter(i => (!st || i.status === st) && (!q || (i.id + ' ' + i.client + ' ' + i.project).toLowerCase().includes(q)));
+  }
+
+  function renderKpis() {
+    const open = INVOICES.filter(i => i.status === 'Enviada' || i.status === 'Vencida').reduce((t, i) => t + i.amount, 0);
+    const overdue = INVOICES.filter(i => i.status === 'Vencida').reduce((t, i) => t + i.amount, 0);
+    document.getElementById('k-open').textContent = money(open);
+    document.getElementById('k-overdue').textContent = money(overdue);
+    document.getElementById('k-draft').textContent = INVOICES.filter(i => i.status === 'Borrador').length;
+  }
+
+  function renderRows() {
+    const rows = visible();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(i => `
+      <tr tabindex="0" data-id="${i.id}" aria-selected="${i.id === selected}">
+        <td><div class="lead-name">${i.id}</div><div class="sub">${i.project}</div></td>
+        <td>${i.client}</td>
+        <td class="hide-sm">${i.status === 'Vencida' ? `<div class="urgent">${i.due}</div>` : `<div class="due">${i.due}</div>`}</td>
+        <td>${money(i.amount)}</td>
+        <td><span class="badge ${BADGE[i.status]}">${i.status}</span></td>
+      </tr>`).join('') : '<tr><td colspan="5" class="muted">No hay facturas con esos filtros.</td></tr>';
+    renderKpis();
+  }
+
+  function renderDetail() {
+    const i = INVOICES.find(x => x.id === selected);
+    if (!i) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una factura para verla.</p>'; return; }
+    const canAnnul = i.status !== 'Anulada' && i.status !== 'Pagada';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${i.id}</h2><div class="sub">${i.client}</div></div><span class="badge ${BADGE[i.status]}">${i.status}</span></div>
+
+      <div class="section"><h3>Detalle</h3>
+        <dl class="kv">
+          <dt>Concepto</dt><dd>${i.concept}</dd>
+          <dt>Monto</dt><dd>${money(i.amount)}</dd>
+          <dt>Vence</dt><dd>${i.due}</dd>
+          <dt>Proyecto</dt><dd>${i.project}</dd>
+        </dl>
+      </div>
+
+      <div class="section"><h3>Estado del pago</h3>
+        <p style="margin:0">${i.note}</p>
+        <p class="sub" style="margin:6px 0 0">Impuesto sobre ventas: pendiente de definir con el contador. Hasta entonces, el cálculo queda marcado como provisional.</p>
+      </div>
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          ${i.status === 'Borrador' ? '<button type="button" class="primary" data-act="issue">Emitir (va a Aprobaciones)</button>' : ''}
+          ${i.status === 'Vencida' ? '<button type="button" class="secondary" data-act="remind">Enviar recordatorio (va a Aprobaciones)</button>' : ''}
+          <button type="button" class="danger" data-act="annul" ${canAnnul ? '' : 'disabled'}>Anular con nota de crédito</button>
+        </div>
+        <p class="sub" style="margin:0">Nada se borra. Una factura anulada queda visible con su nota de crédito. Una factura pagada no se anula; se reembolsa desde Stripe.</p>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+
+  document.getElementById('detail').addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    if (btn.dataset.act === 'issue' || btn.dataset.act === 'remind') { toast('La propuesta se envía a Aprobaciones. Nada sale sin tu decisión.'); return; }
+    if (btn.dataset.act === 'annul') {
+      pendingId = selected;
+      document.getElementById('confirm-body').textContent = 'Se emite una nota de crédito y la factura queda como anulada. Se registra en la bitácora.';
+      document.getElementById('confirm-dialog').classList.add('open');
+      document.getElementById('confirm-ok').focus();
+    }
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok' && pendingId) {
+      const i = INVOICES.find(x => x.id === pendingId);
+      i.status = 'Anulada'; i.note = 'Anulada con nota de crédito. Queda visible en el historial.';
+      document.getElementById('confirm-dialog').classList.remove('open');
+      pendingId = null; renderRows(); renderDetail();
+      toast('Factura anulada. Queda en la bitácora.');
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  ['q', 'f-status'].forEach(id => document.getElementById(id).addEventListener('input', renderRows));
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    document.getElementById('view-normal').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>Todavía no hay facturas</h2><p>Cuando una propuesta aceptada llegue a facturación, la factura aparecerá aquí como borrador.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar las facturas</h2><p>Revisa tu conexión e intenta de nuevo. No se ha emitido ni enviado nada.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  // Nueva factura: se crea como borrador y solo sale cuando la apruebas en Aprobaciones.
+  const form = document.getElementById('invoice-form');
+  const panel = document.getElementById('new-invoice');
+  document.getElementById('btn-new').addEventListener('click', () => { panel.hidden = false; document.getElementById('nf-client').focus(); });
+  document.getElementById('nf-cancel').addEventListener('click', () => { panel.hidden = true; form.reset(); document.getElementById('nf-error').hidden = true; });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const err = document.getElementById('nf-error');
+    const client = document.getElementById('nf-client').value;
+    const project = document.getElementById('nf-project').value;
+    const amount = Number(document.getElementById('nf-amount').value);
+    const concept = document.getElementById('nf-concept').value.trim();
+    const problems = [];
+    if (!client) problems.push('elige el cliente');
+    if (!project) problems.push('elige el proyecto');
+    if (!(amount > 0)) problems.push('escribe un monto mayor que cero');
+    if (!concept) problems.push('escribe el concepto que verá el cliente');
+    if (problems.length) { err.textContent = 'Falta: ' + problems.join(', ') + '.'; err.hidden = false; return; }
+
+    const days = document.getElementById('nf-due').value;
+    const type = document.getElementById('nf-type').value;
+    const n = 33 + INVOICES.length - 4;
+    const invoice = {
+      id: 'F-2026-' + String(n).padStart(4, '0'), client, project, amount,
+      due: `${days} días`, status: 'Borrador', concept: `${type}: ${concept}`,
+      note: 'Borrador creado hoy. Pendiente de tu aprobación en Aprobaciones; nada sale hasta entonces.',
+    };
+    INVOICES.unshift(invoice);
+    selected = invoice.id;
+    form.reset(); panel.hidden = true; err.hidden = true;
+    renderRows(); renderDetail();
+    toast('Borrador creado. Para emitirla, apruébala en Aprobaciones.');
+  });
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

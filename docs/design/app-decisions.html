@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Decisiones</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin decisiones</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<header class="topbar">
+  <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span class="role">Administrador</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta">LR</a>
+    <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <ul>
+      <li><a href="app-projects.html">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html">Entregables</a></li>
+      <li><a href="app-meetings.html">Reuniones</a></li>
+      <li><a href="app-invoices.html">Facturas</a></li>
+      <li><a href="app-decisions.html" aria-current="page">Decisiones</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Registro de decisiones</h1>
+        <p>Cada aprobación, corrección y firma que diste, con el texto exacto que escribiste. No se edita: si cambias de opinión, queda una decisión nueva.</p>
+      </div>
+      <button type="button" class="secondary" id="btn-export">Exportar registro (PDF)</button>
+    </div>
+
+    <div id="view-main">
+      <div class="filters">
+        <label class="sr" for="f-project">Proyecto</label>
+        <select id="f-project">
+          <option value="">Todos los proyectos</option>
+          <option>Modernización del ERP</option><option>Hoja de ruta de TI</option>
+        </select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Decisiones">
+          <table>
+            <thead><tr><th scope="col">Fecha</th><th scope="col">Decisión</th><th scope="col" class="hide-sm">Quién</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle de la decisión"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios.
+  const DECISIONS = [
+    { id: 'D-0014', date: '14 oct', project: 'Modernización del ERP', type: 'Aprobaste el entregable', what: 'Informe preliminar de hallazgos, versión 2', who: 'Lucía Romero (administradora)', text: 'Aprobado. Las correcciones de la sección de riesgos ya están incluidas.', doc: 'Informe preliminar de hallazgos v2.pdf', hash: '3f9a…c21' },
+    { id: 'D-0013', date: '13 oct', project: 'Modernización del ERP', type: 'Dejaste una corrección', what: 'Informe preliminar, sección Hallazgos', who: 'Lucía Romero (administradora)', text: 'Confirmar el impacto del módulo de cuentas por cobrar.', doc: 'Informe preliminar de hallazgos v2.pdf', hash: '9b07…e4d1' },
+    { id: 'D-0009', date: '9 oct', project: 'Modernización del ERP', type: 'Aceptaste el SOW', what: 'Diagnóstico de arquitectura, alcance y anticipo', who: 'Lucía Romero (administradora)', text: 'Acepto el alcance y el anticipo del 50 %.', doc: 'SOW firmado v3.pdf', hash: 'c62e…08a7' },
+    { id: 'D-0004', date: '2 oct', project: 'Hoja de ruta de TI', type: 'Pediste reunión', what: 'Revisión de la hoja de ruta por etapas', who: 'Marco Díaz (miembro)', text: 'Necesitamos revisar el alcance de la etapa 2 antes de fin de mes.', doc: null, hash: null },
+  ];
+  let selected = 'D-0014';
+
+  function visible() {
+    const p = document.getElementById('f-project').value;
+    return DECISIONS.filter(d => !p || d.project === p);
+  }
+
+  function renderRows() {
+    const rows = visible();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(d => `
+      <tr tabindex="0" data-id="${d.id}" aria-selected="${d.id === selected}">
+        <td class="sub">${d.date}</td>
+        <td><div class="lead-name">${d.type}</div><div class="sub">${d.what}</div></td>
+        <td class="hide-sm sub">${d.who}</td>
+      </tr>`).join('') : '<tr><td colspan="3" class="muted">No hay decisiones en este proyecto.</td></tr>';
+  }
+
+  function renderDetail() {
+    const d = DECISIONS.find(x => x.id === selected);
+    if (!d) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona una decisión para verla.</p>'; return; }
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${d.type}</h2><div class="sub">${d.id} · ${d.date}</div></div></div>
+
+      <div class="section"><h3>Texto exacto</h3>
+        <div class="preview">${d.text}</div>
+      </div>
+
+      <div class="section"><h3>Quién</h3>
+        <p style="margin:0">${d.who}</p>
+      </div>
+
+      <div class="section"><h3>Documento</h3>
+        <p style="margin:0">${d.doc ? d.doc : 'Esta decisión no tiene documento adjunto.'}</p>
+        ${d.hash ? `<p class="sub" style="margin:6px 0 0">Huella del documento: ${d.hash}. Sirve para confirmar que el archivo no cambió.</p>` : ''}
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+  document.getElementById('f-project').addEventListener('input', () => { renderRows(); });
+  document.getElementById('btn-export').addEventListener('click', () => toast('Preparando el registro en PDF. Queda registrado que lo descargaste.'));
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    document.getElementById('view-main').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>Todavía no hay decisiones</h2><p>Cuando apruebes un entregable, aceptes una propuesta o dejes una corrección, aparecerá aquí con su texto exacto.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar el registro</h2><p>Revisa tu conexión e intenta de nuevo. Ninguna decisión se ha perdido.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

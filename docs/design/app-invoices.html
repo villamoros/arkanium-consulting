@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arkanium · Facturas</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/app-shell.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin facturas</button>
+  <button type="button" data-state="loading" aria-pressed="false">Cargando</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<header class="topbar">
+  <div class="org"><strong>Distribuidora Norte</strong><span>Organización cliente (ejemplo)</span></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span class="role">Administrador</span>
+    <a class="avatar" href="app-account.html" aria-label="Mi cuenta" style="text-decoration:none;color:inherit">LR</a>
+    <a class="button secondary" href="app-no-access.html" style="text-decoration:none;display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius-sm)">Cerrar sesión</a>
+  </div>
+</header>
+
+<div class="client-shell">
+  <nav class="client-nav" id="site-nav" aria-label="Principal">
+    <ul>
+      <li><a href="app-projects.html">Mis proyectos</a></li>
+      <li><a href="app-deliverable.html">Entregables</a></li>
+      <li><a href="app-meetings.html">Reuniones</a></li>
+      <li><a href="app-invoices.html" aria-current="page">Facturas</a></li>
+      <li><a href="app-decisions.html">Decisiones</a></li>
+    </ul>
+  </nav>
+
+  <main style="padding:24px 28px;min-width:0">
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Facturas</h1>
+        <p>Todas las facturas de tu organización, con su proyecto y su estado de pago.</p>
+      </div>
+    </div>
+
+    <div id="view-main">
+      <div class="kpis">
+        <div class="kpi"><b id="kpi-due">USD 3,000</b><span>pendiente de pago</span></div>
+        <div class="kpi"><b id="kpi-paid">USD 3,750</b><span>pagado este año</span></div>
+        <div class="kpi"><b>0</b><span>vencidas</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="f-project">Proyecto</label>
+        <select id="f-project"><option value="">Todos los proyectos</option><option>Modernización del ERP</option><option>Hoja de ruta de TI</option></select>
+        <label class="sr" for="f-status">Estado</label>
+        <select id="f-status"><option value="">Cualquier estado</option><option>Pendiente</option><option>Pagada</option></select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Lista de facturas">
+          <table>
+            <thead><tr><th scope="col">Factura</th><th scope="col">Proyecto y concepto</th><th scope="col">Monto</th><th scope="col" class="hide-sm">Vence</th><th scope="col">Estado</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel" style="padding:18px;align-self:start;position:sticky;top:18px" id="detail" aria-live="polite"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. Montos en USD de ejemplo.
+  const INVOICES = [
+    { num: 'FAC-1051', project: 'Modernización del ERP', concept: 'Hito 1 · Evaluación aprobada', amount: 3000, issued: '13 oct', due: '28 oct', status: 'Pendiente', lines: [['Evaluación de arquitectura, hito 1', 3000]] },
+    { num: 'FAC-1042', project: 'Modernización del ERP', concept: 'Anticipo de inicio', amount: 2250, issued: '2 oct', due: '17 oct', status: 'Pagada', paidOn: '5 oct', lines: [['Anticipo 50% del alcance de evaluación', 2250]] },
+    { num: 'FAC-1038', project: 'Hoja de ruta de TI', concept: 'Anticipo de inicio', amount: 1500, issued: '4 oct', due: '19 oct', status: 'Pagada', paidOn: '6 oct', lines: [['Anticipo del sprint de hoja de ruta', 1500]] },
+  ];
+  // Archivos de ejemplo descargables por número de factura.
+  const INVOICE_FILES = {
+    'FAC-1051': 'assets/downloads/factura-FAC-1051.pdf',
+    'FAC-1042': 'assets/downloads/factura-FAC-1042.pdf',
+    'FAC-1038': 'assets/downloads/factura-FAC-1038.pdf',
+  };
+  let current = 'FAC-1051';
+
+  const money = n => 'USD ' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  function filtered() {
+    const p = document.getElementById('f-project').value;
+    const s = document.getElementById('f-status').value;
+    return INVOICES.filter(i => (!p || i.project === p) && (!s || i.status === s));
+  }
+
+  function renderRows() {
+    const rows = filtered();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(i => `
+      <tr tabindex="0" data-num="${i.num}" aria-selected="${i.num === current}">
+        <td><b>${i.num}</b><div class="sub">Emitida ${i.issued}</div></td>
+        <td><div>${i.project}</div><div class="sub">${i.concept}</div></td>
+        <td>${money(i.amount)}</td>
+        <td class="hide-sm sub">${i.status === 'Pagada' ? 'Pagada el ' + i.paidOn : i.due}</td>
+        <td><span class="doc-status ${i.status === 'Pagada' ? 'approved' : 'review'}">${i.status}</span></td>
+      </tr>`).join('') : '<tr><td colspan="5" class="muted">No hay facturas con esos filtros.</td></tr>';
+    const due = INVOICES.filter(i => i.status === 'Pendiente').reduce((a, i) => a + i.amount, 0);
+    const paid = INVOICES.filter(i => i.status === 'Pagada').reduce((a, i) => a + i.amount, 0);
+    document.getElementById('kpi-due').textContent = money(due);
+    document.getElementById('kpi-paid').textContent = money(paid);
+  }
+
+  function renderDetail() {
+    const i = INVOICES.find(x => x.num === current);
+    if (!i) { document.getElementById('detail').innerHTML = '<p class="muted" style="margin:0">Selecciona una factura para ver su detalle.</p>'; return; }
+    document.getElementById('detail').innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:start">
+        <div><h2 style="font-size:1rem">${i.num}</h2><div class="sub">${i.project}</div></div>
+        <span class="doc-status ${i.status === 'Pagada' ? 'approved' : 'review'}">${i.status}</span>
+      </div>
+      <div class="section" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+        <h3 style="margin:0 0 8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Detalle</h3>
+        <table><tbody>${i.lines.map(([d, a]) => `<tr><td>${d}</td><td style="text-align:right">${money(a)}</td></tr>`).join('')}
+          <tr><td><b>Total</b></td><td style="text-align:right"><b>${money(i.amount)}</b></td></tr></tbody></table>
+      </div>
+      <div class="section" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">
+        <dl class="kv"><dt>Emitida</dt><dd>${i.issued}</dd><dt>Vence</dt><dd>${i.status === 'Pagada' ? '—' : i.due}</dd>${i.status === 'Pagada' ? `<dt>Pagada</dt><dd>${i.paidOn}</dd>` : ''}</dl>
+      </div>
+      <div class="actions" style="margin-top:14px"><a class="btn-link" href="${INVOICE_FILES[i.num]}" download>Descargar factura (PDF)</a></div>
+      ${i.status === 'Pendiente' ? `<div class="actions" style="margin-top:8px"><button type="button" class="primary" data-pay="${i.num}">Pagar ${money(i.amount)}</button></div>
+        <p class="sub" style="margin:8px 0 0">Serás llevado a la página segura de Stripe. Arkanium no recibe datos de tu tarjeta.</p>` : '<p class="sub" style="margin:10px 0 0">Factura pagada.</p>'}`;
+  }
+
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
+
+  document.getElementById('rows').addEventListener('click', e => { const r = e.target.closest('tr[data-num]'); if (r) { current = r.dataset.num; renderRows(); renderDetail(); } });
+  document.getElementById('rows').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-num]')) { e.preventDefault(); e.target.click(); } });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-pay]'); if (!b) return;
+    toast('Esto abriría la página segura de Stripe para la factura ' + b.dataset.pay + '.');
+  });
+  ['f-project', 'f-status'].forEach(id => document.getElementById(id).addEventListener('change', () => { renderRows(); }));
+
+  function setState(s) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    const main = document.getElementById('view-main'); const v = document.getElementById('view-state');
+    if (s === 'normal') { location.reload(); return; }
+    main.hidden = s !== 'empty';
+    v.hidden = s === 'empty';
+    if (s === 'empty') { v.hidden = false; v.innerHTML = '<h2>Todavía no hay facturas</h2><p>Cuando Arkanium emita una factura para tu organización, aparecerá aquí con su estado de pago.</p>'; }
+    if (s === 'loading') v.innerHTML = '<div style="text-align:left"><div class="skeleton"></div><div class="skeleton"></div></div><p class="muted" style="margin-top:12px">Cargando facturas…</p>';
+    if (s === 'error') v.innerHTML = '<h2>No pudimos cargar las facturas</h2><p>Revisa tu conexión e intenta de nuevo. No se ha cobrado nada.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

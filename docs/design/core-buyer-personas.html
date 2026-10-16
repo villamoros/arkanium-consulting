@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Buyer personas</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="limit" aria-pressed="false">Límite diario alcanzado</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin buyer personas</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html" aria-current="page">Buyer personas</a></li>
+      <li><a href="core-suppression.html">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Buyer personas</h1>
+        <p>Perfiles que queremos convertir en leads, y el contacto directo que el equipo de marketing mantiene con cada uno. Sin envíos masivos.</p>
+      </div>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Política de contacto:</strong> máximo 10 contactos por día en total, repartidos en una jornada laboral. Ninguna plantilla de mensaje se usa sin tu aprobación. Cada contacto queda en la bitácora.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-today">6</b><span>contactos hoy (límite 10)</span></div>
+        <div class="kpi"><b>3</b><span>perfiles en seguimiento</span></div>
+        <div class="kpi"><b>1</b><span>respuesta esperando tu aprobación</span></div>
+        <div class="kpi"><b>0</b><span>incidencias de la cuenta</span></div>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Lista de buyer personas">
+          <table>
+            <thead><tr><th scope="col">Perfil</th><th scope="col">Servicio que evalúa</th><th scope="col">Canal</th><th scope="col">Contactos hoy</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del buyer persona"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. No corresponden a personas reales.
+  const DAILY_CAP = 10;
+  const PERSONAS = [
+    { id: 'BP1', name: 'Director de operaciones, manufactura', service: 'Evaluación de arquitectura', channel: 'LinkedIn', today: 4, status: 'Activo', note: 'Respondió al primer mensaje. Esperando tu aprobación de la respuesta.', pending: 'Respuesta de borrador: "Gracias por responder. ¿Te sirve una llamada de 20 minutos?"' },
+    { id: 'BP2', name: 'Fundador técnico, startup', service: 'CTO fraccional, nivel startup', channel: 'X', today: 2, status: 'Activo', note: 'Publicó sobre falta de liderazgo técnico. Seguimiento en curso.', pending: null },
+    { id: 'BP3', name: 'Gerente de TI, logística', service: 'Hoja de ruta de TI', channel: 'LinkedIn', today: 0, status: 'En pausa', note: 'Pidió retomar el próximo trimestre.', pending: null },
+  ];
+  let selected = 'BP1';
+
+  function renderRows() {
+    const total = PERSONAS.reduce((a, p) => a + p.today, 0);
+    document.getElementById('k-today').textContent = total;
+    document.getElementById('rows').innerHTML = PERSONAS.map(p => `
+      <tr tabindex="0" data-id="${p.id}" aria-selected="${p.id === selected}">
+        <td><div class="lead-name">${p.name}</div><div class="sub">${p.status}</div></td>
+        <td class="sub">${p.service}</td>
+        <td>${p.channel}</td>
+        <td><b>${p.today}</b> <span class="sub">de ${DAILY_CAP}</span></td>
+      </tr>`).join('');
+  }
+
+  function renderDetail() {
+    const p = PERSONAS.find(x => x.id === selected);
+    if (!p) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un buyer persona.</p>'; return; }
+    const remaining = Math.max(DAILY_CAP - p.today, 0);
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${p.name}</h2><div class="sub">${p.service} · ${p.channel}</div></div><span class="badge ${p.status === 'Activo' ? 'b-convertido' : 'b-idle'}">${p.status}</span></div>
+
+      <div class="section"><h3>Cupo de hoy</h3>
+        <div style="height:8px;background:var(--graphite);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(p.today / DAILY_CAP) * 100}%;background:var(--gold)"></div></div>
+        <p class="sub" style="margin:6px 0 0">${p.today} de ${DAILY_CAP} contactos usados. Quedan ${remaining} para hoy, en toda la jornada.</p>
+      </div>
+
+      <div class="section"><h3>Estado del contacto</h3><p style="margin:0">${p.note}</p></div>
+
+      ${p.pending ? `<div class="section"><h3>Pendiente de tu aprobación</h3>
+        <div class="preview" style="white-space:normal">${p.pending}</div>
+        <div class="actions"><button type="button" class="primary" data-act="approve">Aprobar y enviar</button><button type="button" class="secondary" data-act="edit">Editar</button><button type="button" class="danger" data-act="discard">Descartar</button></div>
+      </div>` : ''}
+
+      <div class="section decision"><h3>Control</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="${p.status === 'Activo' ? 'pause' : 'resume'}">${p.status === 'Activo' ? 'Pausar contacto' : 'Reanudar contacto'}</button>
+          <button type="button" class="secondary" data-act="convert" ${p.status === 'Activo' ? '' : 'disabled'}>Pasar a Leads</button>
+        </div>
+        <p class="sub" style="margin:0">Pausar detiene todo contacto con este perfil de inmediato.</p>
+      </div>`;
+  }
+
+  function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2800); }
+
+  document.getElementById('rows').addEventListener('click', e => { const r = e.target.closest('tr[data-id]'); if (r) { selected = r.dataset.id; renderRows(); renderDetail(); } });
+  document.getElementById('rows').addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); } });
+  document.getElementById('detail').addEventListener('click', e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const p = PERSONAS.find(x => x.id === selected);
+    if (b.dataset.act === 'pause') { p.status = 'En pausa'; renderRows(); renderDetail(); toast('Contacto pausado. No se enviará nada a este perfil.'); }
+    if (b.dataset.act === 'resume') { p.status = 'Activo'; renderRows(); renderDetail(); toast('Contacto reanudado.'); }
+    if (b.dataset.act === 'approve') { p.pending = null; renderDetail(); toast('Respuesta aprobada. Queda registrada en la bitácora.'); }
+    if (b.dataset.act === 'discard') { p.pending = null; renderDetail(); toast('Borrador descartado.'); }
+    if (b.dataset.act === 'edit') toast('Abre el borrador para editarlo antes de aprobarlo.');
+    if (b.dataset.act === 'convert') toast('Se crea un lead en Leads, con su origen en este perfil.');
+  });
+
+  function setState(s) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === s)));
+    if (s === 'normal') { location.reload(); return; }
+    if (s === 'limit') {
+      PERSONAS.forEach(p => { p.today = 10; });
+      document.getElementById('view-normal').hidden = false;
+      document.getElementById('view-state').hidden = true;
+      renderRows(); renderDetail();
+      toast('Límite diario alcanzado. Los contactos se reanudan mañana.');
+      return;
+    }
+    document.getElementById('view-normal').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (s === 'empty') v.innerHTML = '<h2>Todavía no hay buyer personas</h2><p>Define el primer perfil con el servicio que quieres vender y el canal donde está.</p>';
+    if (s === 'error') v.innerHTML = '<h2>No pudimos cargar los perfiles</h2><p>Revisa tu conexión e intenta de nuevo. Ningún contacto se ha enviado.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

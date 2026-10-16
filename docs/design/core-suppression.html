@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Core · Supresión y consentimiento</title>
+<link rel="stylesheet" href="assets/arkanium-core.css" />
+<link rel="stylesheet" href="assets/core-extras.css" />
+<link rel="stylesheet" href="assets/core-ops.css" />
+<link rel="stylesheet" href="assets/nav-drawer.css" />
+</head>
+<body>
+
+<div class="preview-bar" role="group" aria-label="Estados de vista previa (solo para revisar el diseño)">
+  <span class="muted">Vista previa de estados:</span>
+  <button type="button" data-state="normal" aria-pressed="true">Normal</button>
+  <button type="button" data-state="empty" aria-pressed="false">Sin registros</button>
+  <button type="button" data-state="error" aria-pressed="false">Error</button>
+</div>
+
+<div class="shell">
+  <nav class="side" id="site-nav" aria-label="Principal">
+    <div class="brand"><img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" style="border-radius:6px;vertical-align:middle;margin-right:10px" />ARKANIUM · CORE</div>
+    <div class="side-group">Ventas</div>
+    <ul>
+      <li><a href="core-leads.html">Leads <span class="count">4</span></a></li>
+      <li><a href="core-meetings.html">Reuniones <span class="count">2</span></a></li>
+      <li><a href="core-clients.html">Clientes</a></li>
+      <li><a href="core-proposals.html">Propuestas</a></li>
+      <li><a href="core-billing.html">Cobros y facturas</a></li>
+    </ul>
+    <div class="side-group">Operación</div>
+    <ul>
+      <li><a href="core-approvals.html">Aprobaciones <span class="count" id="count-pending">6</span></a></li>
+      <li><a href="core-projects.html">Proyectos</a></li>
+      <li><a href="core-org-chart.html">Agentes</a></li>
+      <li><a href="core-agent-budget.html">Presupuesto</a></li>
+      <li><a href="core-emergency.html">Pausas de emergencia</a></li>
+    </ul>
+    <div class="side-group">Mercadeo</div>
+    <ul>
+      <li><a href="core-campaigns.html">Campañas</a></li>
+      <li><a href="core-buyer-personas.html">Buyer personas</a></li>
+      <li><a href="core-suppression.html" aria-current="page">Supresión y consentimiento</a></li>
+      <li><a href="core-insights.html">Insights</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="nav-bar"><button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú" data-nav-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span></button></div>
+    <div class="page-head">
+      <div>
+        <h1>Supresión y consentimiento</h1>
+        <p>Quién no debe recibir ningún contacto y en qué base se contacta a cada persona. Se revisa antes de cada envío de buyer personas y de campañas.</p>
+      </div>
+      <button type="button" class="secondary" id="btn-add">Agregar a supresión</button>
+    </div>
+
+    <div id="view-normal">
+      <div class="approval" role="note">
+        <span aria-hidden="true">◈</span>
+        <div><strong>Regla:</strong> un contacto en supresión bloquea todo envío, en cualquier canal y campaña. Una baja es definitiva hasta que la persona vuelva a dar su consentimiento por escrito. Nadie se elimina del registro; queda marcado.</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><b id="k-suppressed">4</b><span>contactos en supresión</span></div>
+        <div class="kpi"><b>3</b><span>bajas esta semana</span></div>
+        <div class="kpi"><b id="k-blocked">2</b><span>envíos bloqueados esta semana</span></div>
+        <div class="kpi"><b>100%</b><span>envíos con revisión previa</span></div>
+      </div>
+
+      <div class="filters">
+        <label class="sr" for="q">Buscar en el registro</label>
+        <input id="q" type="search" placeholder="Buscar por perfil, canal u origen" />
+        <label class="sr" for="f-status">Estado</label>
+        <select id="f-status">
+          <option value="">Todos los estados</option>
+          <option>Contactable</option><option>No contactar</option><option>Baja solicitada</option><option>Consentimiento revocado</option>
+        </select>
+      </div>
+
+      <div class="layout">
+        <section class="panel" aria-label="Registro de contactos">
+          <table>
+            <thead><tr><th scope="col">Perfil</th><th scope="col">Canal</th><th scope="col" class="hide-sm">Base de contacto</th><th scope="col">Estado</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </section>
+
+        <aside class="panel detail" id="detail" aria-live="polite" aria-label="Detalle del registro"></aside>
+      </div>
+    </div>
+
+    <div id="view-state" class="panel state" hidden></div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand-col">
+    <a class="footer-brand" href="#" aria-label="Arkanium Consulting — volver arriba">
+      <img src="assets/images/arkanium-mark.png" alt="" width="40" height="34" />
+      <span>Arkanium Consulting</span>
+    </a>
+    <p>Ingeniería de la infraestructura digital detrás del crecimiento empresarial moderno.</p>
+  </div>
+  <p class="footer-copy"><small>© 2026 Arkanium Consulting. Todos los derechos reservados.</small></p>
+</footer>
+
+<div class="dialog-back" id="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="dialog">
+    <h2 id="confirm-title">Agregar a supresión</h2>
+    <p id="confirm-body" class="muted"></p>
+    <div class="actions" style="justify-content:flex-end">
+      <button type="button" class="secondary" data-close>Cancelar</button>
+      <button type="button" class="danger" id="confirm-ok">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Datos de ejemplo ficticios. No corresponden a personas reales.
+  const RECORDS = [
+    { id: 'S1', profile: 'Director de operaciones, manufactura (ejemplo)', channel: 'LinkedIn', basis: 'Interés legítimo, contacto profesional', origin: 'Buyer persona BP1', status: 'Contactable', note: 'Respondió al primer mensaje.' },
+    { id: 'S2', profile: 'Fundador técnico, startup (ejemplo)', channel: 'X', basis: 'Interés legítimo, contacto profesional', origin: 'Buyer persona BP2', status: 'Contactable', note: 'Seguimiento en curso.' },
+    { id: 'S3', profile: 'Gerente de TI, logística (ejemplo)', channel: 'LinkedIn', basis: 'Interés legítimo, contacto profesional', origin: 'Buyer persona BP3', status: 'Baja solicitada', note: 'Pidió no recibir más mensajes. Bloqueado desde hoy.' },
+    { id: 'S4', profile: 'Consultor independiente (ejemplo)', channel: 'Correo', basis: 'Consentimiento escrito', origin: 'Formulario de landing', status: 'Consentimiento revocado', note: 'Revocó su consentimiento por correo.' },
+    { id: 'S5', profile: 'Gerente de compras (ejemplo)', channel: 'LinkedIn', basis: 'Sin base registrada', origin: 'Importación manual', status: 'No contactar', note: 'Sin base de contacto registrada. No se envía nada hasta registrarla.' },
+  ];
+  let selected = 'S3';
+  let pendingId = null;
+
+  const BADGE = { 'Contactable': 'b-convertido', 'No contactar': 'b-descartado', 'Baja solicitada': 'b-pospuesto', 'Consentimiento revocado': 'b-pospuesto' };
+
+  function visibleRecords() {
+    const q = document.getElementById('q').value.trim().toLowerCase();
+    const st = document.getElementById('f-status').value;
+    return RECORDS.filter(r => (!st || r.status === st) && (!q || (r.profile + ' ' + r.channel + ' ' + r.origin).toLowerCase().includes(q)));
+  }
+
+  function renderKpis() {
+    document.getElementById('k-suppressed').textContent = RECORDS.filter(r => r.status !== 'Contactable').length;
+  }
+
+  function renderRows() {
+    const rows = visibleRecords();
+    document.getElementById('rows').innerHTML = rows.length ? rows.map(r => `
+      <tr tabindex="0" data-id="${r.id}" aria-selected="${r.id === selected}">
+        <td><div class="lead-name">${r.profile}</div><div class="sub">${r.origin}</div></td>
+        <td>${r.channel}</td>
+        <td class="hide-sm sub">${r.basis}</td>
+        <td><span class="badge ${BADGE[r.status]}">${r.status}</span></td>
+      </tr>`).join('') : '<tr><td colspan="4" class="muted">No hay registros con esos filtros.</td></tr>';
+    renderKpis();
+  }
+
+  function renderDetail() {
+    const r = RECORDS.find(x => x.id === selected);
+    if (!r) { document.getElementById('detail').innerHTML = '<p class="muted">Selecciona un registro para verlo.</p>'; return; }
+    const blocked = r.status !== 'Contactable';
+    document.getElementById('detail').innerHTML = `
+      <div class="head"><div><h2>${r.profile}</h2><div class="sub">${r.channel} · ${r.origin}</div></div><span class="badge ${BADGE[r.status]}">${r.status}</span></div>
+
+      <div class="section"><h3>Base de contacto</h3>
+        <p style="margin:0">${r.basis}</p>
+        <p class="sub" style="margin:6px 0 0">La base la registró el owner. Cambiarla queda en la bitácora.</p>
+      </div>
+
+      <div class="section"><h3>Estado</h3><p style="margin:0">${r.note}</p></div>
+
+      <div class="section decision"><h3>Acciones</h3>
+        <div class="actions">
+          <button type="button" class="secondary" data-act="suppress" ${blocked ? 'disabled' : ''}>Agregar a supresión</button>
+          <button type="button" class="secondary" data-act="consent" ${blocked ? '' : 'disabled'}>Registrar nuevo consentimiento</button>
+        </div>
+        <p class="sub" style="margin:0">Un nuevo consentimiento necesita el documento o correo de la persona adjunto. No se acepta de palabra.</p>
+      </div>
+
+      <div class="section"><h3>Revisiones antes de cada envío</h3>
+        <ul class="checks">
+          <li><span class="${blocked ? 'pending' : 'ok'}" aria-hidden="true">${blocked ? '◷' : '✓'}</span><span>${blocked ? 'Bloqueado en cada envío' : 'Cumple la base registrada'}</span></li>
+          <li><span class="ok" aria-hidden="true">✓</span><span>Tope de 10 contactos al día revisado</span></li>
+        </ul>
+      </div>`;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function openConfirm(title, body, ok, id) {
+    pendingId = id;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-body').textContent = body;
+    document.getElementById('confirm-ok').textContent = ok;
+    document.getElementById('confirm-dialog').classList.add('open');
+    document.getElementById('confirm-ok').focus();
+  }
+
+  document.getElementById('btn-add').addEventListener('click', () => {
+    openConfirm('Agregar a supresión', 'Indica el motivo en el registro al confirmar. El contacto queda bloqueado en todos los canales.', 'Agregar', 'new');
+  });
+
+  document.getElementById('rows').addEventListener('click', e => {
+    const row = e.target.closest('tr[data-id]'); if (!row) return;
+    selected = row.dataset.id; renderRows(); renderDetail();
+  });
+  document.getElementById('rows').addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('tr[data-id]')) { e.preventDefault(); e.target.click(); }
+  });
+
+  document.getElementById('detail').addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]'); if (!btn) return;
+    if (btn.dataset.act === 'suppress') openConfirm('Agregar a supresión', 'El contacto queda bloqueado en todos los canales y campañas. Solo se revierte con un consentimiento nuevo.', 'Agregar', selected);
+    if (btn.dataset.act === 'consent') toast('Adjunta el correo o documento del consentimiento para registrarlo.');
+  });
+
+  document.getElementById('confirm-dialog').addEventListener('click', e => {
+    if (e.target.matches('[data-close]') || e.target.id === 'confirm-dialog') { document.getElementById('confirm-dialog').classList.remove('open'); return; }
+    if (e.target.id === 'confirm-ok') {
+      const r = RECORDS.find(x => x.id === pendingId);
+      document.getElementById('confirm-dialog').classList.remove('open');
+      if (r && r.status === 'Contactable') { r.status = 'No contactar'; r.note = 'Agregado a supresión por el owner. Bloqueado en todos los canales.'; renderRows(); renderDetail(); toast('Agregado a supresión. Queda en la bitácora.'); }
+      else toast('Registro guardado. Queda en la bitácora.');
+      pendingId = null;
+    }
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('confirm-dialog').classList.remove('open'); });
+
+  ['q', 'f-status'].forEach(id => document.getElementById(id).addEventListener('input', renderRows));
+
+  function setState(state) {
+    document.querySelectorAll('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === state)));
+    if (state === 'normal') { location.reload(); return; }
+    document.getElementById('view-normal').hidden = true;
+    const v = document.getElementById('view-state'); v.hidden = false;
+    if (state === 'empty') v.innerHTML = '<h2>Todavía no hay registros de supresión</h2><p>Los contactos aparecerán aquí cuando se registre una baja o un consentimiento.</p>';
+    if (state === 'error') v.innerHTML = '<h2>No pudimos cargar el registro</h2><p>Revisa tu conexión e intenta de nuevo. Ningún envío se ha hecho.</p><div class="actions" style="justify-content:center"><button type="button" class="primary" data-state="normal">Reintentar</button></div>';
+  }
+  document.querySelectorAll('[data-state]').forEach(b => b.addEventListener('click', () => setState(b.dataset.state)));
+
+  renderRows(); renderDetail();
+</script>
+<div class="nav-scrim" data-scrim></div>
+<script>
+  // Menú deslizable: se abre con el botón, se cierra con el velo, con Escape o al elegir una sección.
+  (function () {
+    const toggle = document.querySelector("[data-nav-toggle]");
+    const nav = document.querySelector("nav.side, nav.client-nav");
+    const scrim = document.querySelector("[data-scrim]");
+    if (!toggle || !nav) return;
+    function setOpen(open, returnFocus) {
+      document.body.classList.toggle("nav-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      if (!open && returnFocus) toggle.focus();
+    }
+    toggle.addEventListener("click", () => setOpen(!document.body.classList.contains("nav-open")));
+    scrim.addEventListener("click", () => setOpen(false, true));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("nav-open")) setOpen(false, true); });
+    nav.addEventListener("click", e => { if (e.target.closest("a")) setOpen(false); });
+  })();
+</script>
+</body>
+</html>

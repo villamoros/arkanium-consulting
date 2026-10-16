@@ -1,0 +1,51 @@
+/* Estilos de la app de clientes (se suman a arkanium-core.css). */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; border-bottom: 1px solid var(--line); background: var(--ink-2); flex-wrap: wrap; }
+.topbar .org strong { display: block; font-family: Orbitron, sans-serif; font-size: .95rem; letter-spacing: .04em; }
+.topbar .org span { font-size: 13px; color: var(--muted); }
+.role { font-size: 12px; border: 1px solid var(--line-strong); color: var(--gold-2); border-radius: 999px; padding: 2px 10px; margin-left: 8px; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--graphite-2); display: grid; place-items: center; font-weight: 600; color: var(--gold-2); border: 1px solid var(--line-strong); }
+
+.client-shell { display: grid; grid-template-columns: 220px 1fr; min-height: 60vh; }
+.client-nav { border-right: 1px solid var(--line); padding: 18px 12px; background: var(--ink); }
+.client-nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.client-nav a { display: block; padding: 9px 10px; border-radius: var(--radius-sm); color: var(--muted); text-decoration: none; }
+.client-nav a[aria-current="page"] { background: var(--graphite); color: var(--paper); box-shadow: inset 2px 0 0 var(--gold); }
+
+.project-card { display: grid; gap: 6px; padding: 16px; background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius); text-align: left; color: inherit; font: inherit; width: 100%; cursor: pointer; }
+.project-card:hover { border-color: var(--line-strong); }
+.project-card h3 { margin: 0; font-family: Orbitron, sans-serif; font-size: 1rem; font-weight: 600; }
+.project-card p { margin: 0; color: var(--muted); font-size: 14px; }
+.project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+
+.next-step { font-size: 14px; border-left: 2px solid var(--gold); padding-left: 10px; color: var(--paper); }
+.pending-count { font-size: 12px; color: var(--gold-2); }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.timeline li { padding-left: 14px; border-left: 2px solid var(--graphite-2); }
+.timeline time { font-size: 12px; color: var(--muted); }
+
+.doc-status { font-size: 12px; border-radius: 999px; padding: 2px 10px; border: 1px solid var(--line); }
+.doc-status.review { color: var(--warn); border-color: rgba(224,179,92,.5); }
+.doc-status.ready { color: var(--gold-2); border-color: var(--line-strong); }
+.doc-status.corrections { color: var(--bad); border-color: rgba(224,122,114,.5); }
+.doc-status.approved { color: var(--ok); border-color: rgba(127,184,138,.5); }
+
+.notice { font-size: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--muted); }
+
+.back { background: none; border: 0; padding: 0; color: var(--gold-2); margin-bottom: 10px; }
+
+/* Descarga como enlace con aspecto de botón secundario */
+.btn-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--paper); text-decoration: none; font-size: 14px; white-space: nowrap; background: transparent; }
+.btn-link:hover { border-color: var(--line-strong); background: var(--graphite); }
+.btn-link::after { content: "↓"; color: var(--gold-2); }
+
+@media (max-width: 760px) {
+  .client-shell { grid-template-columns: 1fr; }
+  .client-nav { border-right: 0; border-bottom: 1px solid var(--line); }
+  .client-nav ul { grid-auto-flow: column; overflow-x: auto; }
+}
+
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 14px; }
+.checks li { display: flex; gap: 8px; align-items: flex-start; }
+.checks .ok { color: var(--ok); }
+.checks .pending { color: var(--warn); }
