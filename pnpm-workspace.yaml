@@ -7,3 +7,6 @@ packages:
 allowBuilds:
   esbuild: true
   unrs-resolver: true
+  # Scripts de paquetes transitivos que no necesitamos para compilar. Se declaran bloqueados de forma explícita.
+  browser-tabs-lock: false
+  core-js: false
