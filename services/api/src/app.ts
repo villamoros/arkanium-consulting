@@ -1,15 +1,16 @@
 import { timingSafeEqual } from 'node:crypto';
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
 import cors from '@fastify/cors';
-import { healthResponseSchema, leadDecisionSchema, leadIntakeSchema, memberInvitationSchema, type HealthResponse, type Lead as LeadDto } from '@arkanium/contracts';
+import { healthResponseSchema, leadDecisionSchema, leadDeleteSchema, leadIntakeSchema, leadManualSchema, leadUpdateSchema, memberInvitationSchema, type HealthResponse, type Lead as LeadDto } from '@arkanium/contracts';
 import type { IdentityGateway } from './auth/clerk.js';
 import type { Db } from './db/client.js';
-import { decideLead, captureLead, convertLead, findLead, listLeads, LeadError, type Lead } from './leads/service.js';
+import { createManualLead, decideLead, captureLead, convertLead, deleteLead, findLead, listLeads, LeadError, updateLead, type Lead } from './leads/service.js';
 import { inviteMember, OrganizationError } from './organizations/service.js';
 import { decideDestination, listDestinations } from './session/destination.js';
 import { sendServiceError } from './access.js';
 import { ServiceError } from './errors.js';
 import type { BillingGateway } from './billing/stripe.js';
+import type { CalendarGateway } from './calendar/n8n.js';
 import { verifyStripeSignature } from './billing/stripe.js';
 import { markPaidFromStripe } from './billing/service.js';
 import { registerOperationRoutes } from './routes/operations.js';
@@ -33,6 +34,10 @@ export interface AppOptions {
   billing?: BillingGateway;
   /** Secreto del webhook de Stripe para confirmar pagos. Sin él, el webhook responde 503. */
   stripeWebhookSecret?: string;
+  /** Calendario vía n8n: crea el evento al confirmar una reunión. Sin él, la confirmación no crea evento. */
+  calendar?: CalendarGateway;
+  /** Secreto de n8n para las rutas internas (recordatorios). Sin él, esas rutas responden 401. */
+  internalSecret?: string;
 }
 
 /**
@@ -81,7 +86,7 @@ export function buildApp(options: AppOptions = {}): FastifyInstance {
       const db = options.db;
       registerLeadRoutes(app, { db, identity, internalOrgId, leadIntakeToken: options.leadIntakeToken });
       registerMemberRoutes(app, { db, identity, internalOrgId });
-      registerOperationRoutes(app, { db, identity, internalOrgId, billing: options.billing });
+      registerOperationRoutes(app, { db, identity, internalOrgId, billing: options.billing, calendar: options.calendar, internalSecret: options.internalSecret });
       registerStripeWebhook(app, { db, secret: options.stripeWebhookSecret });
     }
   }
@@ -141,9 +146,11 @@ function toLeadDto(lead: Lead): LeadDto {
     organizationId: lead.organizationId,
     context: lead.context,
     source: lead.source,
+    sourceReference: lead.sourceReference,
     proposedFamily: lead.proposedFamily,
     proposedReason: lead.proposedReason,
     decisionNote: lead.decisionNote,
+    revisitAt: lead.revisitAt?.toISOString() ?? null,
   };
 }
 
@@ -191,6 +198,42 @@ function registerLeadRoutes(app: FastifyInstance, deps: LeadRouteDeps): void {
     if (!ownerId) return;
     try {
       return toLeadDto(await findLead(db, request.params.id));
+    } catch (error) {
+      return leadError(reply, error);
+    }
+  });
+
+  // Alta manual de un lead (owner): mensaje directo, comentario, referido o evento.
+  app.post('/leads/manual', async (request, reply) => {
+    const ownerId = await requireOwner(request, reply, identity, internalOrgId);
+    if (!ownerId) return;
+    const parsed = leadManualSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: 'invalid' });
+    return reply.code(201).send(toLeadDto(await createManualLead(db, parsed.data, ownerId)));
+  });
+
+  // Edición de datos de un lead (owner).
+  app.patch<{ Params: { id: string } }>('/leads/:id', async (request, reply) => {
+    const ownerId = await requireOwner(request, reply, identity, internalOrgId);
+    if (!ownerId) return;
+    const parsed = leadUpdateSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: 'invalid' });
+    try {
+      return toLeadDto(await updateLead(db, request.params.id, parsed.data, ownerId));
+    } catch (error) {
+      return leadError(reply, error);
+    }
+  });
+
+  // Eliminación suave de un lead (owner). Exige motivo; el registro y la bitácora se conservan.
+  app.delete<{ Params: { id: string } }>('/leads/:id', async (request, reply) => {
+    const ownerId = await requireOwner(request, reply, identity, internalOrgId);
+    if (!ownerId) return;
+    const parsed = leadDeleteSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: 'invalid', message: 'Escribe el motivo de la eliminación.' });
+    try {
+      await deleteLead(db, request.params.id, parsed.data.reason, ownerId);
+      return reply.code(204).send();
     } catch (error) {
       return leadError(reply, error);
     }

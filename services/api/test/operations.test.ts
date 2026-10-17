@@ -279,7 +279,7 @@ describe('F-03, A-04, F-09 y A-05 reuniones', () => {
     expect(requested.statusCode).toBe(201);
     const id = requested.json().id;
 
-    const confirmed = await call('POST', `/meetings/${id}/confirm`, 'token-owner', { startsAt: '2026-10-21T16:00:00.000Z' });
+    const confirmed = await call('POST', `/meetings/${id}/confirm`, 'token-owner', { startsAt: '2026-10-10T16:00:00.000Z' });
     expect(confirmed.json().status).toBe('confirmada');
 
     const beforeMinutes = await call('GET', `/organizations/${clientOrgId}/meetings`, 'token-client');
@@ -302,6 +302,17 @@ describe('F-03, A-04, F-09 y A-05 reuniones', () => {
     await call('POST', `/meetings/${id}/confirm`, 'token-owner', { startsAt: '2026-10-21T16:00:00.000Z' });
     const again = await call('POST', `/meetings/${id}/confirm`, 'token-owner', { startsAt: '2026-10-22T16:00:00.000Z' });
     expect(again.statusCode).toBe(409);
+  });
+
+  it('la agenda de core lista las reuniones de todas las organizaciones, solo para el owner', async () => {
+    await call('POST', `/organizations/${clientOrgId}/meetings`, 'token-client', { topic: 'Avance del diagnóstico' });
+
+    const forOwner = await call('GET', '/meetings', 'token-owner');
+    expect(forOwner.statusCode).toBe(200);
+    expect(forOwner.json().meetings[0]).toMatchObject({ topic: 'Avance del diagnóstico', status: 'solicitada', kind: 'cliente', counterpartName: 'Empresa Demo', minutesPublished: false });
+
+    const forClient = await call('GET', '/meetings', 'token-client');
+    expect(forClient.statusCode).toBe(403);
   });
 });
 

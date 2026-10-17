@@ -15,6 +15,10 @@ export interface ApiConfig {
   stripeSecretKey?: string;
   /** Secreto del webhook de Stripe (whsec_…). Sin él, el webhook responde 503. */
   stripeWebhookSecret?: string;
+  /** Base de los webhooks de n8n (…/webhook). Cada acción del calendario tiene su ruta: crear, reprogramar y cancelar. */
+  n8nWebhookBaseUrl?: string;
+  /** Secreto que n8n exige en la cabecera X-Arkanium-Secret. Debe coincidir con la credencial de n8n. */
+  n8nWebhookSecret?: string;
 }
 
 /** Lee la configuración del entorno. Falla al arrancar si falta lo indispensable, con un mensaje claro. */
@@ -35,5 +39,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     leadIntakeToken: env.LEAD_INTAKE_TOKEN || undefined,
     stripeSecretKey: env.STRIPE_SECRET_KEY || undefined,
     stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || undefined,
+    n8nWebhookBaseUrl: env.N8N_WEBHOOK_BASE_URL || undefined,
+    n8nWebhookSecret: env.N8N_WEBHOOK_SECRET || undefined,
   };
 }

@@ -76,8 +76,51 @@ export type MeetingRequest = z.infer<typeof meetingRequestSchema>;
 /** F-03: el owner confirma la reunión con su fecha. */
 export const meetingConfirmSchema = z.object({
   startsAt: z.iso.datetime(),
+  /** Duración en minutos para el evento del calendario. Si se omite, son 60. */
+  durationMinutes: z.number().int().min(15).max(480).optional(),
+  /** Correos invitados además del contacto principal o del lead. */
+  attendees: z.array(z.email().max(254)).max(10).default([]),
 });
 export type MeetingConfirm = z.infer<typeof meetingConfirmSchema>;
+
+/** El owner rechaza una solicitud. El motivo queda registrado. */
+export const meetingRejectSchema = z.object({
+  reason: z.string().trim().min(1).max(1000),
+});
+export type MeetingReject = z.infer<typeof meetingRejectSchema>;
+
+/** El owner no acepta la hora pedida y propone otra. El cliente la verá cuando exista su pantalla. */
+export const meetingProposeSchema = z.object({
+  startsAt: z.iso.datetime(),
+  note: z.string().trim().max(1000).optional(),
+});
+export type MeetingPropose = z.infer<typeof meetingProposeSchema>;
+
+/** El owner cancela una reunión confirmada. El evento se quita del calendario. */
+export const meetingCancelSchema = z.object({
+  reason: z.string().trim().min(1).max(1000),
+});
+export type MeetingCancel = z.infer<typeof meetingCancelSchema>;
+
+/** El owner mueve una reunión confirmada a otra hora. El evento se actualiza en el calendario. */
+export const meetingRescheduleSchema = z.object({
+  startsAt: z.iso.datetime(),
+  durationMinutes: z.number().int().min(15).max(480).optional(),
+});
+export type MeetingReschedule = z.infer<typeof meetingRescheduleSchema>;
+
+/** Reunión con un lead (prospecto) antes de convertirlo en cliente. */
+export const leadMeetingSchema = z.object({
+  topic: z.string().trim().min(1).max(200),
+});
+export type LeadMeeting = z.infer<typeof leadMeetingSchema>;
+
+/** Supresión: un correo que no debe recibir contactos de Arkanium. */
+export const suppressionSchema = z.object({
+  email: z.email().max(254),
+  reason: z.string().trim().min(1).max(500),
+});
+export type Suppression = z.infer<typeof suppressionSchema>;
 
 /** A-05: el owner publica el acta; queda visible para el cliente. */
 export const minutesPublishSchema = z.object({
@@ -105,3 +148,43 @@ export const organizationSuspendSchema = z.object({
   reason: z.string().trim().min(1).max(1000),
 });
 export type OrganizationSuspend = z.infer<typeof organizationSuspendSchema>;
+
+/**
+ * Gestión manual de una reunión (owner), para cuando n8n o Calendar fallan o hay que corregir algo.
+ * Con fecha queda confirmada y se intenta crear el evento; sin fecha queda como solicitud.
+ */
+export const meetingManualSchema = z
+  .object({
+    kind: z.enum(['cliente', 'lead']),
+    organizationId: z.uuid().optional(),
+    leadId: z.uuid().optional(),
+    topic: z.string().trim().min(1).max(200),
+    startsAt: z.iso.datetime().optional(),
+    durationMinutes: z.number().int().min(15).max(480).optional(),
+    attendees: z.array(z.email().max(254)).max(10).default([]),
+  })
+  .refine((value) => (value.kind === 'cliente' ? Boolean(value.organizationId) : Boolean(value.leadId)), {
+    message: 'Indica el cliente o el lead de la reunión.',
+  });
+export type MeetingManual = z.infer<typeof meetingManualSchema>;
+
+/** Cambios manuales de una reunión. Si cambia la hora y el calendario falla, se guarda solo con skipCalendar. */
+export const meetingUpdateSchema = z
+  .object({
+    topic: z.string().trim().min(1).max(200).optional(),
+    attendees: z.array(z.email().max(254)).max(10).optional(),
+    startsAt: z.iso.datetime().optional(),
+    durationMinutes: z.number().int().min(15).max(480).optional(),
+    skipCalendar: z.boolean().optional(),
+  })
+  .refine((value) => Object.keys(value).some((key) => key !== 'skipCalendar' && value[key as keyof typeof value] !== undefined), {
+    message: 'Indica al menos un dato para cambiar.',
+  });
+export type MeetingUpdate = z.infer<typeof meetingUpdateSchema>;
+
+/** Eliminar una reunión: se conserva el registro (borrado lógico). Si el evento no se puede quitar, solo con force. */
+export const meetingDeleteSchema = z.object({
+  reason: z.string().trim().min(1).max(1000),
+  force: z.boolean().optional(),
+});
+export type MeetingDelete = z.infer<typeof meetingDeleteSchema>;

@@ -2,8 +2,19 @@
  * Rutas de proyectos, entregables, reuniones, facturas, decisiones y equipo.
  * Las del owner van desde core; las del cliente, desde la app. Cada una pasa por access.ts.
  */
+import { timingSafeEqual } from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import {
+  leadMeetingSchema,
+  leadProposalSchema,
+  meetingCancelSchema,
+  meetingProposeSchema,
+  meetingDeleteSchema,
+  meetingManualSchema,
+  meetingRejectSchema,
+  meetingRescheduleSchema,
+  meetingUpdateSchema,
+  suppressionSchema,
   correctionCreateSchema,
   correctionResolveSchema,
   deliverableApprovalSchema,
@@ -23,6 +34,7 @@ import { loadCaller, requireClientAccess, requireOwnerCaller, findOrganization, 
 import type { IdentityGateway } from '../auth/clerk.js';
 import type { BillingGateway } from '../billing/stripe.js';
 import { createDraft, clientInvoiceView, findInvoice, issueInvoice, listInvoices, voidInvoice } from '../billing/service.js';
+import type { CalendarGateway } from '../calendar/n8n.js';
 import type { Db } from '../db/client.js';
 import { deliverables } from '../db/schema.js';
 import { listDecisions } from '../decisions/service.js';
@@ -41,7 +53,29 @@ import {
 } from '../deliverables/service.js';
 import { ServiceError } from '../errors.js';
 import { changeMemberRole, listMembers, removeMemberGuarded, setOrganizationStatus } from '../organizations/admin.js';
-import { clientMeetingView, confirmMeeting, listMeetings, publishMinutes, requestMeeting } from '../meetings/service.js';
+import {
+  cancelMeeting,
+  clientMeetingView,
+  confirmMeeting,
+  createLeadMeeting,
+  dueReminders,
+  listAllMeetings,
+  listMeetings,
+  markReminded,
+  ownerMeetingView,
+  proposeMeetingTime,
+  publishMinutes,
+  rejectMeeting,
+  requestMeeting,
+  rescheduleMeeting,
+  retryCalendar,
+  createManualMeeting,
+  deleteMeeting,
+  listClientOrganizations,
+  updateMeeting,
+} from '../meetings/service.js';
+import { addSuppression, listSuppressions } from '../suppressions/service.js';
+import { duplicatesOf, leadHistory, LeadError, respondToProposal } from '../leads/service.js';
 import { addMilestone, createProject, findProject, listMilestones, listProjects, updateMilestone } from '../projects/service.js';
 
 export interface OperationDeps {
@@ -49,6 +83,10 @@ export interface OperationDeps {
   identity: IdentityGateway;
   internalOrgId: string;
   billing?: BillingGateway;
+  /** Calendario (n8n → Google). Sin él, la reunión se confirma pero el evento no se crea. */
+  calendar?: CalendarGateway;
+  /** Secreto que n8n usa para llamar a las rutas internas (recordatorios). */
+  internalSecret?: string;
 }
 
 /** Valida el cuerpo con un esquema; responde 400 si no pasa. Devuelve null si ya respondió. */
@@ -72,13 +110,23 @@ function guarded<P>(deps: OperationDeps, handler: (caller: Caller, request: Fast
       return await handler(caller, request, reply);
     } catch (error) {
       if (error instanceof ServiceError) return sendServiceError(reply, error);
+      if (error instanceof LeadError) return reply.code(error.code === 'not_found' ? 404 : 409).send({ error: error.code, message: error.message });
       throw error;
     }
   };
 }
 
+/** Llamada de n8n: lleva el secreto del webhook en la cabecera, no una sesión de Clerk. */
+function isInternalCall(request: FastifyRequest, secret: string | undefined): boolean {
+  const header = request.headers['x-arkanium-secret'];
+  if (!secret || typeof header !== 'string') return false;
+  const given = Buffer.from(header);
+  const expected = Buffer.from(secret);
+  return given.length === expected.length && timingSafeEqual(given, expected);
+}
+
 export function registerOperationRoutes(app: FastifyInstance, deps: OperationDeps): void {
-  const { db, identity, internalOrgId, billing } = deps;
+  const { db, identity, internalOrgId, billing, calendar } = deps;
 
   // ───────────── Organización (owner y administrador del cliente) ─────────────
 
@@ -360,15 +408,199 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     }),
   );
 
+  // Core: agenda de reuniones de todas las organizaciones (solicitudes pendientes incluidas).
+  app.get(
+    '/meetings',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { meetings: await listAllMeetings(db) };
+    }),
+  );
+
   app.post<{ Params: { id: string } }>(
     '/meetings/:id/confirm',
     guarded(deps, async (caller, request, reply) => {
       requireOwnerCaller(caller, internalOrgId);
       const body = parseBody(meetingConfirmSchema, request, reply);
       if (!body) return;
-      return clientMeetingView(await confirmMeeting(db, request.params.id, body.startsAt, caller.userId));
+      const { meeting, calendar: sync } = await confirmMeeting(db, calendar, request.params.id, body, caller.userId);
+      return { ...ownerMeetingView(meeting, null), calendar: sync };
     }),
   );
+
+  app.post<{ Params: { id: string } }>(
+    '/meetings/:id/reject',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(meetingRejectSchema, request, reply);
+      if (!body) return;
+      return ownerMeetingView(await rejectMeeting(db, request.params.id, body.reason, caller.userId), null);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/meetings/:id/propose',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(meetingProposeSchema, request, reply);
+      if (!body) return;
+      return ownerMeetingView(await proposeMeetingTime(db, request.params.id, body, caller.userId), null);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/meetings/:id/cancel',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(meetingCancelSchema, request, reply);
+      if (!body) return;
+      return ownerMeetingView(await cancelMeeting(db, calendar, request.params.id, body.reason, caller.userId), null);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/meetings/:id/reschedule',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(meetingRescheduleSchema, request, reply);
+      if (!body) return;
+      const { meeting, calendar: sync } = await rescheduleMeeting(db, calendar, request.params.id, body, caller.userId);
+      return { ...ownerMeetingView(meeting, null), calendar: sync };
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/meetings/:id/calendar/retry',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const { meeting, calendar: sync } = await retryCalendar(db, calendar, request.params.id, caller.userId);
+      return { ...ownerMeetingView(meeting, null), calendar: sync };
+    }),
+  );
+
+  // ───────────── Gestión manual de reuniones (respaldo si n8n o Calendar fallan) ─────────────
+
+  // Core: clientes para elegir al crear una reunión a mano.
+  app.get(
+    '/client-organizations',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { organizations: await listClientOrganizations(db) };
+    }),
+  );
+
+  // Core: crear una reunión a mano. Con fecha queda confirmada y se intenta el evento; si falla, queda pendiente.
+  app.post(
+    '/meetings/manual',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(meetingManualSchema, request, reply);
+      if (!body) return;
+      const { meeting, calendar: sync } = await createManualMeeting(db, calendar, body, caller.userId);
+      return reply.code(201).send({ ...ownerMeetingView(meeting, null), calendar: sync });
+    }),
+  );
+
+  // Core: corregir una reunión a mano (tema, invitados, hora y duración).
+  app.patch<{ Params: { id: string } }>(
+    '/meetings/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(meetingUpdateSchema, request, reply);
+      if (!body) return;
+      const { meeting, calendar: sync } = await updateMeeting(db, calendar, request.params.id, body, caller.userId);
+      return { ...ownerMeetingView(meeting, null), calendar: sync };
+    }),
+  );
+
+  // Core: eliminar una reunión (borrado lógico). Si el evento no se puede quitar, no elimina salvo con force.
+  app.delete<{ Params: { id: string } }>(
+    '/meetings/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(meetingDeleteSchema, request, reply);
+      if (!body) return;
+      return deleteMeeting(db, calendar, request.params.id, body, caller.userId);
+    }),
+  );
+
+  // ───────────── Leads: reuniones, historial, duplicados y propuesta del agente (F-02, F-03) ─────────────
+
+  app.post<{ Params: { id: string } }>(
+    '/leads/:id/meetings',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(leadMeetingSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(ownerMeetingView(await createLeadMeeting(db, request.params.id, body, caller.userId), null));
+    }),
+  );
+
+  app.get<{ Params: { id: string } }>(
+    '/leads/:id/history',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return leadHistory(db, request.params.id);
+    }),
+  );
+
+  app.get<{ Params: { id: string } }>(
+    '/leads/:id/duplicates',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const duplicates = await duplicatesOf(db, request.params.id);
+      return { duplicates: duplicates.map((lead) => ({ id: lead.id, name: lead.name, email: lead.email, status: lead.status, receivedAt: lead.receivedAt.toISOString() })) };
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/leads/:id/proposal',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(leadProposalSchema, request, reply);
+      if (!body) return;
+      return respondToProposal(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  // ───────────── Supresión: correos que no deben recibir contactos (consentimiento y baja) ─────────────
+
+  app.get(
+    '/suppressions',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { suppressions: await listSuppressions(db) };
+    }),
+  );
+
+  app.post(
+    '/suppressions',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(suppressionSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await addSuppression(db, body, caller.userId));
+    }),
+  );
+
+  // ───────────── Rutas internas para n8n (recordatorios). Usan el secreto del webhook, no una sesión. ─────────────
+
+  app.get<{ Querystring: { hours?: string } }>('/internal/meetings/due-reminders', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    const hours = Math.min(Math.max(Number(request.query.hours ?? 24) || 24, 1), 168);
+    return { meetings: await dueReminders(db, new Date(), hours) };
+  });
+
+  app.post<{ Params: { id: string } }>('/internal/meetings/:id/reminded', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    try {
+      await markReminded(db, request.params.id);
+      return reply.code(204).send();
+    } catch (error) {
+      if (error instanceof ServiceError) return sendServiceError(reply, error);
+      throw error;
+    }
+  });
 
   app.post<{ Params: { id: string } }>(
     '/meetings/:id/minutes',

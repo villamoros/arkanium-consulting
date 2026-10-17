@@ -32,13 +32,15 @@ export interface Destinations {
 }
 
 export function listDestinations(memberships: Array<{ orgId: string }>, internalOrgId: string): Destinations[] {
+  // Quien pertenece al equipo de Arkanium solo ve Core: no se le ofrecen los dashboards de los clientes.
+  if (memberships.some((m) => m.orgId === internalOrgId)) return [{ destination: 'core', orgId: internalOrgId }];
+
   const seen = new Set<string>();
   const result: Destinations[] = [];
   for (const membership of memberships) {
     if (seen.has(membership.orgId)) continue;
     seen.add(membership.orgId);
-    result.push({ destination: membership.orgId === internalOrgId ? 'core' : 'app', orgId: membership.orgId });
+    result.push({ destination: 'app', orgId: membership.orgId });
   }
-  // Core primero: es el panel del equipo.
-  return result.sort((a, b) => (a.destination === b.destination ? 0 : a.destination === 'core' ? -1 : 1));
+  return result;
 }

@@ -68,6 +68,8 @@ export const leads = pgTable(
     context: text('context'),
     locale: text('locale').notNull(),
     source: text('source').notNull().default('website'),
+    /** Perfil o enlace de origen cuando el lead llega por una red social o un mensaje directo. */
+    sourceReference: text('source_reference'),
     campaignId: uuid('campaign_id').references(() => campaigns.id),
     buyerPersonaId: uuid('buyer_persona_id').references(() => buyerPersonas.id),
     status: leadStatus('status').notNull().default('nuevo'),
@@ -76,8 +78,12 @@ export const leads = pgTable(
     proposedReason: text('proposed_reason'),
     /** Motivo de la decisión del owner (calificar, posponer o descartar). */
     decisionNote: text('decision_note'),
+    /** Cuándo volver a revisar un lead pospuesto. */
+    revisitAt: timestamp('revisit_at', { withTimezone: true }),
     organizationId: uuid('organization_id').references(() => organizations.id),
     receivedAt: timestamp('received_at', { withTimezone: true }).notNull().defaultNow(),
+    /** Borrado suave: el lead deja de aparecer, pero su registro y su bitácora se conservan. */
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index('leads_status_idx').on(t.status), index('leads_received_at_idx').on(t.receivedAt)],
@@ -145,7 +151,10 @@ export const deliverableStatus = pgEnum('deliverable_status', ['en_revision', 'p
 
 export const correctionStatus = pgEnum('correction_status', ['abierta', 'resuelta']);
 
-export const meetingStatus = pgEnum('meeting_status', ['solicitada', 'confirmada', 'realizada']);
+export const meetingStatus = pgEnum('meeting_status', ['solicitada', 'confirmada', 'realizada', 'rechazada', 'cancelada']);
+
+/** Estado de la sincronización con Google Calendar (vía n8n). */
+export const calendarStatus = pgEnum('calendar_status', ['sincronizada', 'pendiente', 'no_configurada', 'cancelada']);
 
 export const invoiceStatus = pgEnum('invoice_status', ['borrador', 'enviada', 'pagada', 'anulada']);
 
@@ -233,21 +242,46 @@ export const meetings = pgTable(
   'meetings',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    organizationId: uuid('organization_id')
-      .notNull()
-      .references(() => organizations.id),
+    /** Reunión con un cliente. Vacío cuando la reunión es con un lead (prospecto) todavía sin organización. */
+    organizationId: uuid('organization_id').references(() => organizations.id),
+    /** Reunión con un prospecto. Vacío cuando es con un cliente. */
+    leadId: uuid('lead_id').references(() => leads.id),
     projectId: uuid('project_id').references(() => projects.id),
     topic: text('topic').notNull(),
     status: meetingStatus('status').notNull().default('solicitada'),
     requestedBy: text('requested_by').notNull(),
     preferredWindows: jsonb('preferred_windows').notNull().default([]),
     startsAt: timestamp('starts_at', { withTimezone: true }),
+    endsAt: timestamp('ends_at', { withTimezone: true }),
+    /** Correos invitados además del contacto principal. */
+    attendees: jsonb('attendees').$type<string[]>().notNull().default([]),
+    /** Hora que el owner propone cuando no acepta la solicitud tal como llegó. */
+    proposedStartsAt: timestamp('proposed_starts_at', { withTimezone: true }),
+    /** Motivo del rechazo, de la propuesta o de la cancelación. */
+    decisionNote: text('decision_note'),
+    calendarEventId: text('calendar_event_id'),
+    calendarStatus: calendarStatus('calendar_status'),
+    calendarLink: text('calendar_link'),
+    meetLink: text('meet_link'),
+    /** Cuándo se envió el recordatorio previo a la reunión. Vacío mientras no se haya enviado. */
+    remindedAt: timestamp('reminded_at', { withTimezone: true }),
+    /** Borrado lógico: la reunión deja de aparecer, pero su registro y su bitácora se conservan. */
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
     minutesText: text('minutes_text'),
     minutesPublishedAt: timestamp('minutes_published_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index('meetings_organization_idx').on(t.organizationId)],
+  (t) => [index('meetings_organization_idx').on(t.organizationId), index('meetings_lead_idx').on(t.leadId)],
 );
+
+/** Supresión: correos que no deben recibir ningún contacto de Arkanium (consentimiento y baja). */
+export const suppressions = pgTable('suppressions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: text('email').notNull().unique(),
+  reason: text('reason').notNull(),
+  createdBy: text('created_by').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
 
 /** Factura (F-10). Se emite en Stripe; el pago ocurre en la página segura de Stripe. */
 export const invoices = pgTable(

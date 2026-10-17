@@ -122,7 +122,7 @@ describe('F-02 decisión del owner', () => {
 
   it('posponer y descartar son decisiones válidas', async () => {
     const lead = await capturedLead();
-    expect((await asUser('POST', `/leads/${lead.id}/decision`, 'token-owner', { decision: 'posponer', reason: 'Después del verano.' })).json().status).toBe('pospuesto');
+    expect((await asUser('POST', `/leads/${lead.id}/decision`, 'token-owner', { decision: 'posponer', reason: 'Después del verano.', revisitAt: '2026-11-15T15:00:00.000Z' })).json().status).toBe('pospuesto');
     expect((await asUser('POST', `/leads/${lead.id}/decision`, 'token-owner', { decision: 'descartar', reason: 'Fuera de alcance.' })).json().status).toBe('descartado');
   });
 
