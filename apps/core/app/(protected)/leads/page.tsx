@@ -1,13 +1,16 @@
 import Link from "next/link";
-import type { Lead } from "@arkanium/contracts";
+import { leadSourceValues, type Lead } from "@arkanium/contracts";
 import { ApiError, apiFetch } from "@/lib/api";
-import { FAMILY_LABEL, LEAD_STATUS_LABEL, formatDate } from "@/lib/labels";
+import { FAMILY_LABEL, LEAD_STATUS_LABEL, SOURCE_LABEL, formatDate } from "@/lib/labels";
 import { StatePanel } from "@/components/state-panel";
 
 const STATUSES = ["nuevo", "calificado", "pospuesto", "descartado", "convertido"] as const;
 
-export default async function LeadsPage({ searchParams }: { searchParams: Promise<{ estado?: string }> }) {
-  const { estado } = await searchParams;
+// instant = false: la página lee la API con la sesión del visitante; la guía de Next lo recomienda para rutas así.
+export const instant = false;
+
+export default async function LeadsPage({ searchParams }: { searchParams: Promise<{ estado?: string; origen?: string; q?: string }> }) {
+  const { estado, origen, q } = await searchParams;
   const filter = STATUSES.find((s) => s === estado);
 
   let leads: Lead[];
@@ -27,15 +30,24 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
   }
 
   const counts = Object.fromEntries(STATUSES.map((s) => [s, leads.filter((l) => l.status === s).length])) as Record<(typeof STATUSES)[number], number>;
-  const visible = filter ? leads.filter((l) => l.status === filter) : leads;
+  const byStatus = filter ? leads.filter((l) => l.status === filter) : leads;
+  // Búsqueda por nombre, correo o empresa, sin distinguir mayúsculas.
+  const term = (q ?? "").trim().toLowerCase();
+  const bySearch = term
+    ? byStatus.filter((l) => [l.name, l.email, l.company ?? ""].some((value) => value.toLowerCase().includes(term)))
+    : byStatus;
+  const visible = origen ? bySearch.filter((l) => l.source === origen) : bySearch;
 
   return (
     <>
       <div className="page-head">
         <div>
           <h1>Leads</h1>
-          <p>Personas y empresas que llegaron por el sitio. Tú decides qué pasa con cada una.</p>
+          <p>Personas y empresas que llegaron por el sitio, las redes o un mensaje directo. Tú decides qué pasa con cada una.</p>
         </div>
+        <Link href="/leads/nuevo" className="primary" style={{ display: "inline-block", padding: "8px 14px", borderRadius: 6 }}>
+          Nuevo lead
+        </Link>
       </div>
 
       <div className="approval" role="note">
@@ -65,6 +77,10 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
       </div>
 
       <form className="filters" method="get" role="search">
+        <label className="sr" htmlFor="f-busqueda">
+          Buscar por nombre, correo o empresa
+        </label>
+        <input id="f-busqueda" name="q" type="search" defaultValue={q ?? ""} placeholder="Buscar por nombre, correo o empresa" />
         <label className="sr" htmlFor="f-estado">
           Filtrar por estado
         </label>
@@ -73,6 +89,17 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           {STATUSES.map((s) => (
             <option key={s} value={s}>
               {LEAD_STATUS_LABEL[s]}
+            </option>
+          ))}
+        </select>
+        <label className="sr" htmlFor="f-origen">
+          Filtrar por origen
+        </label>
+        <select id="f-origen" name="origen" defaultValue={origen ?? ""}>
+          <option value="">Todos los orígenes</option>
+          {leadSourceValues.map((key) => (
+            <option key={key} value={key}>
+              {SOURCE_LABEL[key]}
             </option>
           ))}
         </select>
@@ -99,6 +126,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                   <th scope="col">Estado</th>
                   <th scope="col" className="hide-sm">Propuesta del agente</th>
                   <th scope="col">Recibido</th>
+                  <th scope="col">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -108,7 +136,9 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                       <Link href={`/leads/${lead.id}`} className="row-link">
                         <span className="lead-name">{lead.name}</span>
                         <br />
-                        <span className="sub">{lead.company || "Sin empresa indicada"}</span>
+                        <span className="sub">
+                          {lead.company || "Sin empresa indicada"} · {SOURCE_LABEL[lead.source] ?? lead.source}
+                        </span>
                       </Link>
                     </td>
                     <td>
@@ -118,6 +148,11 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                       <span className="sub">{lead.proposedFamily ? FAMILY_LABEL[lead.proposedFamily] : "Sin propuesta"}</span>
                     </td>
                     <td className="sub">{formatDate(lead.receivedAt)}</td>
+                    <td>
+                      <Link href={`/leads/${lead.id}/editar`} className="secondary" style={{ display: "inline-block", padding: "4px 10px", borderRadius: 6 }}>
+                        {lead.status === "convertido" ? "Editar contacto" : "Editar"}
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

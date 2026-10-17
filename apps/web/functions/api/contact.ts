@@ -2,16 +2,22 @@
  * POST /api/contact — Cloudflare Pages Function (ver docs/ark-web-cta-intake-phase1.md).
  * Orden: origen → tamaño → validación → correo a hello@ (registro oficial) → alerta a Slack.
  * Nunca responde éxito si el correo no salió. Si Slack falla después, el lead ya está guardado en el correo.
- * Secretos solo como variables del proyecto en Cloudflare: RESEND_API_KEY, LEAD_EMAIL_FROM, LEAD_EMAIL_TO, SLACK_WEBHOOK_URL.
+ * Después del correo, el lead también se registra en la API de Arkanium (Leads de core).
+ * Si la API no responde, el lead ya está en el correo: el visitante recibe éxito igualmente y el fallo se registra.
+ * Secretos solo como variables del proyecto en Cloudflare: RESEND_API_KEY, LEAD_EMAIL_FROM, LEAD_EMAIL_TO, SLACK_WEBHOOK_URL, LEAD_INTAKE_TOKEN.
+ * Variable pública: ARKANIUM_API_URL (dirección de la API, sin secreto).
  */
 import { parseLead, LIMITS } from '../../src/lib/contact/lead.ts';
 import { leadEmail, slackAlert } from '../../src/lib/contact/compose.ts';
+import type { Lead } from '../../src/lib/contact/lead.ts';
 
 interface Env {
   RESEND_API_KEY?: string;
   LEAD_EMAIL_FROM?: string;
   LEAD_EMAIL_TO?: string;
   SLACK_WEBHOOK_URL?: string;
+  LEAD_INTAKE_TOKEN?: string;
+  ARKANIUM_API_URL?: string;
 }
 
 interface PagesContext {
@@ -24,6 +30,28 @@ const json = (status: number, body: Record<string, unknown>) =>
     status,
     headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
   });
+
+/** Campos del lead tal como los acepta POST /leads de la API. El origen del lead es el sitio. */
+export function platformPayload(lead: Lead): Record<string, unknown> {
+  const extra = [lead.service && `Servicio: ${lead.service}`, lead.offering && `Oferta: ${lead.offering}`].filter(Boolean);
+  const context = [lead.context, ...extra].filter(Boolean).join('\n').slice(0, 2000);
+  return {
+    name: lead.name,
+    email: lead.email,
+    priority: lead.priority,
+    locale: lead.locale,
+    source: 'website',
+    ...(context ? { context } : {}),
+  };
+}
+
+function forwardToPlatform(lead: Lead, env: Env): Promise<Response> {
+  return fetch(`${env.ARKANIUM_API_URL}/leads`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${env.LEAD_INTAKE_TOKEN}`, 'content-type': 'application/json' },
+    body: JSON.stringify(platformPayload(lead)),
+  });
+}
 
 export async function onRequestPost({ request, env }: PagesContext): Promise<Response> {
   const origin = request.headers.get('origin');
@@ -67,6 +95,12 @@ export async function onRequestPost({ request, env }: PagesContext): Promise<Res
   if (!mailRes || !mailRes.ok) {
     console.error(`contact: envío de correo fallido (${mailRes?.status ?? 'red'})`);
     return json(502, { ok: false, error: 'email_failed' });
+  }
+
+  // Registro en la plataforma: el lead queda en Leads de core. Un fallo aquí no cambia la respuesta al visitante.
+  if (env.ARKANIUM_API_URL && env.LEAD_INTAKE_TOKEN) {
+    const apiRes = await forwardToPlatform(parsed.lead, env).catch(() => null);
+    if (!apiRes || !apiRes.ok) console.error(`contact: registro en la API fallido (${apiRes?.status ?? 'red'})`);
   }
 
   if (env.SLACK_WEBHOOK_URL) {

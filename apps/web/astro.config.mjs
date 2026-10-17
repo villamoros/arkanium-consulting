@@ -47,11 +47,13 @@ function seoSitemap() {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   site,
   output: 'static',
   // Convención única: trailing slash en páginas (/en/, /en/solutions/).
-  trailingSlash: 'always',
+  // En desarrollo se acepta también sin barra: Clerk quita la barra final al volver del cierre de sesión
+  // (/es?__clerk_db_jwt=…) y el servidor de desarrollo daba 404. La compilación sigue exigiendo barra final.
+  trailingSlash: command === 'dev' ? 'ignore' : 'always',
   build: { format: 'directory' },
   // `/` no es una versión distinta de `/en/`: redirige de forma permanente.
   // En salida estática Astro genera una página de redirección (meta refresh);
@@ -65,4 +67,4 @@ export default defineConfig({
     }),
     seoSitemap(),
   ],
-});
+}));

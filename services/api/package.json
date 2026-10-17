@@ -11,7 +11,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "smoke:calendar": "tsx --env-file-if-exists=.env.local scripts/smoke-calendar.ts"
   },
   "dependencies": {
     "@arkanium/contracts": "workspace:*",

@@ -1,0 +1,13 @@
+---
+/**
+ * AccessLayout — documento base para la página de acceso: sin cabecera, menú ni pie.
+ * Solo muestra el estado del acceso mientras Clerk redirige a la persona a su aplicación.
+ */
+import BaseLayout from './BaseLayout.astro';
+---
+
+<BaseLayout {...Astro.props}>
+  <main id="main" tabindex="-1">
+    <slot />
+  </main>
+</BaseLayout>

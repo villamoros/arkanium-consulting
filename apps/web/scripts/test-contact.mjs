@@ -8,7 +8,7 @@ import { groupServices } from '../src/lib/content/services.ts';
 import { readCollection } from '../src/lib/content/store.ts';
 import { PRIORITY_VALUES, parseLead } from '../src/lib/contact/lead.ts';
 import { leadEmail, slackAlert } from '../src/lib/contact/compose.ts';
-import { onRequestPost } from '../functions/api/contact.ts';
+import { onRequestPost, platformPayload } from '../functions/api/contact.ts';
 
 const NOW = new Date('2026-10-14T12:00:00Z');
 const valid = { name: 'Ana Pérez', email: 'ana@empresa.com', priority: 'strategy', context: 'Necesitamos ordenar la deuda técnica.', locale: 'es', consent: true, website: '' };
@@ -20,7 +20,8 @@ function fakeFetch(plan = {}) {
   globalThis.fetch = async (url, init) => {
     calls.push({ url: String(url), body: init?.body ? JSON.parse(init.body) : null, headers: init?.headers });
     const isMail = String(url).includes('resend');
-    const status = isMail ? (plan.resend ?? 200) : (plan.slack ?? 200);
+    const isPlatform = String(url).includes('arkanium.test');
+    const status = isMail ? (plan.resend ?? 200) : isPlatform ? (plan.platform ?? 201) : (plan.slack ?? 200);
     if (status === 'network') throw new Error('red caída');
     return new Response('{}', { status });
   };
@@ -160,6 +161,42 @@ test('sin Slack configurado: el envío sigue siendo correcto', async () => {
   const res = await onRequestPost({ request: request(valid), env: { ...ENV, SLACK_WEBHOOK_URL: undefined } });
   assert.equal(res.status, 200);
   assert.equal(calls.length, 1);
+});
+
+const PLATFORM_ENV = { ...ENV, ARKANIUM_API_URL: 'https://api.arkanium.test', LEAD_INTAKE_TOKEN: 'token-de-prueba' };
+
+test('con la API configurada: el lead también se registra en /leads con el token del servidor', async () => {
+  const calls = fakeFetch();
+  const res = await onRequestPost({ request: request({ ...valid, service: 'technical-health-check' }), env: PLATFORM_ENV });
+  assert.equal(res.status, 200);
+  assert.equal(calls.length, 3);
+  // Orden: correo a hello@, registro en la API y, al final, Slack.
+  const platform = calls[1];
+  assert.equal(platform.url, 'https://api.arkanium.test/leads');
+  assert.equal(platform.headers.authorization, 'Bearer token-de-prueba');
+  assert.equal(platform.body.source, 'website');
+  assert.equal(platform.body.email, 'ana@empresa.com');
+  assert.match(platform.body.context, /Servicio: technical-health-check/);
+});
+test('sin API configurada: no se llama a la plataforma (dos llamadas, como antes)', async () => {
+  const calls = fakeFetch();
+  await onRequestPost({ request: request(valid), env: ENV });
+  assert.equal(calls.length, 2);
+});
+test('la API no responde: el visitante recibe éxito igualmente (el lead ya está en el correo)', async () => {
+  const calls = fakeFetch({ platform: 'network' });
+  const res = await onRequestPost({ request: request(valid), env: PLATFORM_ENV });
+  assert.equal(res.status, 200);
+  assert.equal(calls.length, 3);
+});
+test('la API rechaza el lead (401): éxito para el visitante, fallo registrado', async () => {
+  fakeFetch({ platform: 401 });
+  const res = await onRequestPost({ request: request(valid), env: PLATFORM_ENV });
+  assert.equal(res.status, 200);
+});
+test('el contexto que llega a la API nunca supera 2000 caracteres', () => {
+  const payload = platformPayload({ name: 'Ana', email: 'a@b.co', priority: 'strategy', context: 'x'.repeat(2000), locale: 'es', receivedAt: '2026-10-14T12:00:00Z', service: 'technical-health-check' });
+  assert.ok(payload.context.length <= 2000);
 });
 
 const realFetch = globalThis.fetch;

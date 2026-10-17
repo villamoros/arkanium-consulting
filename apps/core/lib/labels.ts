@@ -16,6 +16,50 @@ export const FAMILY_LABEL: Record<NonNullable<Lead["proposedFamily"]>, string> =
   unknown: "Sin propuesta",
 };
 
+/** Origen del lead: cómo llegó a la plataforma. */
+export const SOURCE_LABEL: Record<string, string> = {
+  website: "Sitio web",
+  linkedin: "LinkedIn",
+  instagram: "Instagram",
+  facebook: "Facebook",
+  tiktok: "TikTok",
+  youtube: "YouTube",
+  x: "X",
+  "mensaje-directo": "Mensaje directo",
+  referido: "Referido",
+  evento: "Evento",
+  otro: "Otro",
+};
+
+/** Estado de una reunión: la solicita el cliente o el owner, la confirma el owner y se cierra con el acta. */
+export const MEETING_STATUS_LABEL: Record<"solicitada" | "confirmada" | "realizada" | "rechazada" | "cancelada", string> = {
+  solicitada: "Por responder",
+  confirmada: "Confirmada",
+  realizada: "Realizada",
+  rechazada: "Rechazada",
+  cancelada: "Cancelada",
+};
+
+/** Estado de la sincronización con Google Calendar. */
+export const CALENDAR_STATUS_LABEL: Record<string, string> = {
+  sincronizada: "En el calendario",
+  pendiente: "Pendiente de calendario",
+  no_configurada: "Sin calendario",
+  cancelada: "Quitada del calendario",
+};
+
+/** Nombres legibles de las acciones de la bitácora de un lead. */
+export const LEAD_EVENT_LABEL: Record<string, string> = {
+  "lead.calificar": "Calificado",
+  "lead.posponer": "Pospuesto",
+  "lead.descartar": "Descartado",
+  "lead.propuesta_aceptada": "Propuesta del agente aceptada",
+  "lead.propuesta_rechazada": "Propuesta del agente rechazada",
+  "lead.updated": "Datos editados",
+  "lead.converted": "Convertido en organización",
+  "lead.deleted": "Eliminado",
+};
+
 export const PRIORITY_LABEL: Record<string, string> = {
   architecture: "Arquitectura",
   strategy: "Estrategia",

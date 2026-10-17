@@ -88,6 +88,7 @@ function buildMenu(name: string, email: string | undefined, memberships: Members
   for (const membership of memberships) {
     const item = document.createElement('li');
     item.textContent = `${membership.organization.name} · ${roleLabel(membership.role)}`;
+    item.dataset.orgId = membership.organization.id;
     roles.append(item);
   }
   panel.append(roles);
@@ -137,6 +138,14 @@ async function fillDestinations(links: HTMLUListElement, token: string, accessPa
     if (!response.ok) throw new Error(`API respondió ${response.status}`);
     const { destinations } = (await response.json()) as { destinations: Destination[] };
 
+    // Si el equipo de Arkanium entra a Core, la lista de organizaciones se reduce a la interna.
+    const core = destinations.find((d) => d.destination === 'core');
+    if (core) {
+      document.querySelectorAll<HTMLLIElement>('.session-roles li[data-org-id]').forEach((item) => {
+        if (item.dataset.orgId !== core.orgId) item.remove();
+      });
+    }
+
     for (const destination of destinations) {
       const orgName = memberships.find((m) => m.organization.id === destination.orgId)?.organization.name ?? destination.orgId;
       const item = document.createElement('li');
@@ -164,7 +173,10 @@ async function run() {
   const email = user.primaryEmailAddress?.emailAddress;
   const memberships = (user.organizationMemberships ?? []) as Membership[];
   const onSignOut = () => {
-    void clerk.signOut({ redirectUrl: window.location.href });
+    // Vuelve a la portada del idioma actual, con barra final: /es/ existe; /es da 404 con trailingSlash 'always'.
+    // No se usa window.location.href: si la página actual no tiene barra final, el cierre de sesión termina en 404.
+    const lang = document.documentElement.lang || 'es';
+    void clerk.signOut({ redirectUrl: new URL(`/${lang}/`, window.location.origin).href });
   };
   const accessPath = triggers[0]?.dataset.accessPath ?? '/acceso/';
 

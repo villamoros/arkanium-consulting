@@ -4,11 +4,15 @@ import { listDestinations } from '../src/session/destination.js';
 import { CLIENT, INTERNAL, OTHER_CLIENT, fakeIdentity } from './support/identity.js';
 
 describe('listDestinations', () => {
-  it('el equipo de Arkanium va a core; cada cliente va a su dashboard', () => {
+  it('el equipo de Arkanium ve solo Core, aunque también pertenezca a organizaciones de clientes', () => {
     const result = listDestinations([{ orgId: CLIENT }, { orgId: INTERNAL }], INTERNAL);
-    expect(result).toEqual([
-      { destination: 'core', orgId: INTERNAL },
+    expect(result).toEqual([{ destination: 'core', orgId: INTERNAL }]);
+  });
+
+  it('un cliente ve cada una de sus organizaciones como dashboard', () => {
+    expect(listDestinations([{ orgId: CLIENT }, { orgId: OTHER_CLIENT }], INTERNAL)).toEqual([
       { destination: 'app', orgId: CLIENT },
+      { destination: 'app', orgId: OTHER_CLIENT },
     ]);
   });
 

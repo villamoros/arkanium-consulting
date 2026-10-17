@@ -1,11 +1,25 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import type { Lead } from "@arkanium/contracts";
 import { ApiError, apiFetch } from "@/lib/api";
-import { FAMILY_LABEL, LEAD_STATUS_LABEL, PRIORITY_LABEL, formatDate } from "@/lib/labels";
+import { FAMILY_LABEL, LEAD_EVENT_LABEL, LEAD_STATUS_LABEL, MEETING_STATUS_LABEL, PRIORITY_LABEL, SOURCE_LABEL, formatDate } from "@/lib/labels";
+import { DeleteLeadPanel } from "@/components/leads/delete-lead-panel";
 import { StatePanel } from "@/components/state-panel";
 import { DecisionForm } from "@/components/leads/decision-form";
 import { ConvertPanel } from "@/components/leads/convert-panel";
+import { ProposalForm } from "@/components/leads/proposal-form";
+import { LeadMeetingForm } from "@/components/leads/lead-meeting-form";
+
+// instant = false: la página lee la API con la sesión del visitante; la guía de Next lo recomienda para rutas así.
+export const instant = false;
+
+type History = {
+  events: Array<{ id: string; at: string; actor: string; action: string; detail: Record<string, unknown> }>;
+  meetings: Array<{ id: string; topic: string; status: keyof typeof MEETING_STATUS_LABEL; startsAt: string | null }>;
+};
+
+type Duplicate = { id: string; name: string; email: string; status: Lead["status"]; receivedAt: string };
 
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,9 +40,23 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
     );
   }
 
+  // Estas tres consultas enriquecen la ficha: si una falla, la ficha se muestra igual sin esa sección.
+  const [history, duplicates, suppressionList] = await Promise.all([
+    apiFetch<History>(`/leads/${id}/history`).catch(() => ({ events: [], meetings: [] }) as History),
+    apiFetch<{ duplicates: Duplicate[] }>(`/leads/${id}/duplicates`).catch(() => ({ duplicates: [] as Duplicate[] })),
+    apiFetch<{ suppressions: Array<{ email: string }> }>("/suppressions").catch(() => ({ suppressions: [] as Array<{ email: string }> })),
+  ]);
+
+  // Depende de cuándo se atiende la petición: connection() lo marca como dinámico.
+  await connection();
+  const now = Date.now();
+
+  const suppressed = suppressionList.suppressions.some((s) => s.email === lead.email.toLowerCase());
+  const active = lead.status !== "convertido" && lead.status !== "descartado";
   const decidable = lead.status !== "convertido";
   const convertible = lead.status === "calificado";
   const suggestion = lead.proposedFamily && lead.proposedFamily !== "unknown" ? FAMILY_LABEL[lead.proposedFamily] : null;
+  const revisitOverdue = lead.status === "pospuesto" && lead.revisitAt !== null && new Date(lead.revisitAt).getTime() <= now;
 
   return (
     <>
@@ -43,6 +71,55 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           </p>
         </div>
         <span className={`badge b-${lead.status}`}>{LEAD_STATUS_LABEL[lead.status]}</span>
+      </div>
+
+      {suppressed ? (
+        <p role="alert" className="notice-bad" style={{ marginBottom: 16 }}>
+          Este correo está en la lista de supresión. No se le puede enviar ninguna invitación ni contacto de Arkanium.
+        </p>
+      ) : null}
+
+      {lead.status === "pospuesto" && lead.revisitAt ? (
+        <p className={revisitOverdue ? "notice-bad" : "notice-ok"} style={{ marginBottom: 16 }}>
+          {revisitOverdue ? "Vencida: " : ""}Volver a revisar este lead el {formatDate(lead.revisitAt)}.
+        </p>
+      ) : null}
+
+      {duplicates.duplicates.length > 0 ? (
+        <section className="panel pad" style={{ marginBottom: 16 }} aria-labelledby="duplicados">
+          <h2 id="duplicados" style={{ fontSize: "1rem" }}>
+            Posibles duplicados
+          </h2>
+          <p className="sub">Otros leads activos con el mismo correo. Revisa si es la misma persona antes de actuar.</p>
+          <ul style={{ margin: "8px 0 0", paddingLeft: 18 }}>
+            {duplicates.duplicates.map((dup) => (
+              <li key={dup.id}>
+                <Link href={`/leads/${dup.id}`}>{dup.name}</Link> · {LEAD_STATUS_LABEL[dup.status]} · recibido {formatDate(dup.receivedAt)}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <div className="panel pad" style={{ marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <h2 style={{ fontSize: "1rem" }}>Acciones del lead</h2>
+          <p className="sub" style={{ margin: 0 }}>
+            {lead.status === "convertido"
+              ? "Ya es una organización: puedes corregir nombre y correo; empresa, mensaje y origen quedan como historial. No se elimina."
+              : "Edita sus datos o elimínalo. Eliminar no borra el registro: deja de aparecer en Leads."}
+          </p>
+        </div>
+        <div className="actions" style={{ marginTop: 0, alignItems: "flex-start" }}>
+          <Link href={`/leads/${lead.id}/editar`} className="primary" style={{ display: "inline-block", padding: "8px 14px", borderRadius: 6 }}>
+            {lead.status === "convertido" ? "Editar nombre y correo" : "Editar datos"}
+          </Link>
+          {lead.status !== "convertido" ? (
+            <div style={{ minWidth: 260 }}>
+              <DeleteLeadPanel leadId={lead.id} />
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="layout">
@@ -60,6 +137,11 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 </p>
               ) : null}
             </div>
+            {lead.proposedReason && active ? (
+              <div style={{ marginTop: 10 }}>
+                <ProposalForm leadId={lead.id} />
+              </div>
+            ) : null}
           </div>
 
           <div className="section">
@@ -68,7 +150,10 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
               <dt>Interés</dt>
               <dd>{PRIORITY_LABEL[lead.priorityChoice] ?? lead.priorityChoice}</dd>
               <dt>Origen</dt>
-              <dd>{lead.source}</dd>
+              <dd>
+                {SOURCE_LABEL[lead.source] ?? lead.source}
+                {lead.sourceReference ? ` · ${lead.sourceReference}` : ""}
+              </dd>
               <dt>Idioma</dt>
               <dd>{lead.locale.toUpperCase()}</dd>
               <dt>Recibido</dt>
@@ -87,6 +172,43 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
               <p style={{ margin: 0 }}>{lead.decisionNote}</p>
             </div>
           ) : null}
+
+          <div className="section">
+            <h3>Reuniones con este lead</h3>
+            {history.meetings.length === 0 ? (
+              <p className="muted" style={{ margin: 0 }}>Todavía no hay reuniones.</p>
+            ) : (
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {history.meetings.map((meeting) => (
+                  <li key={meeting.id}>
+                    {meeting.topic} · {MEETING_STATUS_LABEL[meeting.status]}
+                    {meeting.startsAt ? ` · ${formatDate(meeting.startsAt)}` : ""}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {active ? (
+              <div style={{ marginTop: 10 }}>
+                <LeadMeetingForm leadId={lead.id} />
+              </div>
+            ) : null}
+          </div>
+
+          <div className="section">
+            <h3>Historial</h3>
+            {history.events.length === 0 ? (
+              <p className="muted" style={{ margin: 0 }}>Sin movimientos registrados.</p>
+            ) : (
+              <ol style={{ margin: 0, paddingLeft: 18, display: "grid", gap: 8 }}>
+                {history.events.map((event) => (
+                  <li key={event.id}>
+                    <b>{LEAD_EVENT_LABEL[event.action] ?? event.action}</b> · <span className="sub">{formatDate(event.at)}</span>
+                    {typeof event.detail.reason === "string" ? <div className="muted">{event.detail.reason}</div> : null}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
         </div>
 
         <aside className="panel detail" aria-label="Tu decisión">

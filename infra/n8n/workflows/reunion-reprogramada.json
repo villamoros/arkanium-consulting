@@ -1,0 +1,89 @@
+{
+  "id": "arkReunionRepro01",
+  "name": "Reunión actualizada (hora, tema e invitados) → Google Calendar",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reunion-reprogramada",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000001",
+      "name": "Webhook reunión reprogramada",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "a1b2c3d4-0002-4000-8000-000000000011",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "arkWebhookAuth01",
+          "name": "Arkanium webhook secret"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "mode": "list",
+          "value": "primary"
+        },
+        "eventId": "={{ $json.body.eventId }}",
+        "useDefaultReminders": true,
+        "updateFields": {
+          "start": "={{ $json.body.startsAt }}",
+          "end": "={{ $json.body.endsAt }}",
+          "summary": "={{ $json.body.topic }}",
+          "attendeesUi": {
+            "values": {
+              "mode": "replace",
+              "attendees": ["={{ $json.body.attendees.join(',') }}"]
+            }
+          },
+          "sendUpdates": "all"
+        }
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Actualizar evento",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [240, 0],
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "PENDIENTE",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: true, htmlLink: $json.htmlLink } }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000003",
+      "name": "Responder a la API",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [480, 0]
+    }
+  ],
+  "connections": {
+    "Webhook reunión reprogramada": {
+      "main": [[{ "node": "Actualizar evento", "type": "main", "index": 0 }]]
+    },
+    "Actualizar evento": {
+      "main": [[{ "node": "Responder a la API", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Bogota"
+  },
+  "tags": []
+}
