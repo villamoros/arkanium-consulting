@@ -13,7 +13,7 @@ import { eq } from 'drizzle-orm';
 import { createN8nCalendar } from '../src/calendar/n8n.js';
 import { createDb } from '../src/db/client.js';
 import { contacts, meetings, organizations } from '../src/db/schema.js';
-import { cancelMeeting, confirmMeeting, listAllMeetings, rescheduleMeeting } from '../src/meetings/service.js';
+import { cancelMeeting, confirmMeeting, listAllMeetings, rescheduleMeeting, updateMeeting } from '../src/meetings/service.js';
 
 const databaseUrl = process.env.DATABASE_URL;
 const baseUrl = process.env.N8N_WEBHOOK_BASE_URL;
@@ -71,6 +71,16 @@ async function main() {
   check('Reprogramar: n8n actualiza el evento', moved.calendar.status === 'sincronizada', moved.calendar.status === 'pendiente' ? moved.calendar.reason : moved.calendar.status);
   check('Reprogramar: la nueva hora queda guardada', moved.meeting.startsAt?.toISOString() === newStart, moved.meeting.startsAt?.toISOString() ?? 'sin hora');
   check('Reprogramar: la duración se conserva en la nueva hora', moved.meeting.endsAt?.getTime() === new Date(newStart).getTime() + 45 * 60_000, moved.meeting.endsAt?.toISOString() ?? 'sin fin');
+
+  // 2b. Editar tema e invitados: también deben llegar al evento.
+  const newTopic = `PRUEBA smoke renombrada ${stamp}`;
+  try {
+    const edited = await updateMeeting(db, calendar, id, { topic: newTopic, attendees: [invitee] }, 'smoke');
+    const same = edited.meeting.topic === newTopic && edited.meeting.calendarStatus === 'sincronizada';
+    check('Editar: el tema y los invitados llegan al evento', same, `${edited.meeting.topic} · ${edited.meeting.calendarStatus}`);
+  } catch (error) {
+    check('Editar: el tema y los invitados llegan al evento', false, error instanceof Error ? error.message : String(error));
+  }
 
   // 3. Cancelar: quita el evento del calendario.
   const cancelled = await cancelMeeting(db, calendar, id, 'Prueba automática: cancelación', 'smoke');

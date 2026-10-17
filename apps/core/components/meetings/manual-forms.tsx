@@ -126,11 +126,11 @@ export function EditMeetingForm({ meetingId, topic, attendees }: { meetingId: st
           <label className="field">
             <span>
               <input type="checkbox" name="skipCalendar" style={{ marginRight: 6 }} disabled={pending} />
-              Guardar solo en Arkanium, sin tocar el calendario
+              Guardar solo en Arkanium, sin tocar el calendario (solo aplica a reuniones sin evento)
             </span>
           </label>
           <p className="sub" style={{ margin: 0 }}>
-            Un cambio de hora en una reunión con evento pasa siempre por Calendar. Los invitados y el tema no cambian en el evento de Calendar: ajústalos allí.
+            Si la reunión ya tiene evento, el tema, los invitados y la hora se actualizan en Google Calendar. Si Calendar no responde, no se guarda nada.
           </p>
           <div className="actions">
             <button type="submit" className="primary" disabled={pending}>

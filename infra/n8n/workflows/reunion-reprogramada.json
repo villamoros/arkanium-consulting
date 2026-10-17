@@ -1,6 +1,6 @@
 {
   "id": "arkReunionRepro01",
-  "name": "Reunión reprogramada → Google Calendar",
+  "name": "Reunión actualizada (hora, tema e invitados) → Google Calendar",
   "active": false,
   "nodes": [
     {
@@ -38,6 +38,13 @@
         "updateFields": {
           "start": "={{ $json.body.startsAt }}",
           "end": "={{ $json.body.endsAt }}",
+          "summary": "={{ $json.body.topic }}",
+          "attendeesUi": {
+            "values": {
+              "mode": "replace",
+              "attendees": ["={{ $json.body.attendees.join(',') }}"]
+            }
+          },
           "sendUpdates": "all"
         }
       },

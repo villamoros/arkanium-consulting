@@ -14,7 +14,7 @@ Automatizaciones externas de Arkanium. La API conserva el estado (reuniones, apr
 | Archivo | Ruta del webhook | Qué hace | Lo que responde |
 |---|---|---|---|
 | `reunion-confirmada.json` | `POST /webhook/reunion-confirmada` | Crea el evento en Google Calendar con enlace de Meet, invitados y recordatorio emergente de 60 min. | `{ ok, eventId, htmlLink, meetLink }` |
-| `reunion-reprogramada.json` | `POST /webhook/reunion-reprogramada` | Actualiza la hora del evento existente. | `{ ok, htmlLink }` |
+| `reunion-reprogramada.json` | `POST /webhook/reunion-reprogramada` | Actualiza el evento existente: hora, tema e invitados (la lista reemplaza a la anterior). | `{ ok, htmlLink }` |
 | `reunion-cancelada.json` | `POST /webhook/reunion-cancelada` | Quita el evento del calendario y avisa a los invitados. | `{ ok }` |
 
 Todos usan la credencial de Google `Google Calendar account` y la de cabecera `Arkanium webhook secret`.
@@ -26,8 +26,8 @@ Todos usan la credencial de Google `Google Calendar account` y la de cabecera `A
 { "meetingId": "uuid", "topic": "Revisión del informe", "startsAt": "2026-12-01T15:00:00.000Z",
   "endsAt": "2026-12-01T16:00:00.000Z", "attendees": ["cliente@ejemplo.com"], "meet": true }
 
-// reunion-reprogramada
-{ "eventId": "id-del-evento", "startsAt": "...", "endsAt": "..." }
+// reunion-reprogramada (siempre manda el conjunto completo: tema, horario e invitados)
+{ "eventId": "id-del-evento", "startsAt": "...", "endsAt": "...", "topic": "...", "attendees": ["cliente@ejemplo.com"] }
 
 // reunion-cancelada
 { "eventId": "id-del-evento" }

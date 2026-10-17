@@ -111,12 +111,21 @@ describe('crear a mano', () => {
 });
 
 describe('corregir a mano', () => {
-  it('cambiar el tema y los invitados se guarda sin tocar el calendario', async () => {
+  it('cambiar el tema y los invitados llega al evento de Calendar con la lista completa', async () => {
     const created = await manualMeeting(FUTURE);
     const updated = await call('PATCH', `/meetings/${created.id}`, 'token-owner', { topic: 'Tema corregido', attendees: ['socio@empresa.test'] });
     expect(updated.statusCode).toBe(200);
     expect(updated.json()).toMatchObject({ topic: 'Tema corregido', attendees: ['ana@empresa.test', 'socio@empresa.test'] });
-    expect(calls.updates).toBe(0);
+    expect(calls.updates).toBe(1);
+  });
+
+  it('si Calendar no responde al cambiar tema o invitados, no se guarda nada', async () => {
+    const created = await manualMeeting(FUTURE);
+    flags.updateFails = true;
+    const failed = await call('PATCH', `/meetings/${created.id}`, 'token-owner', { topic: 'No debe guardarse' });
+    expect(failed.statusCode).toBe(502);
+    const [row] = await db.select().from(meetings).where(eq(meetings.id, created.id));
+    expect(row!.topic).toBe('Reunión manual');
   });
 
   it('cambiar la hora con un evento existente pasa por el calendario; si falla, la hora no cambia', async () => {

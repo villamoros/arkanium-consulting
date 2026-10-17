@@ -20,9 +20,19 @@ export interface CalendarEventResult {
   meetLink: string | null;
 }
 
+export interface CalendarEventUpdate {
+  eventId: string;
+  startsAt: string;
+  endsAt: string;
+  topic: string;
+  /** Lista completa de invitados. Debe tener al menos uno: un evento sin invitados no se actualiza. */
+  attendees: string[];
+}
+
 export interface CalendarGateway {
   createEvent(input: CalendarEventRequest): Promise<CalendarEventResult>;
-  updateEvent(input: { eventId: string; startsAt: string; endsAt: string }): Promise<{ htmlLink: string }>;
+  /** Actualiza un evento existente. Envía siempre tema, horario e invitados completos: el workflow los reemplaza. */
+  updateEvent(input: CalendarEventUpdate): Promise<{ htmlLink: string }>;
   cancelEvent(eventId: string): Promise<void>;
 }
 

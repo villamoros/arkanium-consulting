@@ -173,7 +173,13 @@ describe('cancelar y reprogramar', () => {
     const fake = fakeCalendar();
     const { meeting: moved, calendar } = await rescheduleMeeting(db, fake.gateway, meeting.id, { startsAt: '2026-10-22T15:00:00.000Z' }, 'owner');
 
-    expect(fake.updates[0]).toEqual({ eventId: 'evt_9', startsAt: '2026-10-22T15:00:00.000Z', endsAt: '2026-10-22T16:00:00.000Z' });
+    expect(fake.updates[0]).toEqual({
+      eventId: 'evt_9',
+      startsAt: '2026-10-22T15:00:00.000Z',
+      endsAt: '2026-10-22T16:00:00.000Z',
+      topic: 'Avance',
+      attendees: ['ana@empresa.test'],
+    });
     expect(moved.startsAt?.toISOString()).toBe('2026-10-22T15:00:00.000Z');
     expect(calendar.status).toBe('sincronizada');
   });

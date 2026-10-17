@@ -199,7 +199,7 @@ export async function rescheduleMeeting(db: Db, calendar: CalendarGateway | unde
   if (current.calendarEventId) {
     if (!calendar) throw new ServiceError(502, 'calendar_unavailable', 'El calendario no está configurado; la hora no cambió.');
     try {
-      await calendar.updateEvent({ eventId: current.calendarEventId, startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString() });
+      await calendar.updateEvent({ eventId: current.calendarEventId, startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString(), topic: current.topic, attendees: current.attendees as string[] });
     } catch {
       throw new ServiceError(502, 'calendar_unavailable', 'No pudimos actualizar el evento del calendario; la hora no cambió. Intenta de nuevo.');
     }
@@ -274,39 +274,46 @@ export async function createManualMeeting(db: Db, calendar: CalendarGateway | un
 }
 
 /**
- * Owner: corrige una reunión a mano. Los invitados se guardan en Arkanium; el evento de Calendar
- * no cambia de invitados (hay que hacerlo en Calendar). Si la reunión ya tiene evento, la hora
- * siempre pasa por Calendar: así nunca hay dos horas distintas. Sin evento, la hora se guarda y,
- * si hace falta, se intenta crear el evento. Con skipCalendar no se toca el calendario.
+ * Owner: corrige una reunión a mano (tema, invitados, hora y duración). Si la reunión ya tiene evento,
+ * cualquier cambio de tema, invitados u hora se aplica primero al evento de Calendar: si falla, no se guarda nada.
+ * Sin evento, se guarda y, con fecha confirmada, se intenta crear el evento (salvo skipCalendar).
  */
 export async function updateMeeting(db: Db, calendar: CalendarGateway | undefined, id: string, input: MeetingUpdate, actor: string): Promise<{ meeting: Meeting; calendar: CalendarSync | null }> {
   const current = await findMeeting(db, id);
   requireStatus(current, ['solicitada', 'confirmada'], 'Solo se edita una reunión pendiente o confirmada.');
+  if (input.startsAt !== undefined) requireStatus(current, ['confirmada'], 'Para dar fecha a una solicitud, confírmala.');
 
   const values: Partial<typeof meetings.$inferInsert> = {};
   if (input.topic !== undefined) values.topic = input.topic;
+  let attendees = current.attendees as string[];
   if (input.attendees !== undefined) {
-    const invitees = await resolveInvitees(db, current, input.attendees);
-    await assertNotSuppressed(db, invitees);
-    values.attendees = invitees;
+    attendees = await resolveInvitees(db, current, input.attendees);
+    await assertNotSuppressed(db, attendees);
+    values.attendees = attendees;
   }
 
+  let startsAt = current.startsAt;
+  let endsAt = current.endsAt;
   if (input.startsAt !== undefined) {
-    requireStatus(current, ['confirmada'], 'Para dar fecha a una solicitud, confírmala.');
-    const startsAt = new Date(input.startsAt);
+    startsAt = new Date(input.startsAt);
     const minutes = input.durationMinutes ?? (current.startsAt && current.endsAt ? Math.round((current.endsAt.getTime() - current.startsAt.getTime()) / 60_000) : DEFAULT_MINUTES);
-    const endsAt = new Date(startsAt.getTime() + minutes * 60_000);
-
-    if (current.calendarEventId) {
-      if (!calendar) throw new ServiceError(502, 'calendar_unavailable', 'El calendario no está configurado; la hora no cambió.');
-      try {
-        await calendar.updateEvent({ eventId: current.calendarEventId, startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString() });
-      } catch {
-        throw new ServiceError(502, 'calendar_unavailable', 'No pudimos actualizar el evento del calendario; la hora no cambió. Intenta de nuevo.');
-      }
-    }
+    endsAt = new Date(startsAt.getTime() + minutes * 60_000);
     values.startsAt = startsAt;
     values.endsAt = endsAt;
+  }
+
+  const eventChanged = input.startsAt !== undefined || input.topic !== undefined || input.attendees !== undefined;
+  if (current.calendarEventId && eventChanged) {
+    if (!calendar) throw new ServiceError(502, 'calendar_unavailable', 'El calendario no está configurado; no se guardó ningún cambio.');
+    if (!startsAt || !endsAt || attendees.length === 0) {
+      throw new ServiceError(409, 'invalid_state', 'Un evento de Calendar necesita fecha e invitados: agrega un correo antes de guardar.');
+    }
+    const topic = values.topic ?? current.topic;
+    try {
+      await calendar.updateEvent({ eventId: current.calendarEventId, startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString(), topic, attendees });
+    } catch {
+      throw new ServiceError(502, 'calendar_unavailable', 'No pudimos actualizar el evento en Calendar; no se guardó ningún cambio. Intenta de nuevo.');
+    }
   }
 
   const [updated] = await db.update(meetings).set(values).where(eq(meetings.id, id)).returning();
