@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { decideLeadAction, type ActionState } from "@/app/(protected)/leads/actions";
 
-// Calificar, posponer o descartar. El motivo es obligatorio: queda en la bitácora.
+// Calificar, posponer o descartar. El motivo es obligatorio: queda en la bitácora. Posponer pide cuándo volver a revisar.
 export function DecisionForm({ leadId, disabled }: { leadId: string; disabled: boolean }) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(decideLeadAction, null);
 
@@ -13,6 +13,10 @@ export function DecisionForm({ leadId, disabled }: { leadId: string; disabled: b
       <label className="field">
         Motivo de la decisión
         <textarea name="reason" required maxLength={1000} disabled={disabled || pending} placeholder="Por qué calificas, pospones o descartas este lead" />
+      </label>
+      <label className="field">
+        Si lo pospones, ¿cuándo volver a revisarlo?
+        <input type="datetime-local" name="revisitAt" disabled={disabled || pending} />
       </label>
       <div className="actions">
         <button type="submit" name="decision" value="calificar" className="primary" disabled={disabled || pending}>

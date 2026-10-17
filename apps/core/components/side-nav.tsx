@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useNav } from "./nav-context";
 
 // Menú de core. Las secciones que aún no tienen pantalla aparecen apagadas, sin enlace.
 const GROUPS: Array<{ label: string; items: Array<{ href?: string; label: string }> }> = [
   {
     label: "Ventas",
-    items: [{ href: "/leads", label: "Leads" }, { label: "Reuniones" }, { label: "Clientes" }, { label: "Propuestas" }, { label: "Cobros y facturas" }],
+    items: [{ href: "/", label: "Inicio" }, { href: "/leads", label: "Leads" }, { href: "/reuniones", label: "Reuniones" }, { label: "Clientes" }, { label: "Propuestas" }, { label: "Cobros y facturas" }],
   },
   {
     label: "Operación",
@@ -16,50 +17,27 @@ const GROUPS: Array<{ label: string; items: Array<{ href?: string; label: string
   },
   {
     label: "Mercadeo",
-    items: [{ label: "Campañas" }, { label: "Buyer personas" }, { label: "Supresión y consentimiento" }, { label: "Insights" }],
+    items: [{ label: "Campañas" }, { label: "Buyer personas" }, { href: "/supresion", label: "Supresión y consentimiento" }, { label: "Insights" }],
   },
 ];
 
 /**
- * Menú lateral. Bajo 1100 px se desliza desde la izquierda con el botón del sitio;
- * el botón de cerrar vive dentro del panel y viaja con él (ARK-DESIGN-001).
+ * Menú lateral. Bajo 1100 px se desliza desde la izquierda; el botón está en la barra superior
+ * (ver SessionBar), junto al logo y el nombre de la plataforma.
  */
 export function SideNav() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const { open, close } = useNav();
   const firstLink = useRef<HTMLAnchorElement | null>(null);
 
-  // Al abrir, el foco pasa al menú; al cerrar con Escape o con el velo, vuelve al botón.
+  // Al abrir, el foco pasa al primer enlace del menú.
   useEffect(() => {
-    document.body.classList.toggle("nav-open", open);
-    if (!open) return;
-    firstLink.current?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.classList.remove("nav-open");
-    };
+    if (open) firstLink.current?.focus();
   }, [open]);
-
-  const label = open ? "Cerrar menú" : "Abrir menú";
 
   return (
     <>
-      <div className="nav-bar">
-        <button type="button" className="nav-toggle" aria-expanded={open} aria-controls="site-nav" aria-label={label} onClick={() => setOpen((v) => !v)}>
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-        </button>
-      </div>
-      <nav className="side" id="site-nav" aria-label="Principal" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setOpen(false); }}>
-        <div className="brand">ARKANIUM · CORE</div>
-        <button type="button" className="nav-toggle nav-toggle--in" aria-expanded={open} aria-controls="site-nav" aria-label={label} onClick={() => setOpen((v) => !v)}>
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-        </button>
+      <nav className="side" id="site-nav" aria-label="Principal" onClick={(event) => { if ((event.target as HTMLElement).closest("a")) close(); }}>
         {GROUPS.map((group) => (
           <div key={group.label}>
             <div className="side-group">{group.label}</div>
@@ -67,7 +45,7 @@ export function SideNav() {
               {group.items.map((item) =>
                 item.href ? (
                   <li key={item.label}>
-                    <Link href={item.href} aria-current={pathname.startsWith(item.href) ? "page" : undefined} ref={item.href === "/leads" ? firstLink : undefined}>
+                    <Link href={item.href} aria-current={(item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)) ? "page" : undefined} ref={item.href === "/leads" ? firstLink : undefined}>
                       {item.label}
                     </Link>
                   </li>
@@ -81,7 +59,7 @@ export function SideNav() {
           </div>
         ))}
       </nav>
-      <div className="nav-scrim" data-scrim onClick={() => setOpen(false)} />
+      <div className="nav-scrim" data-scrim onClick={close} />
     </>
   );
 }
