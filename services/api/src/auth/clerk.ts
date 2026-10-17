@@ -13,7 +13,9 @@ export interface IdentityGateway {
   /** Retira a una persona de la organización. */
   removeMember(input: { orgId: string; userId: string }): Promise<void>;
   /** Miembros de una organización con su rol (lo ve el administrador de esa organización). */
-  listMembers(orgId: string): Promise<Array<{ userId: string; role: string; email: string | null }>>;
+  listMembers(orgId: string): Promise<Array<{ userId: string; role: string; email: string | null; name: string | null }>>;
+  /** Invitaciones pendientes de una organización (aún no aceptadas). */
+  listInvitations(orgId: string): Promise<Array<{ id: string; email: string; role: string; createdAt: string }>>;
   /** Cambia el rol de una persona dentro de su organización. */
   updateMemberRole(input: { orgId: string; userId: string; role: "org:admin" | "org:member" }): Promise<void>;
 }
@@ -57,12 +59,24 @@ export function createClerkGateway(options: { secretKey: string; authorizedParti
       await clerk.organizations.deleteOrganizationMembership({ organizationId: orgId, userId });
     },
 
+    async listInvitations(orgId) {
+      const response = await clerk.organizations.getOrganizationInvitationList({ organizationId: orgId, status: ['pending'], limit: 100 });
+      return response.data.map((invitation) => ({
+        id: invitation.id,
+        email: invitation.emailAddress,
+        role: invitation.role,
+        createdAt: new Date(invitation.createdAt).toISOString(),
+      }));
+    },
+
     async listMembers(orgId) {
       const response = await clerk.organizations.getOrganizationMembershipList({ organizationId: orgId, limit: 100 });
       return response.data.map((membership) => ({
         userId: membership.publicUserData?.userId ?? '',
         role: membership.role,
-        email: null,
+        // El identificador público de Clerk es el correo de la cuenta; el nombre es el de la persona.
+        email: membership.publicUserData?.identifier ?? null,
+        name: [membership.publicUserData?.firstName, membership.publicUserData?.lastName].filter(Boolean).join(' ') || null,
       }));
     },
 

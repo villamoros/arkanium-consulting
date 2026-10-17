@@ -37,6 +37,7 @@ import type { IdentityGateway } from '../auth/clerk.js';
 import type { BillingGateway } from '../billing/stripe.js';
 import { createDraft, clientInvoiceView, findInvoice, issueInvoice, listInvoices, voidInvoice } from '../billing/service.js';
 import type { CalendarGateway } from '../calendar/n8n.js';
+import { clientSummary, suspensionReason } from '../organizations/summary.js';
 import type { Db } from '../db/client.js';
 import { deliverables } from '../db/schema.js';
 import { listDecisions } from '../decisions/service.js';
@@ -138,8 +139,33 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     guarded(deps, async (caller, request, reply) => {
       requireOwnerCaller(caller, internalOrgId);
       const organization = await findOrganization(db, request.params.id);
-      const members = organization.clerkOrgId ? await listMembers(identity, organization) : [];
-      return { organization: { id: organization.id, name: organization.name, status: organization.status, billingEmail: organization.billingEmail }, members };
+      // Si Clerk no reconoce la organización (por ejemplo, una de prueba), la ficha se muestra igual, sin personas.
+      let members: Awaited<ReturnType<typeof listMembers>> = [];
+      let membersUnavailable = false;
+      if (organization.clerkOrgId) {
+        try {
+          members = await listMembers(identity, organization);
+        } catch {
+          membersUnavailable = true;
+        }
+      }
+      let invitations: Awaited<ReturnType<typeof identity.listInvitations>> = [];
+      let invitationsUnavailable = false;
+      if (organization.clerkOrgId) {
+        try {
+          invitations = await identity.listInvitations(organization.clerkOrgId);
+        } catch {
+          invitationsUnavailable = true;
+        }
+      }
+      const suspendedReason = organization.status === 'suspended' ? await suspensionReason(db, organization.id) : null;
+      return {
+        organization: { id: organization.id, name: organization.name, status: organization.status, billingEmail: organization.billingEmail, suspendedReason },
+        members,
+        membersUnavailable,
+        invitations,
+        invitationsUnavailable,
+      };
     }),
   );
 
@@ -250,7 +276,7 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     guarded(deps, async (caller) => {
       requireOwnerCaller(caller, internalOrgId);
       const rows = await listAllProjects(db);
-      return { projects: rows.map((row) => ({ ...projectDto(row), organizationName: row.organizationName })) };
+      return { projects: rows.map((row) => ({ ...projectDto(row), organizationId: row.organizationId, organizationName: row.organizationName })) };
     }),
   );
 
@@ -520,7 +546,12 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     '/client-organizations',
     guarded(deps, async (caller) => {
       requireOwnerCaller(caller, internalOrgId);
-      return { organizations: await listClientOrganizations(db) };
+      // Cada cliente trae su resumen: personas (para buscar), invitaciones pendientes y estado de Clerk.
+      const clients = await listClientOrganizations(db);
+      const organizationsWithSummary = await Promise.all(
+        clients.map(async ({ clerkOrgId, ...client }) => ({ ...client, ...(await clientSummary(identity, { id: client.id, clerkOrgId })) })),
+      );
+      return { organizations: organizationsWithSummary };
     }),
   );
 

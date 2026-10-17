@@ -9,7 +9,7 @@ import { useNav } from "./nav-context";
 const GROUPS: Array<{ label: string; items: Array<{ href?: string; label: string }> }> = [
   {
     label: "Ventas",
-    items: [{ href: "/", label: "Inicio" }, { href: "/leads", label: "Leads" }, { href: "/reuniones", label: "Reuniones" }, { label: "Clientes" }, { label: "Propuestas" }, { label: "Cobros y facturas" }],
+    items: [{ href: "/", label: "Inicio" }, { href: "/leads", label: "Leads" }, { href: "/reuniones", label: "Reuniones" }, { href: "/clientes", label: "Clientes" }, { label: "Propuestas" }, { label: "Cobros y facturas" }],
   },
   {
     label: "Operación",

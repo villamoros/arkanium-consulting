@@ -28,6 +28,7 @@ if (!databaseUrl || !baseUrl || !secret) {
 const db = createDb(databaseUrl);
 const calendar = createN8nCalendar({ baseUrl, secret });
 const stamp = Date.now();
+let createdOrgId: string | null = null;
 const results: Array<{ step: string; ok: boolean; detail: string }> = [];
 
 function check(step: string, ok: boolean, detail: string) {
@@ -43,11 +44,31 @@ function futureAt(days: number, hourUtc: number): string {
   return date.toISOString();
 }
 
+/**
+ * Limpia lo que creó esta corrida: cancela cualquier evento de prueba que siga abierto y borra
+ * la organización de prueba con sus contactos y reuniones. La bitácora de auditoría se conserva.
+ */
+async function cleanup(orgId: string) {
+  const leftovers = await db.select().from(meetings).where(eq(meetings.organizationId, orgId));
+  for (const meeting of leftovers) {
+    if (!meeting.calendarEventId || meeting.status === 'cancelada') continue;
+    try {
+      await calendar.cancelEvent(meeting.calendarEventId);
+    } catch {
+      console.log(`No se pudo cancelar el evento de prueba ${meeting.calendarEventId}: revísalo en Google Calendar.`);
+    }
+  }
+  await db.delete(meetings).where(eq(meetings.organizationId, orgId));
+  await db.delete(contacts).where(eq(contacts.organizationId, orgId));
+  await db.delete(organizations).where(eq(organizations.id, orgId));
+}
+
 async function main() {
   const [org] = await db
     .insert(organizations)
     .values({ name: `PRUEBA smoke ${stamp}`, kind: 'client', clerkOrgId: `org_SMOKE_${stamp}` })
     .returning();
+  createdOrgId = org!.id;
   await db.insert(contacts).values({ name: 'PRUEBA smoke', email: invitee, organizationId: org!.id, isPrimary: true });
 
   const [requested] = await db
@@ -105,13 +126,19 @@ async function main() {
 
   const failures = results.filter((r) => !r.ok);
   console.log(`\n${results.length - failures.length} de ${results.length} comprobaciones pasan.`);
-  console.log(`Reuniones de prueba creadas: "PRUEBA smoke de calendario ${stamp}" (cancelada) y "PRUEBA smoke de error ${stamp}" (confirmada, sin evento).`);
   return failures.length === 0 ? 0 : 1;
 }
 
-main()
-  .then((code) => process.exit(code))
-  .catch((error) => {
-    console.error('La prueba se detuvo con un error inesperado:', error);
-    process.exit(1);
-  });
+// Corre siempre la limpieza, aunque una comprobación falle o el proceso se detenga con error.
+let exitCode = 1;
+try {
+  exitCode = await main();
+} catch (error) {
+  console.error('La prueba se detuvo con un error inesperado:', error);
+} finally {
+  if (createdOrgId) {
+    await cleanup(createdOrgId);
+    console.log('Datos de prueba eliminados: la organización, sus contactos y sus reuniones de prueba.');
+  }
+}
+process.exit(exitCode);

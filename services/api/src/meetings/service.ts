@@ -8,7 +8,7 @@ import { and, desc, eq, inArray, isNull } from 'drizzle-orm';
 import { audit } from '../audit.js';
 import type { CalendarGateway } from '../calendar/n8n.js';
 import type { Db } from '../db/client.js';
-import { contacts, leads, meetings, organizations, suppressions } from '../db/schema.js';
+import { contacts, leads, meetings, organizations, projects, suppressions } from '../db/schema.js';
 import { ServiceError } from '../errors.js';
 import { recordDecision } from '../decisions/service.js';
 import { syncMeetingToCalendar, type CalendarSync } from './calendar-sync.js';
@@ -234,11 +234,14 @@ export async function publishMinutes(db: Db, id: string, text: string, actor: st
 
 /** Clientes para elegir al crear una reunión a mano. */
 export async function listClientOrganizations(db: Db) {
-  return db
-    .select({ id: organizations.id, name: organizations.name })
+  const clients = await db
+    .select({ id: organizations.id, name: organizations.name, status: organizations.status, clerkOrgId: organizations.clerkOrgId })
     .from(organizations)
     .where(eq(organizations.kind, 'client'))
     .orderBy(organizations.name);
+  // Proyectos activos (no archivados) de cada cliente, para la lista de Clientes.
+  const active = await db.select({ organizationId: projects.organizationId }).from(projects).where(isNull(projects.archivedAt));
+  return clients.map((client) => ({ ...client, projectCount: active.filter((p) => p.organizationId === client.id).length }));
 }
 
 /**

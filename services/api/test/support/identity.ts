@@ -15,6 +15,7 @@ export const OTHER_CLIENT = 'org_OTHER';
  */
 export function fakeIdentity() {
   const created: Array<{ name: string; createdBy: string; orgId: string }> = [];
+  const pendingInvites: Record<string, Array<{ id: string; email: string; role: string; createdAt: string }>> = {};
   const tokens: Record<string, string> = {
     'token-owner': 'user_owner',
     'token-member': 'user_team_member',
@@ -72,6 +73,7 @@ export function fakeIdentity() {
       return { orgId };
     },
     listMembers: async (orgId) => teams[orgId] ?? [],
+    listInvitations: async (orgId) => pendingInvites[orgId] ?? [],
     updateMemberRole: async ({ orgId, userId, role }) => {
       roleChanges.push({ orgId, userId, role });
       teams[orgId] = (teams[orgId] ?? []).map((m) => (m.userId === userId ? { ...m, role } : m));

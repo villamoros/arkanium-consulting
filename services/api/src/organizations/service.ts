@@ -7,6 +7,7 @@ import { audit } from '../audit.js';
 import type { IdentityGateway } from '../auth/clerk.js';
 import type { Db } from '../db/client.js';
 import { organizations } from '../db/schema.js';
+import { forgetSummary } from './summary.js';
 
 export type MemberRole = 'org:admin' | 'org:member';
 
@@ -38,6 +39,7 @@ export async function inviteMember(
     email: input.email,
     role: input.role,
   });
+  forgetSummary(organization.id);
   await audit(db, {
     actor: input.ownerId,
     action: 'member.invited',
@@ -56,6 +58,7 @@ export async function removeMember(
 ): Promise<void> {
   const organization = await findOrganization(db, input.organizationId);
   await identity.removeMember({ orgId: organization.clerkOrgId!, userId: input.userId });
+  forgetSummary(organization.id);
   await audit(db, {
     actor: input.ownerId,
     action: 'member.removed',
