@@ -60,6 +60,14 @@ export const LEAD_EVENT_LABEL: Record<string, string> = {
   "lead.deleted": "Eliminado",
 };
 
+/** Fase de un proyecto: de evaluar a escalar. */
+export const PHASE_LABEL: Record<"evaluar" | "arquitectar" | "modernizar" | "escalar", string> = {
+  evaluar: "Evaluar",
+  arquitectar: "Arquitectar",
+  modernizar: "Modernizar",
+  escalar: "Escalar",
+};
+
 export const PRIORITY_LABEL: Record<string, string> = {
   architecture: "Arquitectura",
   strategy: "Estrategia",

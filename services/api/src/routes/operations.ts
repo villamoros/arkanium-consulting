@@ -28,7 +28,9 @@ import {
   milestoneUpdateSchema,
   minutesPublishSchema,
   organizationSuspendSchema,
+  projectArchiveSchema,
   projectCreateSchema,
+  projectUpdateSchema,
 } from '@arkanium/contracts';
 import { loadCaller, requireClientAccess, requireOwnerCaller, findOrganization, sendServiceError, type Caller } from '../access.js';
 import type { IdentityGateway } from '../auth/clerk.js';
@@ -76,7 +78,7 @@ import {
 } from '../meetings/service.js';
 import { addSuppression, listSuppressions } from '../suppressions/service.js';
 import { duplicatesOf, leadHistory, LeadError, respondToProposal } from '../leads/service.js';
-import { addMilestone, createProject, findProject, listMilestones, listProjects, updateMilestone } from '../projects/service.js';
+import { addMilestone, archiveProject, createProject, findProject, listAllProjects, listMilestones, listProjects, updateMilestone, updateProject } from '../projects/service.js';
 
 export interface OperationDeps {
   db: Db;
@@ -239,6 +241,39 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
       const organization = await findOrganization(db, request.params.id);
       requireClientAccess(caller, organization, internalOrgId);
       return { projects: (await listProjects(db, organization.id)).map(projectDto) };
+    }),
+  );
+
+  // Core: todos los proyectos, con su cliente. Los archivados no aparecen.
+  app.get(
+    '/projects',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const rows = await listAllProjects(db);
+      return { projects: rows.map((row) => ({ ...projectDto(row), organizationName: row.organizationName })) };
+    }),
+  );
+
+  // Core: corregir nombre, familia, fase, avance o siguiente paso de un proyecto.
+  app.patch<{ Params: { id: string } }>(
+    '/projects/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(projectUpdateSchema, request, reply);
+      if (!body) return;
+      return projectDto(await updateProject(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  // Core: archivar un proyecto con motivo. No se borra: deja de aparecer en las listas.
+  app.delete<{ Params: { id: string } }>(
+    '/projects/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(projectArchiveSchema, request, reply);
+      if (!body) return;
+      await archiveProject(db, request.params.id, body, caller.userId);
+      return { ok: true };
     }),
   );
 

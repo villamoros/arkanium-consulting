@@ -188,3 +188,21 @@ export const meetingDeleteSchema = z.object({
   force: z.boolean().optional(),
 });
 export type MeetingDelete = z.infer<typeof meetingDeleteSchema>;
+
+/** Cambios de un proyecto (owner). Solo se envían los campos que cambian. */
+export const projectUpdateSchema = z
+  .object({
+    name: z.string().trim().min(1).max(160).optional(),
+    serviceFamily: z.enum(serviceFamilyValues).optional(),
+    phase: z.enum(projectPhaseValues).optional(),
+    progress: z.string().trim().max(500).optional(),
+    nextStep: z.string().trim().max(300).optional(),
+  })
+  .refine((value) => Object.values(value).some((item) => item !== undefined), 'Indica al menos un dato para cambiar.');
+export type ProjectUpdate = z.infer<typeof projectUpdateSchema>;
+
+/** Archivar un proyecto: deja de aparecer en las listas; el proyecto y su historial se conservan. */
+export const projectArchiveSchema = z.object({
+  reason: z.string().trim().min(1).max(1000),
+});
+export type ProjectArchive = z.infer<typeof projectArchiveSchema>;

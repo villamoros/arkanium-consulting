@@ -171,6 +171,8 @@ export const projects = pgTable(
     phase: projectPhase('phase').notNull().default('evaluar'),
     progress: text('progress').notNull().default(''),
     nextStep: text('next_step').notNull().default(''),
+    /** Archivado: deja de aparecer en las listas, pero el proyecto y su historial se conservan. */
+    archivedAt: timestamp('archived_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index('projects_organization_idx').on(t.organizationId)],

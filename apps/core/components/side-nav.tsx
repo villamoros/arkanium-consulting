@@ -13,7 +13,7 @@ const GROUPS: Array<{ label: string; items: Array<{ href?: string; label: string
   },
   {
     label: "Operación",
-    items: [{ label: "Aprobaciones" }, { label: "Proyectos" }, { label: "Agentes" }, { label: "Presupuesto" }, { label: "Pausas de emergencia" }],
+    items: [{ label: "Aprobaciones" }, { href: "/proyectos", label: "Proyectos" }, { label: "Agentes" }, { label: "Presupuesto" }, { label: "Pausas de emergencia" }],
   },
   {
     label: "Mercadeo",
