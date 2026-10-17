@@ -1,6 +1,8 @@
-# Base de datos local de desarrollo. Solo PostgreSQL: las apps corren en tu máquina con `pnpm dev`.
-# Puerto 5433 en tu máquina, para no chocar con un PostgreSQL ya instalado en Windows (5432).
+# Servicios locales de desarrollo: PostgreSQL y n8n. Las apps corren en tu máquina con `pnpm dev`.
+# PostgreSQL en el puerto 5433, para no chocar con un PostgreSQL ya instalado en Windows (5432).
+# n8n en http://localhost:5678. Los workflows viven en infra/n8n/workflows (ver su README).
 # Credenciales en infra/.env (no se versiona). Ver infra/.env.example.
+# Versión de n8n fijada: la misma imagen debe usarse en el servidor, para que los workflows exportados encajen.
 #
 # Levantar:  docker compose -f infra/docker-compose.dev.yml up -d
 # Apagar:    docker compose -f infra/docker-compose.dev.yml down        (conserva los datos)
@@ -25,5 +27,26 @@ services:
       timeout: 3s
       retries: 20
 
+  n8n:
+    image: n8nio/n8n:2.43.7
+    restart: unless-stopped
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_WEBHOOK_URL: http://localhost:5678/
+      N8N_SECURE_COOKIE: "false"
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      GENERIC_TIMEZONE: America/Bogota
+      TZ: America/Bogota
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+    ports:
+      - "5678:5678"
+    volumes:
+      - arkanium_n8n_dev:/home/node/.n8n
+      - ./n8n/workflows:/workflows
+
 volumes:
   arkanium_pg_dev:
+  arkanium_n8n_dev:
