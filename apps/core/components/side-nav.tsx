@@ -9,11 +9,11 @@ import { useNav } from "./nav-context";
 const GROUPS: Array<{ label: string; items: Array<{ href?: string; label: string }> }> = [
   {
     label: "Ventas",
-    items: [{ href: "/", label: "Inicio" }, { href: "/leads", label: "Leads" }, { href: "/reuniones", label: "Reuniones" }, { href: "/clientes", label: "Clientes" }, { label: "Propuestas" }, { label: "Cobros y facturas" }],
+    items: [{ href: "/", label: "Inicio" }, { href: "/leads", label: "Leads" }, { href: "/reuniones", label: "Reuniones" }, { href: "/clientes", label: "Clientes" }, { href: "/propuestas", label: "Propuestas" }, { href: "/cobros", label: "Cobros y facturas" }],
   },
   {
     label: "Operación",
-    items: [{ label: "Aprobaciones" }, { href: "/proyectos", label: "Proyectos" }, { label: "Agentes" }, { label: "Presupuesto" }, { label: "Pausas de emergencia" }],
+    items: [{ href: "/aprobaciones", label: "Aprobaciones" }, { href: "/proyectos", label: "Proyectos" }, { label: "Agentes" }, { label: "Presupuesto" }, { label: "Pausas de emergencia" }],
   },
   {
     label: "Mercadeo",

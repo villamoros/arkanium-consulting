@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { memberInvitationSchema, memberRoleSchema, organizationSuspendSchema } from "@arkanium/contracts";
+import { billingEmailSchema, memberInvitationSchema, memberRoleSchema, organizationSuspendSchema } from "@arkanium/contracts";
 import { ApiError, apiFetch } from "@/lib/api";
 
 export type ClientActionState = { ok: boolean; message: string } | null;
@@ -84,6 +84,23 @@ export async function suspendClientAction(_previous: ClientActionState, formData
   }
   revalidatePath(`/clientes`);
   return { ok: true, message: "Acceso suspendido. Nada se borró." };
+}
+
+// Correo donde Stripe envía las facturas del cliente. Vacío lo borra. La API valida el formato.
+export async function setBillingEmailAction(_previous: ClientActionState, formData: FormData): Promise<ClientActionState> {
+  const organizationId = orgIdOf(formData);
+  if (!organizationId) return { ok: false, message: "Cliente no válido." };
+
+  const billingEmail = String(formData.get("billingEmail") ?? "").trim();
+  if (!billingEmailSchema.safeParse({ billingEmail }).success) return { ok: false, message: "Revisa el correo de facturación." };
+
+  try {
+    await apiFetch(`/organizations/${organizationId}/billing-email`, { method: "PATCH", body: { billingEmail } });
+  } catch (error) {
+    return { ok: false, message: messageOf(error) };
+  }
+  revalidatePath(`/clientes`);
+  return { ok: true, message: billingEmail ? "Correo de facturación guardado." : "Correo de facturación borrado." };
 }
 
 // Reactiva el acceso; vuelve de inmediato.

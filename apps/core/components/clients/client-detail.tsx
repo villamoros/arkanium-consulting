@@ -6,6 +6,7 @@ import {
   RemoveMemberForm,
   SuspendClientForm,
 } from "@/components/clients/client-forms";
+import { BillingEmailForm } from "@/components/clients/billing-email-form";
 
 const ROLE_LABEL: Record<string, string> = {
   "org:admin": "Administrador",
@@ -20,7 +21,7 @@ const DECISION_LABEL: Record<string, string> = {
 };
 
 export type ClientDetailData = {
-  organization: { id: string; name: string; status: "active" | "suspended"; suspendedReason?: string | null };
+  organization: { id: string; name: string; status: "active" | "suspended"; suspendedReason?: string | null; billingEmail?: string | null };
   /** Invitaciones que todavía no se han aceptado. */
   invitations: Array<{ id: string; email: string; role: string; createdAt: string }>;
   invitationsUnavailable?: boolean;
@@ -141,6 +142,12 @@ export function ClientDetail({ detail, projects }: { detail: ClientDetailData; p
           </ol>
         )}
         <p className="sub" style={{ margin: "8px 0 0" }}>Solo lectura. Las decisiones no se editan.</p>
+      </div>
+
+      <div className="section">
+        <h3>Facturación</h3>
+        <BillingEmailForm organizationId={organization.id} current={organization.billingEmail ?? ""} />
+        <p className="sub" style={{ margin: "8px 0 0" }}>Stripe envía cada factura a este correo. Sin él no se puede emitir.</p>
       </div>
 
       <div className="section decision">

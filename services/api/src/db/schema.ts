@@ -299,14 +299,50 @@ export const invoices = pgTable(
     amountCents: integer('amount_cents').notNull(),
     currency: text('currency').notNull().default('usd'),
     dueDays: integer('due_days').notNull().default(30),
+    /** Correo al que se envía esta factura. Vacío: el correo de facturación de la organización. */
+    recipientEmail: text('recipient_email'),
     status: invoiceStatus('status').notNull().default('borrador'),
     stripeInvoiceId: text('stripe_invoice_id'),
     hostedUrl: text('hosted_url'),
     issuedAt: timestamp('issued_at', { withTimezone: true }),
     paidAt: timestamp('paid_at', { withTimezone: true }),
+    /** Borrador descartado. Borrado lógico: el número no se reutiliza. */
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex('invoices_number_uq').on(t.number), index('invoices_organization_idx').on(t.organizationId)],
+);
+
+/** Líneas de una factura. El monto total de la factura es la suma de cantidad × precio unitario. */
+export const invoiceLines = pgTable(
+  'invoice_lines',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    invoiceId: uuid('invoice_id')
+      .notNull()
+      .references(() => invoices.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+    description: text('description').notNull(),
+    quantity: integer('quantity').notNull(),
+    unitAmountCents: integer('unit_amount_cents').notNull(),
+  },
+  (t) => [index('invoice_lines_invoice_idx').on(t.invoiceId)],
+);
+
+/** Notas de crédito sobre una factura pagada. Se suman; nunca se editan ni se borran. */
+export const invoiceCreditNotes = pgTable(
+  'invoice_credit_notes',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    invoiceId: uuid('invoice_id')
+      .notNull()
+      .references(() => invoices.id),
+    amountCents: integer('amount_cents').notNull(),
+    reason: text('reason').notNull(),
+    stripeCreditNoteId: text('stripe_credit_note_id'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('invoice_credit_notes_invoice_idx').on(t.invoiceId)],
 );
 
 /**
@@ -331,4 +367,47 @@ export const decisions = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index('decisions_organization_idx').on(t.organizationId)],
+);
+
+export const proposalStatus = pgEnum('proposal_status', ['borrador', 'en_aprobacion', 'enviada', 'aceptada', 'rechazada']);
+export const proposalPriceStatus = pgEnum('proposal_price_status', ['por_confirmar', 'confirmado']);
+
+/** Propuesta para un lead o un cliente. Ninguna sale sin aprobación del owner; el precio debe estar confirmado para enviarla. */
+export const proposals = pgTable(
+  'proposals',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    organizationId: uuid('organization_id').references(() => organizations.id),
+    leadId: uuid('lead_id').references(() => leads.id),
+    title: text('title').notNull(),
+    serviceFamily: serviceFamily('service_family').notNull().default('unknown'),
+    templateCode: text('template_code').notNull(),
+    status: proposalStatus('status').notNull().default('borrador'),
+    currentVersion: integer('current_version').notNull().default(1),
+    /** Motivo del rechazo o referencia de la firma de aceptación. */
+    decisionNote: text('decision_note'),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('proposals_organization_idx').on(t.organizationId), index('proposals_lead_idx').on(t.leadId)],
+);
+
+/** Versión de una propuesta: cada cambio de texto o precio crea una versión nueva. Una versión enviada no se edita. */
+export const proposalVersions = pgTable(
+  'proposal_versions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    proposalId: uuid('proposal_id')
+      .notNull()
+      .references(() => proposals.id),
+    version: integer('version').notNull(),
+    summary: text('summary').notNull(),
+    priceStatus: proposalPriceStatus('price_status').notNull().default('por_confirmar'),
+    priceCents: integer('price_cents'),
+    priceNote: text('price_note'),
+    createdBy: text('created_by').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex('proposal_versions_unique_idx').on(t.proposalId, t.version)],
 );

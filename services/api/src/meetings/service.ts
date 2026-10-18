@@ -4,11 +4,11 @@
  * Una reunión puede ser con un cliente (organización) o con un lead todavía sin convertir.
  * El owner también puede crear, editar y eliminar reuniones a mano, por si n8n o Calendar fallan.
  */
-import { and, desc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, like } from 'drizzle-orm';
 import { audit } from '../audit.js';
 import type { CalendarGateway } from '../calendar/n8n.js';
 import type { Db } from '../db/client.js';
-import { contacts, leads, meetings, organizations, projects, suppressions } from '../db/schema.js';
+import { auditLog, contacts, leads, meetings, organizations, projects, suppressions } from '../db/schema.js';
 import { ServiceError } from '../errors.js';
 import { recordDecision } from '../decisions/service.js';
 import { syncMeetingToCalendar, type CalendarSync } from './calendar-sync.js';
@@ -215,21 +215,64 @@ export async function rescheduleMeeting(db: Db, calendar: CalendarGateway | unde
   return { meeting: await findMeeting(db, id), calendar: sync };
 }
 
-/** A-05: el owner publica el acta. Queda visible para el cliente. */
-export async function publishMinutes(db: Db, id: string, text: string, actor: string): Promise<Meeting> {
+/** A-05: el owner crea el acta de una reunión que ya empezó. Queda visible para el cliente. */
+export async function createMinutes(db: Db, id: string, text: string, actor: string): Promise<Meeting> {
   const current = await findMeeting(db, id);
-  requireStatus(current, ['confirmada', 'realizada'], 'Solo se publica el acta de una reunión confirmada.');
-  // El acta describe lo que pasó: no se publica antes de la hora de la reunión.
+  requireStatus(current, ['confirmada', 'realizada'], 'Solo se crea el acta de una reunión confirmada.');
+  // El acta describe lo que pasó: no se crea antes de la hora de la reunión.
   if (!current.startsAt || current.startsAt.getTime() > Date.now()) {
-    throw new ServiceError(409, 'invalid_state', 'La reunión todavía no ha empezado: el acta se publica después de la hora de la reunión.');
+    throw new ServiceError(409, 'invalid_state', 'La reunión todavía no ha empezado: el acta se crea después de la hora de la reunión.');
+  }
+  if (current.minutesPublishedAt) {
+    throw new ServiceError(409, 'invalid_state', 'Esta reunión ya tiene acta. Edítala desde su apartado.');
   }
   const [updated] = await db
     .update(meetings)
     .set({ status: 'realizada', minutesText: text, minutesPublishedAt: new Date() })
     .where(eq(meetings.id, id))
     .returning();
-  await audit(db, { actor, action: 'minutes.published', subjectType: 'meeting', subjectId: id, detail: {} });
+  await audit(db, { actor, action: 'minutes.created', subjectType: 'meeting', subjectId: id, detail: { text } });
   return updated!;
+}
+
+/** Edita el acta existente. La bitácora guarda el texto anterior y el nuevo. */
+export async function updateMinutes(db: Db, id: string, text: string, actor: string): Promise<Meeting> {
+  const current = await findMeeting(db, id);
+  if (!current.minutesPublishedAt) throw new ServiceError(409, 'invalid_state', 'Esta reunión no tiene acta que editar.');
+  const [updated] = await db.update(meetings).set({ minutesText: text }).where(eq(meetings.id, id)).returning();
+  await audit(db, { actor, action: 'minutes.edited', subjectType: 'meeting', subjectId: id, detail: { previousText: current.minutesText, text } });
+  return updated!;
+}
+
+/**
+ * Elimina el acta: deja de verla el cliente y la reunión queda sin acta. No se borra de la bitácora:
+ * el texto eliminado queda guardado en el registro de la acción.
+ */
+export async function deleteMinutes(db: Db, id: string, actor: string): Promise<void> {
+  const current = await findMeeting(db, id);
+  if (!current.minutesPublishedAt) throw new ServiceError(409, 'invalid_state', 'Esta reunión no tiene acta que eliminar.');
+  await db.update(meetings).set({ minutesText: null, minutesPublishedAt: null }).where(eq(meetings.id, id));
+  await audit(db, { actor, action: 'minutes.deleted', subjectType: 'meeting', subjectId: id, detail: { previousText: current.minutesText } });
+}
+
+/** Historial del acta de una reunión, del más reciente al más antiguo, leído de la bitácora. */
+export async function minutesHistory(db: Db, id: string) {
+  const rows = await db
+    .select()
+    .from(auditLog)
+    .where(and(eq(auditLog.subjectType, 'meeting'), eq(auditLog.subjectId, id), like(auditLog.action, 'minutes.%')))
+    .orderBy(desc(auditLog.at));
+  return rows.map((row) => {
+    const detail = row.detail as Record<string, unknown>;
+    return {
+      id: row.id,
+      action: row.action,
+      at: row.at.toISOString(),
+      actor: row.actor,
+      text: typeof detail.text === 'string' ? detail.text : null,
+      previousText: typeof detail.previousText === 'string' ? detail.previousText : null,
+    };
+  });
 }
 
 /** Clientes para elegir al crear una reunión a mano. */
@@ -391,6 +434,7 @@ export function ownerMeetingView(meeting: Meeting, counterpart: string | null) {
     calendarLink: meeting.calendarLink,
     meetLink: meeting.meetLink,
     minutesPublished: meeting.minutesPublishedAt !== null,
+    minutesText: meeting.minutesPublishedAt ? meeting.minutesText : null,
     requestedAt: meeting.createdAt.toISOString(),
   };
 }

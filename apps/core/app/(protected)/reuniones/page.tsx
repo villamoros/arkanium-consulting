@@ -4,8 +4,9 @@ import { ApiError, apiFetch } from "@/lib/api";
 import { CALENDAR_STATUS_LABEL, MEETING_STATUS_LABEL, formatDate } from "@/lib/labels";
 import { StatePanel } from "@/components/state-panel";
 import { ConfirmMeetingForm } from "@/components/meetings/confirm-meeting-form";
-import { CancelMeetingForm, MinutesForm, ProposeMeetingForm, RejectMeetingForm, RescheduleMeetingForm, RetryCalendarButton } from "@/components/meetings/meeting-forms";
+import { CancelMeetingForm, ProposeMeetingForm, RejectMeetingForm, RescheduleMeetingForm, RetryCalendarButton } from "@/components/meetings/meeting-forms";
 import { DeleteMeetingForm, EditMeetingForm, ManualMeetingForm } from "@/components/meetings/manual-forms";
+import { MinutesPanel, type MinutesHistoryEntry } from "@/components/meetings/minutes-panel";
 
 // instant = false: la página lee la API con la sesión del visitante; la guía de Next lo recomienda para rutas así.
 export const instant = false;
@@ -28,6 +29,7 @@ type OwnerMeeting = {
   calendarLink: string | null;
   meetLink: string | null;
   minutesPublished: boolean;
+  minutesText: string | null;
 };
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
@@ -98,6 +100,20 @@ export default async function MeetingsPage() {
   const closed = meetings.filter((m) => m.status === "rechazada" || m.status === "cancelada");
   const thisWeek = upcoming.filter((m) => timeOf(m) - now <= WEEK_MS).length;
   const withoutMinutes = past.filter((m) => !m.minutesPublished).length;
+
+  // Bitácora de cada reunión pasada. Si una no carga, su panel avisa y las demás siguen.
+  const histories = new Map<string, MinutesHistoryEntry[] | null>(
+    await Promise.all(
+      past.map(async (meeting): Promise<[string, MinutesHistoryEntry[] | null]> => {
+        try {
+          const data = await apiFetch<{ history: MinutesHistoryEntry[] }>(`/meetings/${meeting.id}/minutes/history`);
+          return [meeting.id, data.history];
+        } catch {
+          return [meeting.id, null];
+        }
+      }),
+    ),
+  );
 
   return (
     <>
@@ -228,7 +244,12 @@ export default async function MeetingsPage() {
               <p className="sub" style={{ margin: 0 }}>
                 {meeting.startsAt ? formatDate(meeting.startsAt) : "Sin fecha"} · Acta: {meeting.minutesPublished ? "publicada" : "pendiente"}
               </p>
-              <MinutesForm meetingId={meeting.id} published={meeting.minutesPublished} />
+              <MinutesPanel
+                meetingId={meeting.id}
+                minutesText={meeting.minutesText}
+                published={meeting.minutesPublished}
+                history={histories.get(meeting.id) ?? null}
+              />
               <EditMeetingForm meetingId={meeting.id} topic={meeting.topic} attendees={meeting.attendees} />
               <DeleteMeetingForm meetingId={meeting.id} />
             </article>

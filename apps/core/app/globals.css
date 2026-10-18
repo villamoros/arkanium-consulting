@@ -175,3 +175,18 @@ tbody tr:hover, tbody tr[aria-selected="true"] { background: var(--graphite); }
 .head { display: flex; justify-content: space-between; gap: 8px; align-items: start; }
 .head h2 { margin: 0; }
 @media (max-width: 760px) { .phases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Modal (bitácora de actas) */
+.dialog-back { position: fixed; inset: 0; background: rgba(5, 9, 16, 0.72); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 60; }
+.dialog-back.open { display: flex; }
+.dialog { background: var(--graphite); border: 1px solid var(--line); border-radius: var(--radius); width: min(680px, 100%); max-height: 88vh; overflow: auto; padding: 20px; }
+
+/* Línea de tiempo (bitácora) */
+.timeline { list-style: none; margin: 8px 0 0; padding: 0 0 0 22px; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--line-strong); }
+.timeline li { position: relative; padding: 0 0 12px; }
+.timeline li::before { content: ""; position: absolute; left: -20px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 3px var(--graphite); }
+.timeline li.tl-edit::before { background: var(--warn); }
+.timeline li.tl-delete::before { background: var(--bad); }
+.timeline .tl-item { all: unset; box-sizing: border-box; display: block; width: 100%; cursor: pointer; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.timeline .tl-item:hover, .timeline .tl-item:focus-visible { border-color: var(--line-strong); }

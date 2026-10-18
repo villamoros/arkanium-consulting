@@ -2,7 +2,7 @@
 export class ServiceError extends Error {
   constructor(
     public readonly status: number,
-    public readonly code: 'not_found' | 'forbidden' | 'suspended' | 'invalid_state' | 'conflict' | 'billing_unavailable' | 'invalid' | 'suppressed' | 'calendar_unavailable',
+    public readonly code: 'not_found' | 'forbidden' | 'suspended' | 'invalid_state' | 'conflict' | 'billing_unavailable' | 'invalid' | 'suppressed' | 'calendar_unavailable' | 'missing_billing_email',
     message: string,
   ) {
     super(message);

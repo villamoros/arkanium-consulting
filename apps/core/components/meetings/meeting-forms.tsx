@@ -4,7 +4,6 @@ import { useActionState, useState, type ReactNode } from "react";
 import {
   cancelMeetingAction,
   proposeMeetingAction,
-  publishMinutesAction,
   rejectMeetingAction,
   rescheduleMeetingAction,
   retryCalendarAction,
@@ -138,30 +137,6 @@ export function CancelMeetingForm({ meetingId }: { meetingId: string }) {
           <div className="actions">
             <button type="submit" className="danger" disabled={pending}>
               Cancelar reunión
-            </button>
-          </div>
-          <Notice state={state} />
-        </form>
-      )}
-    </Disclosure>
-  );
-}
-
-// Acta: el cliente la ve cuando la publicas.
-export function MinutesForm({ meetingId, published }: { meetingId: string; published: boolean }) {
-  const [state, action, pending] = useActionState<MeetingActionState, FormData>(publishMinutesAction, null);
-  return (
-    <Disclosure label={published ? "Editar y volver a publicar acta" : "Publicar acta"}>
-      {() => (
-        <form action={action} className="decision">
-          <input type="hidden" name="meetingId" value={meetingId} />
-          <label className="field">
-            Acta de la reunión
-            <textarea name="text" required maxLength={20000} disabled={pending} style={{ minHeight: 140 }} placeholder="Acuerdos, decisiones y próximos pasos" />
-          </label>
-          <div className="actions">
-            <button type="submit" className="primary" disabled={pending}>
-              {pending ? "Publicando…" : "Publicar acta"}
             </button>
           </div>
           <Notice state={state} />

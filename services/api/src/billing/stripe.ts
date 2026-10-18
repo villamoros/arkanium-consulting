@@ -1,16 +1,25 @@
 /**
  * Facturación con Stripe por la API REST, sin SDK. Modo de prueba mientras no esté constituida la LLC:
  * se usan claves sk_test_… y después se cambian por las de la LLC, sin tocar el código.
- * Ninguna factura se envía por correo desde aquí: el cliente la ve en la app y paga en la página de Stripe.
+ * Stripe envía la factura por correo al cliente al emitirla (correo de facturación de la organización);
+ * el cliente también la ve en la app y paga en la página segura de Stripe.
  */
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
+export interface BillingLine {
+  description: string;
+  quantity: number;
+  unitAmountCents: number;
+}
+
 export interface BillingGateway {
   createCustomer(input: { name: string; email: string | null; metadata: Record<string, string> }): Promise<{ id: string }>;
-  /** Crea la factura con un solo concepto y la finaliza. Devuelve la página de pago. */
+  /** Actualiza el correo del cliente de Stripe (la factura se envía a ese correo). */
+  updateCustomerEmail(customerId: string, email: string | null): Promise<void>;
+  /** Crea la factura con sus líneas y la finaliza. Devuelve la página de pago. */
   createInvoice(input: {
     customerId: string;
-    amountCents: number;
+    lines: BillingLine[];
     currency: string;
     description: string;
     daysUntilDue: number;
@@ -18,6 +27,13 @@ export interface BillingGateway {
   }): Promise<{ id: string; hostedUrl: string }>;
   /** Anula una factura ya emitida. Stripe la deja visible como anulada. */
   voidInvoice(stripeInvoiceId: string): Promise<void>;
+  /** Reenvía la factura por correo al cliente. */
+  sendInvoice(stripeInvoiceId: string): Promise<void>;
+  /**
+   * Nota de crédito sobre una factura. Con `refund`, el monto vuelve al medio de pago del cliente
+   * (necesario en facturas ya pagadas).
+   */
+  createCreditNote(input: { stripeInvoiceId: string; amountCents: number; description: string; refund: boolean }): Promise<{ id: string }>;
 }
 
 export class BillingError extends Error {}
@@ -32,7 +48,11 @@ export function createStripeBilling(options: { secretKey: string; fetchImpl?: ty
       headers: { authorization: `Bearer ${options.secretKey}`, 'content-type': 'application/x-www-form-urlencoded' },
       body: form,
     });
-    if (!response.ok) throw new BillingError(`Stripe respondió ${response.status} en ${path}`);
+    if (!response.ok) {
+      // El mensaje de Stripe dice qué parámetro falló; queda en la bitácora de la factura.
+      const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
+      throw new BillingError(`Stripe respondió ${response.status} en ${path}: ${body?.error?.message ?? 'sin detalle'}`);
+    }
     return (await response.json()) as T;
   }
 
@@ -48,29 +68,59 @@ export function createStripeBilling(options: { secretKey: string; fetchImpl?: ty
       return call<{ id: string }>('POST', '/customers', form);
     },
 
-    async createInvoice({ customerId, amountCents, currency, description, daysUntilDue, metadata }) {
-      // El concepto va como ítem pendiente del cliente; la factura lo toma al crearse.
-      await call('POST', '/invoiceitems', new URLSearchParams({
-        customer: customerId,
-        amount: String(amountCents),
-        currency,
-        description,
-      }));
+    async updateCustomerEmail(customerId, email) {
+      // Stripe no acepta un correo vacío para borrarlo con la misma llamada: se envía cadena vacía.
+      await call('POST', `/customers/${customerId}`, new URLSearchParams({ email: email ?? '' }));
+    },
 
+    async createInvoice({ customerId, lines, currency, description, daysUntilDue, metadata }) {
+      // Primero la factura en borrador, luego sus líneas dentro de ella: así ningún ítem queda suelto
+      // en el cliente si algo falla antes de finalizarla.
       const form = new URLSearchParams({
         customer: customerId,
         collection_method: 'send_invoice',
         days_until_due: String(daysUntilDue),
         currency,
+        description,
       });
       withMetadata(form, metadata);
-      const invoice = await call<{ id: string }>('POST', '/invoices', form);
-      const finalized = await call<{ id: string; hosted_invoice_url: string }>('POST', `/invoices/${invoice.id}/finalize`, new URLSearchParams());
+      const draft = await call<{ id: string }>('POST', '/invoices', form);
+
+      for (const line of lines) {
+        await call('POST', '/invoiceitems', new URLSearchParams({
+          customer: customerId,
+          invoice: draft.id,
+          currency,
+          description: line.description,
+          quantity: String(line.quantity),
+          // Stripe espera el precio unitario en centavos como decimal (unit_amount no existe en este endpoint).
+          unit_amount_decimal: String(line.unitAmountCents),
+        }));
+      }
+
+      const finalized = await call<{ id: string; hosted_invoice_url: string }>('POST', `/invoices/${draft.id}/finalize`, new URLSearchParams());
       return { id: finalized.id, hostedUrl: finalized.hosted_invoice_url };
     },
 
     async voidInvoice(stripeInvoiceId) {
       await call('POST', `/invoices/${stripeInvoiceId}/void`, new URLSearchParams());
+    },
+
+    async sendInvoice(stripeInvoiceId) {
+      await call('POST', `/invoices/${stripeInvoiceId}/send`, new URLSearchParams());
+    },
+
+    async createCreditNote({ stripeInvoiceId, amountCents, description, refund }) {
+      const form = new URLSearchParams({
+        invoice: stripeInvoiceId,
+        'lines[0][type]': 'custom_line_item',
+        'lines[0][description]': description,
+        'lines[0][quantity]': '1',
+        'lines[0][unit_amount]': String(amountCents),
+      });
+      if (refund) form.set('refund_amount', String(amountCents));
+      const note = await call<{ id: string }>('POST', '/credit_notes', form);
+      return { id: note.id };
     },
   };
 }

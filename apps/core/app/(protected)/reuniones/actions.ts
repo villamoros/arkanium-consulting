@@ -126,19 +126,47 @@ export async function rescheduleMeetingAction(_previous: MeetingActionState, for
   }
 }
 
-// A-05: publica el acta. Queda visible para el cliente.
-export async function publishMinutesAction(_previous: MeetingActionState, formData: FormData): Promise<MeetingActionState> {
+// A-05: crea el acta de una reunión que ya empezó. Queda visible para el cliente.
+export async function createMinutesAction(_previous: MeetingActionState, formData: FormData): Promise<MeetingActionState> {
   const meetingId = meetingIdOf(formData);
   if (!meetingId) return { ok: false, message: "Reunión no válida." };
   const text = String(formData.get("text") ?? "").trim();
-  if (!text) return { ok: false, message: "Escribe el acta antes de publicarla." };
+  if (!text) return { ok: false, message: "Escribe el acta antes de guardarla." };
   try {
     await apiFetch(`/meetings/${meetingId}/minutes`, { method: "POST", body: { text } });
   } catch (error) {
     return { ok: false, message: messageOf(error) };
   }
   revalidatePath("/reuniones");
-  return { ok: true, message: "Acta publicada. El cliente ya puede verla." };
+  return { ok: true, message: "Acta creada. El cliente ya puede verla." };
+}
+
+// Edita el acta. El texto anterior queda en la bitácora.
+export async function updateMinutesAction(_previous: MeetingActionState, formData: FormData): Promise<MeetingActionState> {
+  const meetingId = meetingIdOf(formData);
+  if (!meetingId) return { ok: false, message: "Reunión no válida." };
+  const text = String(formData.get("text") ?? "").trim();
+  if (!text) return { ok: false, message: "El acta no puede quedar vacía. Para quitarla, usa Eliminar acta." };
+  try {
+    await apiFetch(`/meetings/${meetingId}/minutes`, { method: "PUT", body: { text } });
+  } catch (error) {
+    return { ok: false, message: messageOf(error) };
+  }
+  revalidatePath("/reuniones");
+  return { ok: true, message: "Acta actualizada. Queda registrado en la bitácora." };
+}
+
+// Elimina el acta: el cliente deja de verla. El texto queda en la bitácora.
+export async function deleteMinutesAction(_previous: MeetingActionState, formData: FormData): Promise<MeetingActionState> {
+  const meetingId = meetingIdOf(formData);
+  if (!meetingId) return { ok: false, message: "Reunión no válida." };
+  try {
+    await apiFetch(`/meetings/${meetingId}/minutes`, { method: "DELETE" });
+  } catch (error) {
+    return { ok: false, message: messageOf(error) };
+  }
+  revalidatePath("/reuniones");
+  return { ok: true, message: "Acta eliminada. Queda registrado en la bitácora." };
 }
 
 // Reintenta crear el evento de una reunión confirmada cuya sincronización quedó pendiente.

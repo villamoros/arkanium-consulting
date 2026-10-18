@@ -164,7 +164,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
 
         <aside className="panel detail" aria-live="polite" aria-label="Detalle de la organización">
           {selectedRow && detail ? (
-            <ClientDetail detail={detail} projects={selectedProjects} />
+            <ClientDetail key={selectedRow.id} detail={detail} projects={selectedProjects} />
           ) : (
             <p className="muted" style={{ margin: 0 }}>
               {selectedRow ? "No pudimos cargar este cliente." : "Selecciona una organización para ver su detalle."}

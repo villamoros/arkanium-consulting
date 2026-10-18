@@ -128,14 +128,37 @@ export const minutesPublishSchema = z.object({
 });
 export type MinutesPublish = z.infer<typeof minutesPublishSchema>;
 
-/** F-10: borrador de factura, emitido después desde core. Montos en centavos de USD. */
+/** Una línea de factura: cantidad × precio unitario, en centavos de USD. */
+export const invoiceLineSchema = z.object({
+  description: z.string().trim().min(1).max(140),
+  quantity: z.number().int().min(1).max(10_000),
+  unitAmountCents: z.number().int().positive().max(100_000_000),
+});
+export type InvoiceLine = z.infer<typeof invoiceLineSchema>;
+
+/** F-10: borrador de factura, emitido después desde core. El total se calcula con las líneas. */
 export const invoiceDraftSchema = z.object({
   projectId: z.uuid().optional(),
   concept: z.string().trim().min(1).max(140),
-  amountCents: z.number().int().positive().max(100_000_000),
+  lines: z.array(invoiceLineSchema).min(1).max(20),
   dueDays: z.number().int().min(1).max(90).default(30),
+  /** Correo al que Stripe envía la factura. Vacío usa el correo de facturación de la organización. */
+  recipientEmail: z.email().max(254).optional(),
 });
 export type InvoiceDraft = z.infer<typeof invoiceDraftSchema>;
+
+/** Correo donde Stripe envía la factura. Vacío lo borra. */
+export const billingEmailSchema = z.object({
+  billingEmail: z.union([z.email().max(254), z.literal('')]).transform((value) => (value === '' ? null : value.toLowerCase())),
+});
+export type BillingEmail = z.infer<typeof billingEmailSchema>;
+
+/** Nota de crédito sobre una factura pagada: devuelve el monto al cliente desde Stripe. */
+export const creditNoteSchema = z.object({
+  amountCents: z.number().int().positive().max(100_000_000),
+  reason: z.string().trim().min(1).max(140),
+});
+export type CreditNote = z.infer<typeof creditNoteSchema>;
 
 /** Cambio de rol de un miembro. Solo administradores de la organización o el owner. */
 export const memberRoleSchema = z.object({
@@ -206,3 +229,44 @@ export const projectArchiveSchema = z.object({
   reason: z.string().trim().min(1).max(1000),
 });
 export type ProjectArchive = z.infer<typeof projectArchiveSchema>;
+
+/** Propuestas (Core): texto y precio por versión. El precio confirmado exige monto o una nota (p. ej. «Acordado en SOW»). */
+export const proposalPriceStatusValues = ['por_confirmar', 'confirmado'] as const;
+export const proposalStatusValues = ['borrador', 'en_aprobacion', 'enviada', 'aceptada', 'rechazada'] as const;
+
+const priceRule = (value: { priceStatus: 'por_confirmar' | 'confirmado'; priceCents?: number; priceNote?: string }) =>
+  value.priceStatus !== 'confirmado' || value.priceCents !== undefined || Boolean(value.priceNote);
+
+const proposalVersionShape = {
+  summary: z.string().trim().min(1).max(4000),
+  priceStatus: z.enum(proposalPriceStatusValues),
+  priceCents: z.number().int().min(0).max(1_000_000_000).optional(),
+  priceNote: z.string().trim().max(200).optional(),
+};
+
+export const proposalVersionSchema = z
+  .object(proposalVersionShape)
+  .refine(priceRule, { message: 'Un precio confirmado necesita un monto o una nota de precio.', path: ['priceStatus'] });
+export type ProposalVersion = z.infer<typeof proposalVersionSchema>;
+
+export const proposalCreateSchema = z
+  .object({
+    kind: z.enum(['cliente', 'lead']),
+    organizationId: z.uuid().optional(),
+    leadId: z.uuid().optional(),
+    title: z.string().trim().min(1).max(160),
+    serviceFamily: z.enum(serviceFamilyValues).default('unknown'),
+    templateCode: z.string().trim().min(1).max(20),
+    ...proposalVersionShape,
+  })
+  .refine((value) => (value.kind === 'cliente' ? Boolean(value.organizationId) : Boolean(value.leadId)), {
+    message: 'Indica el cliente o el lead de la propuesta.',
+  })
+  .refine(priceRule, { message: 'Un precio confirmado necesita un monto o una nota de precio.', path: ['priceStatus'] });
+export type ProposalCreate = z.infer<typeof proposalCreateSchema>;
+
+/** Decisión sobre una propuesta enviada: motivo del rechazo o referencia de la firma de aceptación. */
+export const proposalDecisionSchema = z.object({
+  note: z.string().trim().min(1).max(1000),
+});
+export type ProposalDecision = z.infer<typeof proposalDecisionSchema>;

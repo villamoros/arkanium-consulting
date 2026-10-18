@@ -25,7 +25,7 @@ function describeFailure(status: number, code: string, detail?: string): string 
  * Llama a la API de Arkanium con la sesión de Clerk de quien está usando core.
  * Solo se ejecuta en el servidor: el token nunca llega al navegador.
  */
-export async function apiFetch<T>(path: string, options: { method?: "GET" | "POST" | "PATCH" | "DELETE"; body?: unknown } = {}): Promise<T> {
+export async function apiFetch<T>(path: string, options: { method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"; body?: unknown } = {}): Promise<T> {
   const base = process.env.API_URL;
   if (!base) throw new ApiError(503, "api_not_configured", "Falta API_URL en apps/core/.env.local.");
 

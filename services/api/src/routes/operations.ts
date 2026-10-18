@@ -20,6 +20,8 @@ import {
   deliverableApprovalSchema,
   deliverableContentSchema,
   deliverableCreateSchema,
+  billingEmailSchema,
+  creditNoteSchema,
   invoiceDraftSchema,
   meetingConfirmSchema,
   meetingRequestSchema,
@@ -30,14 +32,31 @@ import {
   organizationSuspendSchema,
   projectArchiveSchema,
   projectCreateSchema,
+  proposalCreateSchema,
+  proposalDecisionSchema,
+  proposalVersionSchema,
   projectUpdateSchema,
 } from '@arkanium/contracts';
 import { loadCaller, requireClientAccess, requireOwnerCaller, findOrganization, sendServiceError, type Caller } from '../access.js';
 import type { IdentityGateway } from '../auth/clerk.js';
 import type { BillingGateway } from '../billing/stripe.js';
-import { createDraft, clientInvoiceView, findInvoice, issueInvoice, listInvoices, voidInvoice } from '../billing/service.js';
+import {
+  createCreditNote,
+  createDraft,
+  clientInvoiceView,
+  discardDraft,
+  findInvoice,
+  issueInvoice,
+  listAllInvoices,
+  listInvoices,
+  sendReminder,
+  updateBillingEmail,
+  updateDraft,
+  voidInvoice,
+} from '../billing/service.js';
 import type { CalendarGateway } from '../calendar/n8n.js';
 import { clientSummary, suspensionReason } from '../organizations/summary.js';
+import { acceptProposal, addVersion, createProposal, listProposals, markSent, proposalDetail, rejectProposal, sendToApproval } from '../proposals/service.js';
 import type { Db } from '../db/client.js';
 import { deliverables } from '../db/schema.js';
 import { listDecisions } from '../decisions/service.js';
@@ -67,9 +86,12 @@ import {
   markReminded,
   ownerMeetingView,
   proposeMeetingTime,
-  publishMinutes,
+  createMinutes,
+  deleteMinutes,
+  minutesHistory,
   rejectMeeting,
   requestMeeting,
+  updateMinutes,
   rescheduleMeeting,
   retryCalendar,
   createManualMeeting,
@@ -80,6 +102,7 @@ import {
 import { addSuppression, listSuppressions } from '../suppressions/service.js';
 import { duplicatesOf, leadHistory, LeadError, respondToProposal } from '../leads/service.js';
 import { addMilestone, archiveProject, createProject, findProject, listAllProjects, listMilestones, listProjects, updateMilestone, updateProject } from '../projects/service.js';
+import { approvalQueue } from '../approvals/queue.js';
 
 export interface OperationDeps {
   db: Db;
@@ -590,6 +613,113 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     }),
   );
 
+  // ───────────── Aprobaciones (Core): lo que espera tu decisión, leído de los estados de cada módulo ─────────────
+
+  app.get(
+    '/approvals',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { approvals: await approvalQueue(db) };
+    }),
+  );
+
+  // Core: todas las facturas (cobrado, por cobrar y borradores).
+  app.get(
+    '/invoices',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { invoices: await listAllInvoices(db) };
+    }),
+  );
+
+  // ───────────── Propuestas (Core): versiones, aprobación, envío y decisión del cliente ─────────────
+
+  // Core: todas las propuestas con su versión vigente.
+  app.get(
+    '/proposals',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { proposals: await listProposals(db) };
+    }),
+  );
+
+  // Core: crear una propuesta (borrador, versión 1) para un cliente o un lead calificado.
+  app.post(
+    '/proposals',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalCreateSchema, request, reply);
+      if (!body) return;
+      const { proposal, version } = await createProposal(db, body, caller.userId);
+      return reply.code(201).send({ id: proposal.id, status: proposal.status, currentVersion: version.version });
+    }),
+  );
+
+  // Core: detalle de una propuesta con su historial de versiones.
+  app.get<{ Params: { id: string } }>(
+    '/proposals/:id',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return proposalDetail(db, request.params.id);
+    }),
+  );
+
+  // Core: nueva versión (solo en borrador).
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/versions',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalVersionSchema, request, reply);
+      if (!body) return;
+      const { proposal } = await addVersion(db, request.params.id, body, caller.userId);
+      return { id: proposal.id, status: proposal.status, currentVersion: proposal.currentVersion };
+    }),
+  );
+
+  // Core: enviar a aprobación (requiere precio confirmado).
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/approval',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const proposal = await sendToApproval(db, request.params.id, caller.userId);
+      return { id: proposal.id, status: proposal.status };
+    }),
+  );
+
+  // Core: el owner aprueba el envío y lo registra como enviado (no envía correos).
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/sent',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const proposal = await markSent(db, request.params.id, caller.userId);
+      return { id: proposal.id, status: proposal.status };
+    }),
+  );
+
+  // Core: registrar la aceptación con la referencia de la firma adjunta.
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/accept',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalDecisionSchema, request, reply);
+      if (!body) return;
+      const proposal = await acceptProposal(db, request.params.id, body, caller.userId);
+      return { id: proposal.id, status: proposal.status };
+    }),
+  );
+
+  // Core: registrar el rechazo con su motivo.
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/reject',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalDecisionSchema, request, reply);
+      if (!body) return;
+      const proposal = await rejectProposal(db, request.params.id, body, caller.userId);
+      return { id: proposal.id, status: proposal.status };
+    }),
+  );
+
   // ───────────── Leads: reuniones, historial, duplicados y propuesta del agente (F-02, F-03) ─────────────
 
   app.post<{ Params: { id: string } }>(
@@ -668,13 +798,44 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     }
   });
 
+  // Core: crear el acta de una reunión que ya empezó. Queda visible para el cliente.
   app.post<{ Params: { id: string } }>(
     '/meetings/:id/minutes',
     guarded(deps, async (caller, request, reply) => {
       requireOwnerCaller(caller, internalOrgId);
       const body = parseBody(minutesPublishSchema, request, reply);
       if (!body) return;
-      return clientMeetingView(await publishMinutes(db, request.params.id, body.text, caller.userId));
+      return clientMeetingView(await createMinutes(db, request.params.id, body.text, caller.userId));
+    }),
+  );
+
+  // Core: editar el acta existente. Lo anterior queda en la bitácora.
+  app.put<{ Params: { id: string } }>(
+    '/meetings/:id/minutes',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(minutesPublishSchema, request, reply);
+      if (!body) return;
+      return clientMeetingView(await updateMinutes(db, request.params.id, body.text, caller.userId));
+    }),
+  );
+
+  // Core: eliminar el acta. Deja de verla el cliente; el texto queda en la bitácora.
+  app.delete<{ Params: { id: string } }>(
+    '/meetings/:id/minutes',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await deleteMinutes(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  // Core: historial del acta (creación, ediciones y eliminación).
+  app.get<{ Params: { id: string } }>(
+    '/meetings/:id/minutes/history',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { history: await minutesHistory(db, request.params.id) };
     }),
   );
 
@@ -707,6 +868,62 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
       requireOwnerCaller(caller, internalOrgId);
       if (!billing) throw new ServiceError(503, 'billing_unavailable', 'La facturación no está configurada.');
       return clientInvoiceView(await voidInvoice(db, billing, request.params.id, caller.userId), false);
+    }),
+  );
+
+  // Core: corregir un borrador (concepto, proyecto, plazo y líneas). Una factura emitida no se edita.
+  app.put<{ Params: { id: string } }>(
+    '/invoices/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(invoiceDraftSchema, request, reply);
+      if (!body) return;
+      return clientInvoiceView(await updateDraft(db, request.params.id, body, caller.userId), false);
+    }),
+  );
+
+  // Core: descartar un borrador (borrado lógico). No llega a Stripe porque nunca se emitió.
+  app.delete<{ Params: { id: string } }>(
+    '/invoices/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await discardDraft(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  // Core: reenviar una factura emitida y sin pagar (recordatorio).
+  app.post<{ Params: { id: string } }>(
+    '/invoices/:id/reminder',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      if (!billing) throw new ServiceError(503, 'billing_unavailable', 'La facturación no está configurada.');
+      return clientInvoiceView(await sendReminder(db, billing, request.params.id, caller.userId), false);
+    }),
+  );
+
+  // Core: nota de crédito sobre una factura pagada; el monto vuelve al cliente desde Stripe.
+  app.post<{ Params: { id: string } }>(
+    '/invoices/:id/credit-notes',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      if (!billing) throw new ServiceError(503, 'billing_unavailable', 'La facturación no está configurada.');
+      const body = parseBody(creditNoteSchema, request, reply);
+      if (!body) return;
+      const note = await createCreditNote(db, billing, request.params.id, body, caller.userId);
+      return reply.code(201).send({ id: note.id, amountCents: note.amountCents, reason: note.reason });
+    }),
+  );
+
+  // Core: correo de facturación del cliente. Es el destino de cada factura que Stripe envía.
+  app.patch<{ Params: { id: string } }>(
+    '/organizations/:id/billing-email',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(billingEmailSchema, request, reply);
+      if (!body) return;
+      const organization = await updateBillingEmail(db, billing, request.params.id, body.billingEmail, caller.userId);
+      return { billingEmail: organization.billingEmail };
     }),
   );
 
