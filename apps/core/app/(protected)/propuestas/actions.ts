@@ -1,17 +1,13 @@
 "use server";
 
+import { messageOf, isUuid } from "@/lib/action-helpers";
+
 import { revalidatePath } from "next/cache";
-import { ApiError, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 export type ProposalActionState = { ok: boolean; message: string } | null;
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const FAMILIES = ["architecture", "strategy", "product", "unknown"];
-
-function messageOf(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  return "No pudimos completar la acción. Intenta de nuevo.";
-}
 
 function text(formData: FormData, key: string): string {
   return String(formData.get(key) ?? "").trim();
@@ -35,7 +31,7 @@ export async function createProposalAction(_previous: ProposalActionState, formD
   const kind = text(formData, "kind");
   const target = text(formData, "target");
   if (kind !== "cliente" && kind !== "lead") return { ok: false, message: "Elige si es para un cliente o un lead." };
-  if (!uuid.test(target)) return { ok: false, message: "Elige a quién va la propuesta." };
+  if (!isUuid(target)) return { ok: false, message: "Elige a quién va la propuesta." };
 
   const title = text(formData, "title");
   const summary = text(formData, "summary");
@@ -67,7 +63,7 @@ export async function createProposalAction(_previous: ProposalActionState, formD
 // Nueva versión: solo en borrador. Cada cambio queda registrado.
 export async function addVersionAction(_previous: ProposalActionState, formData: FormData): Promise<ProposalActionState> {
   const id = text(formData, "proposalId");
-  if (!uuid.test(id)) return { ok: false, message: "Propuesta no válida." };
+  if (!isUuid(id)) return { ok: false, message: "Propuesta no válida." };
   const summary = text(formData, "summary");
   if (!summary) return { ok: false, message: "Escribe el resumen de la propuesta." };
   const price = priceFields(formData);
@@ -84,7 +80,7 @@ export async function addVersionAction(_previous: ProposalActionState, formData:
 
 async function simpleAction(formData: FormData, path: string, successMessage: string): Promise<ProposalActionState> {
   const id = text(formData, "proposalId");
-  if (!uuid.test(id)) return { ok: false, message: "Propuesta no válida." };
+  if (!isUuid(id)) return { ok: false, message: "Propuesta no válida." };
   try {
     await apiFetch(`/proposals/${id}/${path}`, { method: "POST" });
   } catch (error) {
@@ -104,7 +100,7 @@ export async function markSentAction(_previous: ProposalActionState, formData: F
 
 async function decisionAction(formData: FormData, path: string, field: string, successMessage: string): Promise<ProposalActionState> {
   const id = text(formData, "proposalId");
-  if (!uuid.test(id)) return { ok: false, message: "Propuesta no válida." };
+  if (!isUuid(id)) return { ok: false, message: "Propuesta no válida." };
   const note = text(formData, "note");
   if (!note) return { ok: false, message: field === "signature" ? "Escribe la referencia de la firma." : "Escribe el motivo." };
   try {

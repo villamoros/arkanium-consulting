@@ -1,24 +1,20 @@
 "use server";
 
+import { messageOf, isUuid } from "@/lib/action-helpers";
+
 import { revalidatePath } from "next/cache";
-import { ApiError, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { bogotaToIso } from "@/lib/time";
 
 export type MeetingActionState = { ok: boolean; message: string } | null;
 
 type CalendarSync = { status: "sincronizada"; htmlLink: string; meetLink: string | null } | { status: "pendiente"; reason: string } | { status: "no_configurada" };
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function messageOf(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  return "No pudimos completar la acción. Intenta de nuevo.";
-}
 
 function meetingIdOf(formData: FormData): string | null {
   const id = String(formData.get("meetingId") ?? "");
-  return uuid.test(id) ? id : null;
+  return isUuid(id) ? id : null;
 }
 
 /** Textarea con correos separados por comas, espacios o saltos de línea. Devuelve null si alguno no es válido. */

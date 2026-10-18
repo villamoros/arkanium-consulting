@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { connection } from "next/server";
+import { requestNow } from "@/lib/request-time";
 import type { Lead } from "@arkanium/contracts";
 import { ApiError, apiFetch } from "@/lib/api";
 import { leadsBySource, leadsByStatus, leadsPerWeek, meetingsPerWeek, type MeetingPoint } from "@/lib/dashboard";
@@ -32,9 +32,7 @@ export default async function CoreHome() {
     );
   }
 
-  // Depende de cuándo se atiende la petición: connection() lo marca como dinámico.
-  await connection();
-  const now = Date.now();
+  const now = (await requestNow()).getTime();
 
   const newLeads = leads.filter((lead) => lead.status === "nuevo").length;
   const converted = leads.filter((lead) => lead.status === "convertido").length;

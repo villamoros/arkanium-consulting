@@ -1,5 +1,6 @@
 "use client";
 
+import { Notice } from "@/components/ui/notice";
 import { useActionState, useState, type ReactNode } from "react";
 import {
   acceptProposalAction,
@@ -11,15 +12,6 @@ import {
   type ProposalActionState,
 } from "@/app/(protected)/propuestas/actions";
 import { FAMILY_LABEL } from "@/lib/labels";
-
-function Notice({ state }: { state: ProposalActionState }) {
-  if (!state) return null;
-  return (
-    <p role="status" className={state.ok ? "notice-ok" : "notice-bad"}>
-      {state.message}
-    </p>
-  );
-}
 
 function Disclosure({ label, danger, children }: { label: string; danger?: boolean; children: () => ReactNode }) {
   const [open, setOpen] = useState(false);

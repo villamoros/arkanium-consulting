@@ -64,6 +64,34 @@
       "when": 1792293799982,
       "tag": "0008_past_zombie",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792296096629,
+      "tag": "0009_sparkling_santa_claus",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792302042559,
+      "tag": "0010_violet_mister_fear",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792330784910,
+      "tag": "0011_gigantic_moonstone",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792332903338,
+      "tag": "0012_glossy_iron_lad",
+      "breakpoints": true
     }
   ]
 }

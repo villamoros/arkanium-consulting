@@ -1,5 +1,6 @@
 "use client";
 
+import { Notice } from "@/components/ui/notice";
 import { useActionState, useState, type ReactNode } from "react";
 import {
   cancelMeetingAction,
@@ -11,15 +12,6 @@ import {
 } from "@/app/(protected)/reuniones/actions";
 
 const DURATIONS = [30, 60, 90, 120];
-
-function Notice({ state }: { state: MeetingActionState }) {
-  if (!state) return null;
-  return (
-    <p role="status" className={state.ok ? "notice-ok" : "notice-bad"}>
-      {state.message}
-    </p>
-  );
-}
 
 /** Acción que se abre con un botón y se cierra al terminar bien. Evita formularios largos siempre visibles. */
 function Disclosure({ label, children }: { label: string; children: () => ReactNode }) {

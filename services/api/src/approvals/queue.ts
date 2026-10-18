@@ -8,10 +8,11 @@
  */
 import { and, asc, eq, isNull, ne } from 'drizzle-orm';
 import type { Db } from '../db/client.js';
-import { invoices, leads, meetings, organizations, proposals } from '../db/schema.js';
+import { articles, invoices, leads, meetings, organizations, proposals } from '../db/schema.js';
+import { campaignsAwaitingApproval } from '../marketing/briefs.js';
 
-export type ApprovalKind = 'propuesta' | 'reunion' | 'factura';
-export type ApprovalAction = 'enviar_propuesta' | 'agendar_reunion' | 'crear_evento' | 'publicar_acta' | 'emitir_factura';
+export type ApprovalKind = 'propuesta' | 'reunion' | 'factura' | 'articulo' | 'brief' | 'pieza';
+export type ApprovalAction = 'enviar_propuesta' | 'agendar_reunion' | 'crear_evento' | 'publicar_acta' | 'emitir_factura' | 'publicar_articulo' | 'aprobar_brief' | 'aprobar_pieza';
 
 export interface ApprovalItem {
   id: string;
@@ -22,7 +23,7 @@ export interface ApprovalItem {
   title: string;
   targetName: string | null;
   /** Módulo al que pertenece la acción, para saber dónde se resuelve. */
-  module: 'Propuestas' | 'Reuniones' | 'Cobros y facturas';
+  module: 'Propuestas' | 'Reuniones' | 'Cobros y facturas' | 'Insights' | 'Campañas';
   /** Fecha que marca la urgencia (inicio de la reunión), si la hay. */
   dueAt: string | null;
   /** true cuando se puede aprobar desde la cola; si no, se resuelve en su módulo. */
@@ -35,6 +36,9 @@ const ACTION_LABEL: Record<ApprovalAction, string> = {
   crear_evento: 'Crear evento en Calendar',
   publicar_acta: 'Publicar acta',
   emitir_factura: 'Emitir factura',
+  publicar_articulo: 'Publicar artículo',
+  aprobar_brief: 'Aprobar brief de campaña',
+  aprobar_pieza: 'Aprobar pieza publicitaria',
 };
 
 export async function approvalQueue(db: Db, now: Date = new Date()): Promise<ApprovalItem[]> {
@@ -82,6 +86,57 @@ export async function approvalQueue(db: Db, now: Date = new Date()): Promise<App
     } else if ((meeting.status === 'confirmada' || meeting.status === 'realizada') && meeting.startsAt && meeting.startsAt.getTime() <= now.getTime() && !meeting.minutesPublishedAt) {
       items.push({ ...base, id: `reunion:${meeting.id}:acta`, action: 'publicar_acta', actionLabel: ACTION_LABEL.publicar_acta, dueAt: null, approvable: false });
     }
+  }
+
+  // Artículos de Insights listos para publicar: la publicación sale al sitio, así que pasa por tu decisión.
+  const awaitingArticles = await db
+    .select({ id: articles.id, title: articles.title, caseRef: articles.caseRef })
+    .from(articles)
+    .where(and(eq(articles.status, 'en_revision'), isNull(articles.deletedAt)));
+  // Briefs y piezas de campaña en revisión: nada se produce ni se publica sin tu aprobación.
+  const awaitingCampaigns = await campaignsAwaitingApproval(db);
+  for (const brief of awaitingCampaigns.briefs) {
+    items.push({
+      id: `brief:${brief.id}`,
+      kind: 'brief',
+      subjectId: brief.id,
+      action: 'aprobar_brief',
+      actionLabel: ACTION_LABEL.aprobar_brief,
+      title: `Brief · ${brief.name}`,
+      targetName: brief.name,
+      module: 'Campañas',
+      dueAt: null,
+      approvable: true,
+    });
+  }
+  for (const piece of awaitingCampaigns.pieces) {
+    items.push({
+      id: `pieza:${piece.id}`,
+      kind: 'pieza',
+      subjectId: piece.id,
+      action: 'aprobar_pieza',
+      actionLabel: ACTION_LABEL.aprobar_pieza,
+      title: `${piece.network} · ${piece.format}`,
+      targetName: piece.campaignName,
+      module: 'Campañas',
+      dueAt: null,
+      approvable: true,
+    });
+  }
+
+  for (const article of awaitingArticles) {
+    items.push({
+      id: `articulo:${article.id}`,
+      kind: 'articulo',
+      subjectId: article.id,
+      action: 'publicar_articulo',
+      actionLabel: ACTION_LABEL.publicar_articulo,
+      title: article.title,
+      targetName: article.caseRef,
+      module: 'Insights',
+      dueAt: null,
+      approvable: true,
+    });
   }
 
   const drafts = await db

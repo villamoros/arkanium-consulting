@@ -1,5 +1,6 @@
 "use client";
 
+import { Notice } from "@/components/ui/notice";
 import { useActionState, useState, type ReactNode } from "react";
 import {
   inviteMemberAction,
@@ -9,15 +10,6 @@ import {
   suspendClientAction,
   type ClientActionState,
 } from "@/app/(protected)/clientes/actions";
-
-function Notice({ state }: { state: ClientActionState }) {
-  if (!state) return null;
-  return (
-    <p role="status" className={state.ok ? "notice-ok" : "notice-bad"}>
-      {state.message}
-    </p>
-  );
-}
 
 function Disclosure({ label, danger, children }: { label: string; danger?: boolean; children: () => ReactNode }) {
   const [open, setOpen] = useState(false);

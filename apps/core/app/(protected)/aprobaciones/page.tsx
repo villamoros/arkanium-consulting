@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { connection } from "next/server";
+import { requestNow } from "@/lib/request-time";
 import { ApiError, apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/labels";
 import { StatePanel } from "@/components/state-panel";
@@ -12,11 +12,11 @@ type ApprovalItem = {
   id: string;
   kind: "propuesta" | "reunion";
   subjectId: string;
-  action: "enviar_propuesta" | "agendar_reunion" | "crear_evento" | "publicar_acta" | "emitir_factura";
+  action: "enviar_propuesta" | "agendar_reunion" | "crear_evento" | "publicar_acta" | "emitir_factura" | "publicar_articulo" | "aprobar_brief" | "aprobar_pieza";
   actionLabel: string;
   title: string;
   targetName: string | null;
-  module: "Propuestas" | "Reuniones" | "Cobros y facturas";
+  module: "Propuestas" | "Reuniones" | "Cobros y facturas" | "Insights" | "Campañas";
   dueAt: string | null;
   approvable: boolean;
 };
@@ -27,12 +27,17 @@ const ACTION_OPTIONS: Array<{ value: ApprovalItem["action"]; label: string }> = 
   { value: "crear_evento", label: "Crear evento en Calendar" },
   { value: "publicar_acta", label: "Publicar acta" },
   { value: "emitir_factura", label: "Emitir factura" },
+  { value: "publicar_articulo", label: "Publicar artículo" },
+  { value: "aprobar_brief", label: "Aprobar brief de campaña" },
+  { value: "aprobar_pieza", label: "Aprobar pieza publicitaria" },
 ];
 
 /** Dónde se resuelve un elemento que no se aprueba desde la cola. */
 function moduleHref(item: ApprovalItem): string {
   if (item.module === "Propuestas") return `/propuestas?id=${item.subjectId}`;
   if (item.module === "Cobros y facturas") return `/cobros?id=${item.subjectId}`;
+  if (item.module === "Insights") return "/insights";
+  if (item.module === "Campañas") return "/campanas";
   return "/reuniones";
 }
 
@@ -55,9 +60,7 @@ export default async function ApprovalsPage({ searchParams }: { searchParams: Pr
     );
   }
 
-  // Depende de cuándo se atiende la petición: connection() lo marca como dinámico.
-  await connection();
-  const today = bogotaDay.format(new Date());
+  const today = bogotaDay.format(await requestNow());
   const isToday = (item: ApprovalItem) => item.dueAt !== null && bogotaDay.format(new Date(item.dueAt)) === today;
 
   const term = q.trim().toLowerCase();
@@ -192,6 +195,9 @@ export default async function ApprovalsPage({ searchParams }: { searchParams: Pr
                   {selected.action === "agendar_reunion" && "Esta solicitud necesita una fecha: se confirma en Reuniones."}
                   {selected.action === "publicar_acta" && "El acta se publica y el cliente la puede ver. Se escribe en Reuniones."}
                   {selected.action === "emitir_factura" && "La factura se emite en Stripe y queda pagable por el cliente. Es el único paso que la saca de borrador."}
+                  {selected.action === "publicar_articulo" && "El artículo se publica en Insights. Es una salida externa."}
+                  {selected.action === "aprobar_brief" && "El agente puede producir piezas para este brief. Todavía no se publica nada."}
+                  {selected.action === "aprobar_pieza" && "La pieza queda aprobada para publicarse. Publicarla es un paso aparte del agente."}
                 </p>
               </div>
               <div className="section decision">

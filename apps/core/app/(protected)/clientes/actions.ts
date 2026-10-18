@@ -1,22 +1,18 @@
 "use server";
 
+import { messageOf, isUuid } from "@/lib/action-helpers";
+
 import { revalidatePath } from "next/cache";
 import { billingEmailSchema, memberInvitationSchema, memberRoleSchema, organizationSuspendSchema } from "@arkanium/contracts";
-import { ApiError, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 export type ClientActionState = { ok: boolean; message: string } | null;
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const userIdPattern = /^[A-Za-z0-9_]+$/;
-
-function messageOf(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  return "No pudimos completar la acción. Intenta de nuevo.";
-}
 
 function orgIdOf(formData: FormData): string | null {
   const id = String(formData.get("organizationId") ?? "");
-  return uuid.test(id) ? id : null;
+  return isUuid(id) ? id : null;
 }
 
 // Invitar a una persona al cliente: Arkanium envía la invitación, el cliente no invita por su cuenta (D-03).

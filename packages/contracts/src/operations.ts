@@ -147,6 +147,14 @@ export const invoiceDraftSchema = z.object({
 });
 export type InvoiceDraft = z.infer<typeof invoiceDraftSchema>;
 
+/** Pausa de emergencia: el motivo queda en la bitácora. Al reanudar es opcional. */
+export const emergencyPauseSchema = z.object({
+  reason: z.string().trim().min(1).max(140),
+});
+export const emergencyResumeSchema = z.object({
+  reason: z.string().trim().max(140).optional(),
+});
+
 /** Correo donde Stripe envía la factura. Vacío lo borra. */
 export const billingEmailSchema = z.object({
   billingEmail: z.union([z.email().max(254), z.literal('')]).transform((value) => (value === '' ? null : value.toLowerCase())),

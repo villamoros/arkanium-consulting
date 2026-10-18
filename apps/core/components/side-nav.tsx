@@ -13,11 +13,11 @@ const GROUPS: Array<{ label: string; items: Array<{ href?: string; label: string
   },
   {
     label: "Operación",
-    items: [{ href: "/aprobaciones", label: "Aprobaciones" }, { href: "/proyectos", label: "Proyectos" }, { label: "Agentes" }, { label: "Presupuesto" }, { label: "Pausas de emergencia" }],
+    items: [{ href: "/aprobaciones", label: "Aprobaciones" }, { href: "/proyectos", label: "Proyectos" }, { label: "Agentes" }, { label: "Presupuesto" }, { href: "/pausas", label: "Pausas de emergencia" }],
   },
   {
     label: "Mercadeo",
-    items: [{ label: "Campañas" }, { label: "Buyer personas" }, { href: "/supresion", label: "Supresión y consentimiento" }, { label: "Insights" }],
+    items: [{ href: "/campanas", label: "Campañas" }, { href: "/perfiles", label: "Buyer personas" }, { href: "/supresion", label: "Supresión y consentimiento" }, { href: "/insights", label: "Insights" }],
   },
 ];
 
@@ -50,8 +50,9 @@ export function SideNav() {
                     </Link>
                   </li>
                 ) : (
-                  <li key={item.label} className="off" aria-disabled="true">
+                  <li key={item.label} className="off">
                     {item.label} <span className="sub">pronto</span>
+                    <span className="sr"> (próximamente)</span>
                   </li>
                 ),
               )}

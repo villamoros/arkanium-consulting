@@ -9,6 +9,8 @@ export const leadIntakeSchema = z.object({
   context: z.string().trim().max(2000).optional(),
   locale: z.enum(['es', 'en', 'fr', 'pt']),
   source: z.string().trim().max(60).default('website'),
+  /** Campaña desde la que llegó la persona (landing page). Si no existe, el lead se guarda sin campaña. */
+  campaignId: z.uuid().optional(),
 });
 export type LeadIntake = z.infer<typeof leadIntakeSchema>;
 

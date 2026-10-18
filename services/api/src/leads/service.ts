@@ -6,7 +6,7 @@ import { and, desc, eq, isNull, ne, sql } from 'drizzle-orm';
 import type { IdentityGateway } from '../auth/clerk.js';
 import type { Db } from '../db/client.js';
 import { audit as auditEntry } from '../audit.js';
-import { auditLog, contacts, leads, meetings, organizations } from '../db/schema.js';
+import { auditLog, campaigns, contacts, leads, meetings, organizations } from '../db/schema.js';
 import type { LeadDecision, LeadIntake, LeadManual, LeadProposal, LeadUpdate } from '@arkanium/contracts';
 
 export type Lead = typeof leads.$inferSelect;
@@ -22,6 +22,15 @@ export class LeadError extends Error {
 
 /** F-01: registra un lead que llega desde el sitio. */
 export async function captureLead(db: Db, input: LeadIntake): Promise<Lead> {
+  // Una campaña desconocida o eliminada no rechaza a la persona: el lead se guarda sin campaña.
+  let campaignId: string | null = null;
+  if (input.campaignId) {
+    const [campaign] = await db
+      .select({ id: campaigns.id })
+      .from(campaigns)
+      .where(and(eq(campaigns.id, input.campaignId), isNull(campaigns.deletedAt)));
+    campaignId = campaign?.id ?? null;
+  }
   const [lead] = await db
     .insert(leads)
     .values({
@@ -32,6 +41,7 @@ export async function captureLead(db: Db, input: LeadIntake): Promise<Lead> {
       context: input.context ?? null,
       locale: input.locale,
       source: input.source,
+      campaignId,
     })
     .returning();
   await auditEntry(db, { subjectType: 'lead', actor: `sitio:${input.source}`, action: 'lead.captured', subjectId: lead!.id });

@@ -1,5 +1,6 @@
 "use client";
 
+import { Notice } from "@/components/ui/notice";
 import { useActionState, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   createMinutesAction,
@@ -31,15 +32,6 @@ const ACTION_TONE: Record<MinutesHistoryEntry["action"], string> = {
   "minutes.deleted": "tl-delete",
   "minutes.published": "tl-create",
 };
-
-function Notice({ state }: { state: MeetingActionState }) {
-  if (!state) return null;
-  return (
-    <p role="status" className={state.ok ? "notice-ok" : "notice-bad"}>
-      {state.message}
-    </p>
-  );
-}
 
 /** Botón que abre un formulario y lo cierra al cancelar. */
 function Disclosure({ label, tone = "secondary", children }: { label: string; tone?: "secondary" | "danger"; children: () => ReactNode }) {

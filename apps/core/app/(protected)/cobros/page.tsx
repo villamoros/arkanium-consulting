@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { connection } from "next/server";
+import { requestNow } from "@/lib/request-time";
 import { ApiError, apiFetch } from "@/lib/api";
 import { formatDate } from "@/lib/labels";
 import { StatePanel } from "@/components/state-panel";
@@ -76,10 +76,9 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
     );
   }
 
-  // Depende de cuándo se atiende la petición: connection() lo marca como dinámico.
-  await connection();
-  const now = Date.now();
-  const thisMonth = monthKey.format(new Date());
+  const requested = await requestNow();
+  const now = requested.getTime();
+  const thisMonth = monthKey.format(requested);
 
   const withStatus = invoices.map((invoice) => ({ invoice, status: displayStatus(invoice, now) }));
   const term = q.trim().toLowerCase();

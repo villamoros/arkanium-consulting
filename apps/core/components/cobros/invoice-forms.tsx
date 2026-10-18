@@ -1,5 +1,7 @@
 "use client";
 
+import { ConfirmAction } from "@/components/ui/confirm-action";
+import { Notice } from "@/components/ui/notice";
 import { useActionState, useState } from "react";
 import {
   createInvoiceAction,
@@ -22,15 +24,6 @@ const emptyLine = (): Line => ({ description: "", quantity: "1", amount: "" });
 
 function toEditable(lines: SavedLine[]): Line[] {
   return lines.map((line) => ({ description: line.description, quantity: String(line.quantity), amount: (line.unitAmountCents / 100).toFixed(2) }));
-}
-
-function Notice({ state }: { state: InvoiceActionState }) {
-  if (!state) return null;
-  return (
-    <p role="status" className={state.ok ? "notice-ok" : "notice-bad"}>
-      {state.message}
-    </p>
-  );
 }
 
 /** Líneas de la factura: descripción, cantidad y precio unitario. El total se calcula aquí mismo. */
@@ -192,26 +185,15 @@ export function EditDraftForm({
 
 /** Descartar un borrador, con confirmación. Queda oculto y su número no se reutiliza. */
 export function DiscardDraftForm({ invoiceId }: { invoiceId: string }) {
-  const [state, action, pending] = useActionState<InvoiceActionState, FormData>(discardInvoiceAction, null);
-  const [open, setOpen] = useState(false);
-  if (!open) {
-    return (
-      <button type="button" className="danger" onClick={() => setOpen(true)} style={{ marginTop: 8 }}>
-        Descartar borrador
-      </button>
-    );
-  }
   return (
-    <form action={action} className="decision" style={{ marginTop: 8 }}>
-      <input type="hidden" name="invoiceId" value={invoiceId} />
-      <p className="sub" style={{ margin: 0 }}>El borrador deja de verse. Su número no se reutiliza.</p>
-      <div className="actions">
-        <button type="submit" className="danger" disabled={pending}>
-          {pending ? "Descartando…" : "Confirmar descarte"}
-        </button>
-      </div>
-      <Notice state={state} />
-    </form>
+    <ConfirmAction
+      label="Descartar borrador"
+      title="¿Descartar este borrador?"
+      body="El borrador deja de verse. Su número no se reutiliza."
+      confirmLabel="Descartar borrador"
+      action={discardInvoiceAction}
+      fields={{ invoiceId }}
+    />
   );
 }
 
@@ -269,25 +251,14 @@ export function CreditNoteForm({ invoiceId, remainingCents }: { invoiceId: strin
 
 /** Anular una factura emitida, con confirmación. */
 export function VoidInvoiceForm({ invoiceId }: { invoiceId: string }) {
-  const [state, action, pending] = useActionState<InvoiceActionState, FormData>(voidInvoiceAction, null);
-  const [open, setOpen] = useState(false);
-  if (!open) {
-    return (
-      <button type="button" className="danger" onClick={() => setOpen(true)} style={{ marginTop: 8 }}>
-        Anular factura
-      </button>
-    );
-  }
   return (
-    <form action={action} className="decision" style={{ marginTop: 8 }}>
-      <input type="hidden" name="invoiceId" value={invoiceId} />
-      <p className="sub" style={{ margin: 0 }}>Se anula la factura en Stripe. Queda en la bitácora; no se borra.</p>
-      <div className="actions">
-        <button type="submit" className="danger" disabled={pending}>
-          {pending ? "Anulando…" : "Confirmar anulación"}
-        </button>
-      </div>
-      <Notice state={state} />
-    </form>
+    <ConfirmAction
+      label="Anular factura"
+      title="¿Anular esta factura?"
+      body="Se anula en Stripe. Queda en la bitácora; no se borra."
+      confirmLabel="Anular factura"
+      action={voidInvoiceAction}
+      fields={{ invoiceId }}
+    />
   );
 }

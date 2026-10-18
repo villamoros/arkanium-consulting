@@ -190,3 +190,25 @@ tbody tr:hover, tbody tr[aria-selected="true"] { background: var(--graphite); }
 .timeline li.tl-delete::before { background: var(--bad); }
 .timeline .tl-item { all: unset; box-sizing: border-box; display: block; width: 100%; cursor: pointer; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .timeline .tl-item:hover, .timeline .tl-item:focus-visible { border-color: var(--line-strong); }
+
+/* Editor de artículos (Insights), estilo Medium */
+.article-editor { max-width: 760px; margin: 0 auto; }
+.article-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 0 12px; position: sticky; top: 0; z-index: 5; background: var(--ink); }
+.article-langs { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+.article-toolbar { display: flex; gap: 4px; flex-wrap: wrap; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); margin-bottom: 14px; position: sticky; top: 52px; z-index: 4; background: var(--graphite); }
+.article-toolbar button { background: transparent; color: var(--paper); border: 1px solid transparent; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 13px; }
+.article-toolbar button[aria-pressed="true"] { border-color: var(--line-strong); color: var(--gold-2); }
+.article-page { padding: 8px 0 40px; }
+.article-title { width: 100%; background: transparent; border: 0; outline: none; color: var(--paper); font-size: 2.2rem; font-weight: 700; line-height: 1.2; padding: 8px 0; }
+.article-subtitle { width: 100%; background: transparent; border: 0; outline: none; color: var(--muted); font-size: 1.2rem; padding: 4px 0 16px; }
+.article-body { font-size: 1.12rem; line-height: 1.75; color: var(--paper); }
+.article-body .tiptap { outline: none; min-height: 320px; }
+.article-body .tiptap h2 { font-size: 1.6rem; margin: 1.6em 0 0.4em; }
+.article-body .tiptap h3 { font-size: 1.3rem; margin: 1.4em 0 0.4em; }
+.article-body .tiptap blockquote { border-left: 3px solid var(--gold); padding-left: 16px; color: var(--muted); font-style: italic; margin: 1em 0; }
+.article-body .tiptap a { color: var(--gold-2); text-decoration: underline; }
+.article-body .tiptap hr { border: 0; border-top: 1px solid var(--line); margin: 2em 0; }
+.article-body .tiptap p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: var(--muted); float: left; height: 0; pointer-events: none; }
+.article-body.preview .tiptap { cursor: default; }
+.article-settings { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 12px; }
+.article-settings summary { cursor: pointer; font-weight: 600; margin-bottom: 10px; }

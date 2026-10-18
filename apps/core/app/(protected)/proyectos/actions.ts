@@ -1,20 +1,16 @@
 "use server";
 
+import { messageOf, isUuid } from "@/lib/action-helpers";
+
 import { revalidatePath } from "next/cache";
-import { ApiError, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { bogotaToIso } from "@/lib/time";
 
 export type ProjectActionState = { ok: boolean; message: string } | null;
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SERVICE_FAMILIES = ["architecture", "strategy", "product", "unknown"];
 const PHASES = ["evaluar", "arquitectar", "modernizar", "escalar"];
 const MILESTONE_STATUSES = ["pendiente", "en_curso", "completado"];
-
-function messageOf(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  return "No pudimos completar la acción. Intenta de nuevo.";
-}
 
 function text(formData: FormData, key: string): string {
   return String(formData.get(key) ?? "").trim();
@@ -28,7 +24,7 @@ function choice(formData: FormData, key: string, allowed: string[]): string | nu
 // Crear un proyecto para un cliente. Igual que en la app, el cliente lo verá con su avance.
 export async function createProjectAction(_previous: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
   const organizationId = text(formData, "organizationId");
-  if (!uuid.test(organizationId)) return { ok: false, message: "Elige el cliente del proyecto." };
+  if (!isUuid(organizationId)) return { ok: false, message: "Elige el cliente del proyecto." };
 
   const name = text(formData, "name");
   if (!name) return { ok: false, message: "Escribe el nombre del proyecto." };
@@ -51,7 +47,7 @@ export async function createProjectAction(_previous: ProjectActionState, formDat
 // Corregir datos del proyecto: solo se envían los campos que se llenaron.
 export async function updateProjectAction(_previous: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
   const projectId = text(formData, "projectId");
-  if (!uuid.test(projectId)) return { ok: false, message: "Proyecto no válido." };
+  if (!isUuid(projectId)) return { ok: false, message: "Proyecto no válido." };
 
   const body: Record<string, string> = {};
   const name = text(formData, "name");
@@ -77,7 +73,7 @@ export async function updateProjectAction(_previous: ProjectActionState, formDat
 // Agregar un hito con fecha prevista (D-21: el cliente ve la fecha prevista).
 export async function addMilestoneAction(_previous: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
   const projectId = text(formData, "projectId");
-  if (!uuid.test(projectId)) return { ok: false, message: "Proyecto no válido." };
+  if (!isUuid(projectId)) return { ok: false, message: "Proyecto no válido." };
   const name = text(formData, "name");
   if (!name) return { ok: false, message: "Escribe el nombre del hito." };
 
@@ -98,7 +94,7 @@ export async function addMilestoneAction(_previous: ProjectActionState, formData
 export async function setMilestoneStatusAction(_previous: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
   const projectId = text(formData, "projectId");
   const milestoneId = text(formData, "milestoneId");
-  if (!uuid.test(milestoneId)) return { ok: false, message: "Hito no válido." };
+  if (!isUuid(milestoneId)) return { ok: false, message: "Hito no válido." };
   const status = choice(formData, "status", MILESTONE_STATUSES);
   if (!status) return { ok: false, message: "Estado no válido." };
 
@@ -114,7 +110,7 @@ export async function setMilestoneStatusAction(_previous: ProjectActionState, fo
 // Archivar: el proyecto deja de aparecer en las listas y en la app del cliente. No se borra.
 export async function archiveProjectAction(_previous: ProjectActionState, formData: FormData): Promise<ProjectActionState> {
   const projectId = text(formData, "projectId");
-  if (!uuid.test(projectId)) return { ok: false, message: "Proyecto no válido." };
+  if (!isUuid(projectId)) return { ok: false, message: "Proyecto no válido." };
   const reason = text(formData, "reason");
   if (!reason) return { ok: false, message: "Escribe el motivo para archivarlo." };
 

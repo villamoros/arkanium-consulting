@@ -1,23 +1,18 @@
 "use server";
 
+import { messageOf, isUuid } from "@/lib/action-helpers";
+
 import { revalidatePath } from "next/cache";
 import { leadDecisionSchema, leadProposalSchema, leadMeetingSchema, type Lead } from "@arkanium/contracts";
-import { ApiError, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { bogotaToIso } from "@/lib/time";
 
 export type ActionState = { ok: boolean; message: string } | null;
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function messageOf(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  return "No pudimos completar la acción. Intenta de nuevo.";
-}
-
 // F-02: el owner califica, pospone o descarta. Al posponer indica cuándo volver a revisar el lead.
 export async function decideLeadAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
   const leadId = String(formData.get("leadId") ?? "");
-  if (!uuid.test(leadId)) return { ok: false, message: "Lead no válido." };
+  if (!isUuid(leadId)) return { ok: false, message: "Lead no válido." };
 
   const decision = String(formData.get("decision") ?? "");
   const revisitLocal = String(formData.get("revisitAt") ?? "");
@@ -42,7 +37,7 @@ export async function decideLeadAction(_previous: ActionState, formData: FormDat
 // F-04: convierte un lead calificado en organización de cliente.
 export async function convertLeadAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
   const leadId = String(formData.get("leadId") ?? "");
-  if (!uuid.test(leadId)) return { ok: false, message: "Lead no válido." };
+  if (!isUuid(leadId)) return { ok: false, message: "Lead no válido." };
 
   try {
     const result = await apiFetch<{ lead: Lead; organizationId: string }>(`/leads/${leadId}/convert`, { method: "POST" });
@@ -57,7 +52,7 @@ export async function convertLeadAction(_previous: ActionState, formData: FormDa
 // F-02: el owner acepta o rechaza la propuesta del agente. Aceptarla califica el lead con ese motivo.
 export async function respondProposalAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
   const leadId = String(formData.get("leadId") ?? "");
-  if (!uuid.test(leadId)) return { ok: false, message: "Lead no válido." };
+  if (!isUuid(leadId)) return { ok: false, message: "Lead no válido." };
 
   const note = String(formData.get("note") ?? "").trim();
   const parsed = leadProposalSchema.safeParse({ accepted: formData.get("accepted") === "true", note: note || undefined });
@@ -76,7 +71,7 @@ export async function respondProposalAction(_previous: ActionState, formData: Fo
 // Reunión con un lead antes de convertirlo. Queda pendiente hasta que la confirmes en Reuniones.
 export async function createLeadMeetingAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
   const leadId = String(formData.get("leadId") ?? "");
-  if (!uuid.test(leadId)) return { ok: false, message: "Lead no válido." };
+  if (!isUuid(leadId)) return { ok: false, message: "Lead no válido." };
 
   const parsed = leadMeetingSchema.safeParse({ topic: formData.get("topic") });
   if (!parsed.success) return { ok: false, message: "Escribe el tema de la reunión." };

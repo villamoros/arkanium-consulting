@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { connection } from "next/server";
+import { requestNow } from "@/lib/request-time";
 import { ApiError, apiFetch } from "@/lib/api";
 import { CALENDAR_STATUS_LABEL, MEETING_STATUS_LABEL, formatDate } from "@/lib/labels";
 import { StatePanel } from "@/components/state-panel";
@@ -89,9 +89,7 @@ export default async function MeetingsPage() {
     );
   }
 
-  // Depende de cuándo se atiende la petición: connection() lo marca como dinámico.
-  await connection();
-  const now = Date.now();
+  const now = (await requestNow()).getTime();
   const timeOf = (m: OwnerMeeting) => (m.startsAt ? new Date(m.startsAt).getTime() : 0);
 
   const requests = meetings.filter((m) => m.status === "solicitada");

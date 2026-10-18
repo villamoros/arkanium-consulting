@@ -20,8 +20,23 @@ import {
   deliverableApprovalSchema,
   deliverableContentSchema,
   deliverableCreateSchema,
+  articleCreateSchema,
+  articleUpdateSchema,
   billingEmailSchema,
+  campaignBriefSchema,
+  pieceCreateSchema,
+  pieceUpdateSchema,
+  campaignCreateSchema,
+  campaignUpdateSchema,
   creditNoteSchema,
+  emergencyPauseSchema,
+  landingCreateSchema,
+  landingUpdateSchema,
+  personaContactSchema,
+  personaConvertSchema,
+  personaCreateSchema,
+  personaUpdateSchema,
+  emergencyResumeSchema,
   invoiceDraftSchema,
   meetingConfirmSchema,
   meetingRequestSchema,
@@ -55,6 +70,51 @@ import {
   voidInvoice,
 } from '../billing/service.js';
 import type { CalendarGateway } from '../calendar/n8n.js';
+import { AGENT_DEPARTMENTS, type AgentDepartmentId } from '../agents/catalog.js';
+import {
+  approveBrief,
+  approvePiece,
+  campaignBriefOf,
+  createPiece,
+  discardPiece,
+  findCampaignRow,
+  requestBriefReview,
+  saveBrief,
+  sendPieceToReview,
+  updatePiece,
+} from '../marketing/briefs.js';
+import {
+  addContact,
+  convertPersona,
+  createArticle,
+  createCampaign,
+  getArticle,
+  createLanding,
+  createPersona,
+  deletePersona,
+  discardArticle,
+  listArticles,
+  listCampaigns,
+  listContacts,
+  listPersonas,
+  listUnassignedLandings,
+  publishArticle,
+  sendArticleToReview,
+  updateArticle,
+  updateCampaign,
+  updateLanding,
+  updatePersona,
+} from '../marketing/service.js';
+import {
+  emergencyOverview,
+  internalEmergencyStatus,
+  pauseAgent,
+  pauseAll,
+  pauseDepartment,
+  resumeAgent,
+  resumeAll,
+  resumeDepartment,
+} from '../emergency/service.js';
 import { clientSummary, suspensionReason } from '../organizations/summary.js';
 import { acceptProposal, addVersion, createProposal, listProposals, markSent, proposalDetail, rejectProposal, sendToApproval } from '../proposals/service.js';
 import type { Db } from '../db/client.js';
@@ -927,6 +987,345 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     }),
   );
 
+  // ───────────── Mercadeo (Core): campañas, landing pages, buyer personas e Insights ─────────────
+
+  app.get(
+    '/campaigns',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { campaigns: await listCampaigns(db), landings: await listUnassignedLandings(db) };
+    }),
+  );
+
+  app.post(
+    '/campaigns',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(campaignCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createCampaign(db, body, caller.userId));
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/campaigns/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(campaignUpdateSchema, request, reply);
+      if (!body) return;
+      return updateCampaign(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  // Brief de campaña: instrucciones para el agente. Se revisa y se aprueba antes de producir piezas.
+  app.put<{ Params: { id: string } }>(
+    '/campaigns/:id/brief',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(campaignBriefSchema, request, reply);
+      if (!body) return;
+      await saveBrief(db, request.params.id, body, caller.userId);
+      return campaignBriefOf(db, await findCampaignRow(db, request.params.id));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/brief/review',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await requestBriefReview(db, request.params.id, caller.userId);
+      return campaignBriefOf(db, await findCampaignRow(db, request.params.id));
+    }),
+  );
+
+  // Se llama desde Aprobaciones, con tu decisión.
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/brief/approve',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await approveBrief(db, request.params.id, caller.userId);
+      return campaignBriefOf(db, await findCampaignRow(db, request.params.id));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/pieces',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(pieceCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createPiece(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/campaign-pieces/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(pieceUpdateSchema, request, reply);
+      if (!body) return;
+      return updatePiece(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaign-pieces/:id/review',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return sendPieceToReview(db, request.params.id, caller.userId);
+    }),
+  );
+
+  // Se llama desde Aprobaciones, con tu decisión. Publicarla lo hace el agente después.
+  app.post<{ Params: { id: string } }>(
+    '/campaign-pieces/:id/approve',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return approvePiece(db, request.params.id, caller.userId);
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/campaign-pieces/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await discardPiece(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  app.post(
+    '/landing-pages',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(landingCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createLanding(db, body, caller.userId));
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/landing-pages/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(landingUpdateSchema, request, reply);
+      if (!body) return;
+      return updateLanding(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.get(
+    '/buyer-personas',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return listPersonas(db, new Date());
+    }),
+  );
+
+  app.post(
+    '/buyer-personas',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createPersona(db, body, caller.userId));
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/buyer-personas/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaUpdateSchema, request, reply);
+      if (!body) return;
+      return updatePersona(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/buyer-personas/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await deletePersona(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  app.get<{ Params: { id: string } }>(
+    '/buyer-personas/:id/contacts',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { contacts: await listContacts(db, request.params.id) };
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/buyer-personas/:id/contacts',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaContactSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await addContact(db, request.params.id, body, caller.userId, new Date()));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/buyer-personas/:id/convert',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaConvertSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await convertPersona(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  app.get(
+    '/articles',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { articles: await listArticles(db) };
+    }),
+  );
+
+  app.post(
+    '/articles',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(articleCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createArticle(db, body, caller.userId));
+    }),
+  );
+
+  // Core: un artículo completo, con el contenido de cada idioma, para el editor.
+  app.get<{ Params: { id: string } }>(
+    '/articles/:id',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return getArticle(db, request.params.id);
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/articles/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(articleUpdateSchema, request, reply);
+      if (!body) return;
+      return updateArticle(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/articles/:id/review',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return sendArticleToReview(db, request.params.id, caller.userId);
+    }),
+  );
+
+  // Se llama desde Aprobaciones, con tu decisión. Nada sale al sitio antes.
+  app.post<{ Params: { id: string } }>(
+    '/articles/:id/publish',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return publishArticle(db, request.params.id, caller.userId);
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/articles/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await discardArticle(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  // ───────────── Pausas de emergencia (ARK-ARCH-003, sección 4) ─────────────
+
+  app.get(
+    '/emergency',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post(
+    '/emergency/pause-all',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(emergencyPauseSchema, request, reply);
+      if (!body) return;
+      await pauseAll(db, body.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post(
+    '/emergency/resume-all',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const parsed = emergencyResumeSchema.safeParse(request.body ?? {});
+      if (!parsed.success) return reply.code(400).send({ error: 'invalid', message: 'El motivo es demasiado largo.' });
+      await resumeAll(db, parsed.data.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { department: string } }>(
+    '/emergency/departments/:department/pause',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const department = departmentOf(request.params.department);
+      const body = parseBody(emergencyPauseSchema, request, reply);
+      if (!body) return;
+      await pauseDepartment(db, department, body.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { department: string } }>(
+    '/emergency/departments/:department/resume',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const department = departmentOf(request.params.department);
+      const parsed = emergencyResumeSchema.safeParse(request.body ?? {});
+      if (!parsed.success) return reply.code(400).send({ error: 'invalid', message: 'El motivo es demasiado largo.' });
+      await resumeDepartment(db, department, parsed.data.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/agents/:id/pause',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(emergencyPauseSchema, request, reply);
+      if (!body) return;
+      await pauseAgent(db, request.params.id, body.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/agents/:id/resume',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const parsed = emergencyResumeSchema.safeParse(request.body ?? {});
+      if (!parsed.success) return reply.code(400).send({ error: 'invalid', message: 'El motivo es demasiado largo.' });
+      await resumeAgent(db, request.params.id, parsed.data.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  // Estado para los agentes y para Control. Usa el secreto interno, no una sesión.
+  app.get('/internal/emergency', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    return internalEmergencyStatus(db);
+  });
+
   // Factura del cliente. El enlace de pago solo lo ve un administrador de la organización.
   app.get<{ Params: { id: string } }>(
     '/invoices/:id',
@@ -937,6 +1336,13 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
       return clientInvoiceView(invoice, role === 'org:admin' || role === 'owner');
     }),
   );
+}
+
+/** Departamento de la ruta. Si no existe en el organigrama, es un 404 y no un error del servidor. */
+function departmentOf(value: string): AgentDepartmentId {
+  const found = AGENT_DEPARTMENTS.find((department) => department.id === value);
+  if (!found) throw new ServiceError(404, 'not_found', 'Departamento no encontrado.');
+  return found.id;
 }
 
 function projectDto(project: Awaited<ReturnType<typeof findProject>>) {

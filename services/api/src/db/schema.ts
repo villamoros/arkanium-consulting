@@ -39,20 +39,49 @@ export const organizations = pgTable(
   (t) => [uniqueIndex('organizations_clerk_org_id_uq').on(t.clerkOrgId)],
 );
 
+/** Estado de una campaña de mercadeo. */
+export const campaignStatus = pgEnum('campaign_status', ['borrador', 'activa', 'pausada', 'cerrada']);
+/** Estado de un perfil de comprador (buyer persona). */
+export const personaStatus = pgEnum('persona_status', ['activo', 'pausado']);
+/** Estado del brief de una campaña: el agente solo produce piezas con el brief aprobado. */
+export const briefStatus = pgEnum('brief_status', ['borrador', 'en_revision', 'aprobado']);
+
 /** Buyer persona: segmento de cliente ideal (ARK-ARCH-001). No es una cuenta de usuario. */
 export const buyerPersonas = pgTable('buyer_personas', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   segment: text('segment').notNull(),
+  /** Servicio que evalúa este perfil y canal donde está. Opcionales para filas anteriores al módulo. */
+  service: text('service'),
+  channel: text('channel'),
+  note: text('note'),
+  status: personaStatus('status').notNull().default('activo'),
+  createdBy: text('created_by'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 /** Campaña: esfuerzo de mercadeo que atrae interesados (ARK-ARCH-001). */
 export const campaigns = pgTable('campaigns', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
+  /** Perfil único de la versión anterior. Las campañas nuevas usan campaign_personas. */
   buyerPersonaId: uuid('buyer_persona_id').references(() => buyerPersonas.id),
+  service: text('service'),
+  status: campaignStatus('status').notNull().default('borrador'),
+  /** Brief: instrucciones que el agente necesita para producir las piezas. */
+  objective: text('objective'),
+  message: text('message'),
+  cta: text('cta'),
+  constraints: text('constraints'),
+  kpis: text('kpis'),
+  budgetCents: integer('budget_cents'),
+  networks: jsonb('networks').$type<string[]>().notNull().default([]),
+  briefStatus: briefStatus('brief_status').notNull().default('borrador'),
+  briefApprovedAt: timestamp('brief_approved_at', { withTimezone: true }),
+  createdBy: text('created_by'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 
 /** Lead: persona u organización interesada. Puede convertirse en organización (F-04). */
@@ -410,4 +439,120 @@ export const proposalVersions = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex('proposal_versions_unique_idx').on(t.proposalId, t.version)],
+);
+
+/** Departamentos operativos del organigrama (ARK-ARCH-003, sección 3). */
+export const agentDepartment = pgEnum('agent_department', ['arquitectura', 'estrategia', 'producto']);
+/** definido: existe pero no está activado · activo: puede trabajar · pausado: detenido por una pausa. */
+export const agentStatus = pgEnum('agent_status', ['definido', 'activo', 'pausado']);
+/** sin_operacion hoy: ningún agente corre todavía. */
+export const agentOperation = pgEnum('agent_operation', ['sin_operacion', 'operando']);
+
+/** Agente especialista (ARK-AGT-001). Se carga desde el catálogo; el estado vive aquí. */
+export const agents = pgTable(
+  'agents',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    code: text('code').notNull(),
+    name: text('name').notNull(),
+    service: text('service').notNull(),
+    department: agentDepartment('department').notNull(),
+    status: agentStatus('status').notNull().default('definido'),
+    operation: agentOperation('operation').notNull().default('sin_operacion'),
+    pauseReason: text('pause_reason'),
+    pausedAt: timestamp('paused_at', { withTimezone: true }),
+  },
+  (t) => [uniqueIndex('agents_code_uq').on(t.code)],
+);
+
+/** Pausa global de emergencia. Una sola fila: id = 1. */
+export const emergencyState = pgTable('emergency_state', {
+  id: integer('id').primaryKey(),
+  paused: boolean('paused').notNull().default(false),
+  reason: text('reason'),
+  changedBy: text('changed_by'),
+  changedAt: timestamp('changed_at', { withTimezone: true }),
+});
+
+/** Estado de un artículo de Insights: borrador → en revisión → publicado (lo aprueba el owner). */
+export const articleStatus = pgEnum('article_status', ['borrador', 'en_revision', 'publicado']);
+
+/** Landing page que entrega leads. Puede no pertenecer a ninguna campaña todavía. */
+export const landingPages = pgTable('landing_pages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  campaignId: uuid('campaign_id').references(() => campaigns.id),
+  title: text('title').notNull(),
+  url: text('url'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Contacto directo registrado con un perfil. Cuenta para el límite diario. */
+export const personaContacts = pgTable(
+  'persona_contacts',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    personaId: uuid('persona_id')
+      .notNull()
+      .references(() => buyerPersonas.id),
+    channel: text('channel').notNull(),
+    note: text('note').notNull(),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull().defaultNow(),
+    actor: text('actor').notNull(),
+  },
+  (t) => [index('persona_contacts_persona_idx').on(t.personaId), index('persona_contacts_at_idx').on(t.occurredAt)],
+);
+
+/** Artículo de Insights, con sus idiomas y el caso que lo respalda. */
+export const articles = pgTable('articles', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: text('title').notNull(),
+  excerpt: text('excerpt'),
+  caseRef: text('case_ref'),
+  langs: jsonb('langs').$type<string[]>().notNull().default([]),
+  /** Contenido por idioma: título, subtítulo y cuerpo en formato del editor (documento TipTap). */
+  content: jsonb('content').$type<Record<string, { title: string; subtitle?: string; body: Record<string, unknown> }>>().notNull().default({}),
+  status: articleStatus('status').notNull().default('borrador'),
+  publishedAt: timestamp('published_at', { withTimezone: true }),
+  createdBy: text('created_by').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+});
+
+/** Estado de una pieza (anuncio) por red. Publicada y pausada las marca el agente desde Control. */
+export const pieceStatus = pgEnum('piece_status', ['borrador', 'en_revision', 'aprobada', 'publicada', 'pausada']);
+
+/** Perfiles de comprador a los que se dirige una campaña. */
+export const campaignPersonas = pgTable(
+  'campaign_personas',
+  {
+    campaignId: uuid('campaign_id')
+      .notNull()
+      .references(() => campaigns.id),
+    personaId: uuid('persona_id')
+      .notNull()
+      .references(() => buyerPersonas.id),
+  },
+  (t) => [uniqueIndex('campaign_personas_uq').on(t.campaignId, t.personaId)],
+);
+
+/** Pieza publicitaria de una campaña para una red concreta. */
+export const campaignPieces = pgTable(
+  'campaign_pieces',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    campaignId: uuid('campaign_id')
+      .notNull()
+      .references(() => campaigns.id),
+    network: text('network').notNull(),
+    format: text('format').notNull(),
+    copy: text('copy').notNull(),
+    assetUrl: text('asset_url'),
+    status: pieceStatus('status').notNull().default('borrador'),
+    createdBy: text('created_by').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  },
+  (t) => [index('campaign_pieces_campaign_idx').on(t.campaignId)],
 );
