@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { DEFAULT_CONTENT_ROOT } from '../src/lib/content/execute.ts';
 import { groupServices } from '../src/lib/content/services.ts';
 import { readCollection } from '../src/lib/content/store.ts';
-import { PRIORITY_VALUES, parseLead } from '../src/lib/contact/lead.ts';
+import { CONSENT_TEXT_VERSION, PRIORITY_VALUES, parseLead } from '../src/lib/contact/lead.ts';
 import { leadEmail, slackAlert } from '../src/lib/contact/compose.ts';
 import { onRequestPost, platformPayload } from '../functions/api/contact.ts';
 
@@ -89,126 +89,86 @@ test('alerta de Slack: datos mínimos y contexto recortado a 200 caracteres', ()
   assert.ok(msg.split('Contexto: ')[1].length <= 202);
 });
 
-// Endpoint
-test('origen distinto → 403 sin enviar', async () => {
+// Endpoint: el lead se guarda en la API antes de cualquier aviso. El sitio no envía correo ni Slack.
+const PLATFORM_ENV = { ARKANIUM_API_URL: 'https://api.arkanium.test', LEAD_INTAKE_TOKEN: 'token-de-prueba' };
+
+test('origen distinto → 403 sin guardar nada', async () => {
   const calls = fakeFetch();
-  const res = await onRequestPost({ request: request(valid, { origin: 'https://otro.test' }), env: ENV });
+  const res = await onRequestPost({ request: request(valid, { origin: 'https://otro.test' }), env: PLATFORM_ENV });
   assert.equal(res.status, 403);
   assert.equal(calls.length, 0);
 });
-test('cuerpo que no es JSON → 415 o 400 sin enviar', async () => {
+test('cuerpo que no es JSON → 415 o 400 sin guardar nada', async () => {
   const calls = fakeFetch();
-  const r1 = await onRequestPost({ request: request('{}', { 'content-type': 'text/plain' }), env: ENV });
-  const r2 = await onRequestPost({ request: request('{roto'), env: ENV });
+  const r1 = await onRequestPost({ request: request('{}', { 'content-type': 'text/plain' }), env: PLATFORM_ENV });
+  const r2 = await onRequestPost({ request: request('{roto'), env: PLATFORM_ENV });
   assert.equal(r1.status, 415);
   assert.equal(r2.status, 400);
   assert.equal(calls.length, 0);
 });
 test('cuerpo de más de 16 KB → 413', async () => {
-  const res = await onRequestPost({ request: request({ ...valid, context: 'x'.repeat(20000) }), env: ENV });
+  const res = await onRequestPost({ request: request({ ...valid, context: 'x'.repeat(20000) }), env: PLATFORM_ENV });
   assert.equal(res.status, 413);
 });
-test('datos inválidos → 400 con el campo, sin enviar', async () => {
+test('datos inválidos → 400 con el campo, sin guardar nada', async () => {
   const calls = fakeFetch();
-  const res = await onRequestPost({ request: request({ ...valid, email: 'mal' }), env: ENV });
+  const res = await onRequestPost({ request: request({ ...valid, email: 'mal' }), env: PLATFORM_ENV });
   assert.equal(res.status, 400);
   assert.equal((await res.json()).field, 'email');
   assert.equal(calls.length, 0);
 });
-test('sin configuración de correo → 503, nunca éxito', async () => {
+test('sin API configurada → 503, nunca éxito', async () => {
   const calls = fakeFetch();
   const res = await onRequestPost({ request: request(valid), env: {} });
   assert.equal(res.status, 503);
   assert.equal(calls.length, 0);
 });
-test('campo trampa → 200 sin enviar nada', async () => {
+test('campo trampa → 200 sin guardar nada', async () => {
   const calls = fakeFetch();
-  const res = await onRequestPost({ request: request({ ...valid, website: 'bot' }), env: ENV });
+  const res = await onRequestPost({ request: request({ ...valid, website: 'bot' }), env: PLATFORM_ENV });
   assert.equal(res.status, 200);
   assert.equal(calls.length, 0);
 });
-test('envío correcto: correo a hello@ con Reply-To del visitante y alerta a Slack', async () => {
-  const calls = fakeFetch();
-  const res = await onRequestPost({ request: request(valid), env: ENV });
-  assert.equal(res.status, 200);
-  assert.equal(calls.length, 2);
-  const [mail, slack] = calls;
-  assert.match(mail.url, /api\.resend\.com/);
-  assert.deepEqual(mail.body.to, ['hello@arkanium.consulting']);
-  assert.equal(mail.body.reply_to, 'ana@empresa.com');
-  assert.equal(mail.headers.authorization, 'Bearer test-key');
-  assert.equal(slack.url, ENV.SLACK_WEBHOOK_URL);
-});
-test('correo falla → 502 y no se avisa a Slack (no hay éxito falso)', async () => {
-  const calls = fakeFetch({ resend: 500 });
-  const res = await onRequestPost({ request: request(valid), env: ENV });
-  assert.equal(res.status, 502);
-  assert.equal(calls.length, 1);
-});
-test('correo falla por red → 502', async () => {
-  fakeFetch({ resend: 'network' });
-  const res = await onRequestPost({ request: request(valid), env: ENV });
-  assert.equal(res.status, 502);
-});
-test('Slack falla después de enviar el correo → 200 (el lead ya está en el correo)', async () => {
-  const calls = fakeFetch({ slack: 500 });
-  const res = await onRequestPost({ request: request(valid), env: ENV });
-  assert.equal(res.status, 200);
-  assert.equal(calls.length, 2);
-});
-test('sin Slack configurado: el envío sigue siendo correcto', async () => {
-  const calls = fakeFetch();
-  const res = await onRequestPost({ request: request(valid), env: { ...ENV, SLACK_WEBHOOK_URL: undefined } });
-  assert.equal(res.status, 200);
-  assert.equal(calls.length, 1);
-});
-
-const PLATFORM_ENV = { ...ENV, ARKANIUM_API_URL: 'https://api.arkanium.test', LEAD_INTAKE_TOKEN: 'token-de-prueba' };
-
-test('con la API configurada: el lead también se registra en /leads con el token del servidor', async () => {
+test('envío correcto: se guarda en /leads con el token del servidor y el consentimiento, y nada más sale', async () => {
   const calls = fakeFetch();
   const res = await onRequestPost({ request: request({ ...valid, service: 'technical-health-check' }), env: PLATFORM_ENV });
   assert.equal(res.status, 200);
-  assert.equal(calls.length, 3);
-  // Orden: correo a hello@, registro en la API y, al final, Slack.
-  const platform = calls[1];
+  // Solo una llamada: a la API. Ni correo ni Slack desde el sitio; los avisos los hace n8n.
+  assert.equal(calls.length, 1);
+  const [platform] = calls;
   assert.equal(platform.url, 'https://api.arkanium.test/leads');
   assert.equal(platform.headers.authorization, 'Bearer token-de-prueba');
   assert.equal(platform.body.source, 'website');
   assert.equal(platform.body.email, 'ana@empresa.com');
+  assert.deepEqual(platform.body.consent, { accepted: true, textVersion: CONSENT_TEXT_VERSION });
   assert.match(platform.body.context, /Servicio: technical-health-check/);
 });
-test('sin API configurada: no se llama a la plataforma (dos llamadas, como antes)', async () => {
-  const calls = fakeFetch();
-  await onRequestPost({ request: request(valid), env: ENV });
-  assert.equal(calls.length, 2);
-});
-test('la API no responde: el visitante recibe éxito igualmente (el lead ya está en el correo)', async () => {
+test('la API no responde → 503 not_saved: el visitante ve un error y puede reintentar', async () => {
   const calls = fakeFetch({ platform: 'network' });
   const res = await onRequestPost({ request: request(valid), env: PLATFORM_ENV });
-  assert.equal(res.status, 200);
-  assert.equal(calls.length, 3);
+  assert.equal(res.status, 503);
+  assert.equal((await res.json()).error, 'not_saved');
+  assert.equal(calls.length, 1);
 });
-test('la API rechaza el lead (401): éxito para el visitante, fallo registrado', async () => {
+test('la API rechaza el lead (401) → 503 not_saved, nunca éxito falso', async () => {
   fakeFetch({ platform: 401 });
   const res = await onRequestPost({ request: request(valid), env: PLATFORM_ENV });
-  assert.equal(res.status, 200);
+  assert.equal(res.status, 503);
 });
 test('el contexto que llega a la API nunca supera 2000 caracteres', () => {
   const payload = platformPayload({ name: 'Ana', email: 'a@b.co', priority: 'strategy', context: 'x'.repeat(2000), locale: 'es', receivedAt: '2026-10-14T12:00:00Z', service: 'technical-health-check' });
   assert.ok(payload.context.length <= 2000);
 });
 
-const realFetch = globalThis.fetch;
-let passed = 0;
 try {
-  console.log('Formulario de contacto');
+  let passed = 0;
   for (const t of tests) {
     await t.fn();
     passed++;
     console.log('  ✓', t.name);
   }
   console.log(`\n${passed} pruebas OK`);
-} finally {
-  globalThis.fetch = realFetch;
+} catch (error) {
+  console.error(error);
+  process.exitCode = 1;
 }

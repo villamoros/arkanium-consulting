@@ -39,7 +39,7 @@ beforeEach(async () => {
   app = buildApp({ identity: fakeIdentity(), internalOrgId: INTERNAL, db, leadIntakeToken: INTAKE });
 });
 
-const intake = { name: 'Ana Pérez', email: 'ana@ejemplo.test', priority: 'unsure', locale: 'es', source: 'linkedin' };
+const intake = { name: 'Ana Pérez', email: 'ana@ejemplo.test', priority: 'unsure', locale: 'es', source: 'linkedin', consent: { accepted: true, textVersion: "2026-10" } };
 
 describe('atribución de leads a campañas', () => {
   it('un lead que llega desde una landing queda asociado a su campaña', async () => {

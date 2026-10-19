@@ -101,6 +101,13 @@ export const leads = pgTable(
     sourceReference: text('source_reference'),
     campaignId: uuid('campaign_id').references(() => campaigns.id),
     buyerPersonaId: uuid('buyer_persona_id').references(() => buyerPersonas.id),
+    /** Consentimiento que el visitante aceptó al enviar el formulario: versión del texto y momento. */
+    consentTextVersion: text('consent_text_version'),
+    consentAcceptedAt: timestamp('consent_accepted_at', { withTimezone: true }),
+    /** Cola de notificación: el lead aún no avisó por correo y Slack. n8n lo marca cuando avisa. */
+    notifiedAt: timestamp('notified_at', { withTimezone: true }),
+    notifyAttempts: integer('notify_attempts').notNull().default(0),
+    notifyLastError: text('notify_last_error'),
     status: leadStatus('status').notNull().default('nuevo'),
     /** Propuesta del agente de calificación (F-02). Solo informa; la decisión la toma el owner. */
     proposedFamily: serviceFamily('proposed_family').default('unknown'),

@@ -31,7 +31,7 @@ async function captureLead() {
     method: 'POST',
     url: '/leads',
     headers: { authorization: `Bearer ${INTAKE}` },
-    payload: { name: 'Lucía Romero', email: 'lucia@ejemplo.test', company: 'Distribuidora Norte', priority: 'architecture', context: 'Nuestro ERP tiene doce años.', locale: 'es' },
+    payload: { name: 'Lucía Romero', email: 'lucia@ejemplo.test', company: 'Distribuidora Norte', priority: 'architecture', context: 'Nuestro ERP tiene doce años.', locale: 'es', consent: { accepted: true, textVersion: "2026-10" } },
   });
   return response.json().id as string;
 }

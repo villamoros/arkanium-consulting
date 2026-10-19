@@ -9,6 +9,9 @@ export const LOCALE_VALUES = ['en', 'es', 'pt', 'fr'] as const;
 
 export const LIMITS = { name: 120, email: 254, context: 2000, slug: 80, bodyBytes: 16 * 1024 } as const;
 
+/** Versión del texto de consentimiento que se muestra en el formulario. Pendiente de revisión legal (B4). */
+export const CONSENT_TEXT_VERSION = '2026-10-v1';
+
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

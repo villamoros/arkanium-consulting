@@ -11,6 +11,11 @@ export const leadIntakeSchema = z.object({
   source: z.string().trim().max(60).default('website'),
   /** Campaña desde la que llegó la persona (landing page). Si no existe, el lead se guarda sin campaña. */
   campaignId: z.uuid().optional(),
+  /** Consentimiento explícito: sin él no se guarda el lead. La versión identifica el texto que se mostró. */
+  consent: z.object({
+    accepted: z.literal(true),
+    textVersion: z.string().trim().min(1).max(40),
+  }),
 });
 export type LeadIntake = z.infer<typeof leadIntakeSchema>;
 
@@ -61,6 +66,10 @@ export const leadSchema = z.object({
   decisionNote: z.string().nullable(),
   /** Cuándo volver a revisar el lead pospuesto. */
   revisitAt: z.string().nullable(),
+  /** Estado del aviso por correo y Slack. Atascado: se agotaron los intentos y hay que revisarlo a mano. */
+  notifiedAt: z.string().nullable(),
+  notifyAttempts: z.number().int(),
+  notifyLastError: z.string().nullable(),
 });
 export type Lead = z.infer<typeof leadSchema>;
 

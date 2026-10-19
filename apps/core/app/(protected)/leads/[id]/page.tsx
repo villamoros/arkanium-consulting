@@ -77,6 +77,14 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
         </p>
       ) : null}
 
+      {lead.notifiedAt === null && lead.notifyAttempts >= 10 ? (
+        <p className="notice-bad" style={{ marginBottom: 16 }} role="status">
+          Aviso atascado: {lead.notifyAttempts} intentos sin éxito. Último error: {lead.notifyLastError ?? "desconocido"}. Revisa el correo y Slack a mano.
+        </p>
+      ) : lead.notifiedAt === null ? (
+        <p className="sub" style={{ marginBottom: 16 }}>Aviso por correo y Slack pendiente.</p>
+      ) : null}
+
       {lead.status === "pospuesto" && lead.revisitAt ? (
         <p className={revisitOverdue ? "notice-bad" : "notice-ok"} style={{ marginBottom: 16 }}>
           {revisitOverdue ? "Vencida: " : ""}Volver a revisar este lead el {formatDate(lead.revisitAt)}.

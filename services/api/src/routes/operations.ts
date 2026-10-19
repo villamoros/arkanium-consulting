@@ -160,7 +160,7 @@ import {
   updateMeeting,
 } from '../meetings/service.js';
 import { addSuppression, listSuppressions } from '../suppressions/service.js';
-import { duplicatesOf, leadHistory, LeadError, respondToProposal } from '../leads/service.js';
+import { duplicatesOf, leadHistory, LeadError, markNotified, markNotifyFailed, pendingNotifications, respondToProposal } from '../leads/service.js';
 import { addMilestone, archiveProject, createProject, findProject, listAllProjects, listMilestones, listProjects, updateMilestone, updateProject } from '../projects/service.js';
 import { approvalQueue } from '../approvals/queue.js';
 
@@ -840,6 +840,46 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
   );
 
   // ───────────── Rutas internas para n8n (recordatorios). Usan el secreto del webhook, no una sesión. ─────────────
+
+  // Leads que todavía no avisaron por correo y Slack. n8n los lee en cada pasada y marca los que avisó.
+  app.get('/internal/leads/pending-notification', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    const pending = await pendingNotifications(db);
+    return {
+      leads: pending.map((lead) => ({
+        id: lead.id,
+        name: lead.name,
+        email: lead.email,
+        company: lead.company,
+        priority: lead.priorityChoice,
+        context: lead.context,
+        locale: lead.locale,
+        source: lead.source,
+        sourceReference: lead.sourceReference,
+        receivedAt: lead.receivedAt.toISOString(),
+        consentTextVersion: lead.consentTextVersion,
+        consentAcceptedAt: lead.consentAcceptedAt?.toISOString() ?? null,
+        notifyAttempts: lead.notifyAttempts,
+      })),
+    };
+  });
+
+  app.post<{ Params: { id: string } }>('/internal/leads/:id/notified', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    try {
+      await markNotified(db, request.params.id);
+      return reply.code(204).send();
+    } catch (error) {
+      if (error instanceof ServiceError) return sendServiceError(reply, error);
+      throw error;
+    }
+  });
+
+  app.post<{ Params: { id: string }; Body: { error?: string } }>('/internal/leads/:id/notify-failed', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    await markNotifyFailed(db, request.params.id, String(request.body?.error ?? 'error desconocido'));
+    return reply.code(204).send();
+  });
 
   app.get<{ Querystring: { hours?: string } }>('/internal/meetings/due-reminders', async (request, reply) => {
     if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });

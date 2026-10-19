@@ -2,10 +2,11 @@
  * Primer contrato (ARK-ARCH-002): F-01 captar, F-02 calificar y F-04 convertir en organización.
  * Cada paso deja registro en la bitácora. La decisión de calificar, posponer o descartar es del owner.
  */
-import { and, desc, eq, isNull, ne, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, isNull, lt, ne, sql } from 'drizzle-orm';
 import type { IdentityGateway } from '../auth/clerk.js';
 import type { Db } from '../db/client.js';
 import { audit as auditEntry } from '../audit.js';
+import { ServiceError } from '../errors.js';
 import { auditLog, campaigns, contacts, leads, meetings, organizations } from '../db/schema.js';
 import type { LeadDecision, LeadIntake, LeadManual, LeadProposal, LeadUpdate } from '@arkanium/contracts';
 
@@ -18,6 +19,40 @@ export class LeadError extends Error {
   ) {
     super(message);
   }
+}
+
+/** Intentos de aviso antes de dejar de reintentar. Después el lead queda atascado para revisión manual. */
+export const MAX_NOTIFY_ATTEMPTS = 10;
+
+/**
+ * Leads que todavía no avisaron por correo y Slack, los más antiguos primero.
+ * n8n los lee, envía los avisos y marca cada uno cuando el aviso salió.
+ * Los que agotaron los intentos no entran: quedan atascados hasta revisarlos.
+ */
+export async function pendingNotifications(db: Db, limit = 20): Promise<Lead[]> {
+  return db
+    .select()
+    .from(leads)
+    .where(and(isNull(leads.notifiedAt), isNull(leads.deletedAt), lt(leads.notifyAttempts, MAX_NOTIFY_ATTEMPTS)))
+    .orderBy(asc(leads.receivedAt))
+    .limit(limit);
+}
+
+/** Marca el aviso como enviado. Repetirlo no cambia nada: el primer aviso manda. */
+export async function markNotified(db: Db, leadId: string): Promise<void> {
+  const [lead] = await db.select().from(leads).where(eq(leads.id, leadId));
+  if (!lead) throw new ServiceError(404, 'not_found', 'Lead no encontrado.');
+  if (lead.notifiedAt) return;
+  await db.update(leads).set({ notifiedAt: new Date(), notifyLastError: null }).where(eq(leads.id, leadId));
+  await auditEntry(db, { subjectType: 'lead', actor: 'n8n', action: 'lead.notified', subjectId: leadId });
+}
+
+/** Registra un intento de aviso fallido. El lead sigue pendiente y se reintenta en la siguiente pasada. */
+export async function markNotifyFailed(db: Db, leadId: string, error: string): Promise<void> {
+  await db
+    .update(leads)
+    .set({ notifyAttempts: sql`${leads.notifyAttempts} + 1`, notifyLastError: error.slice(0, 300) })
+    .where(eq(leads.id, leadId));
 }
 
 /** F-01: registra un lead que llega desde el sitio. */
@@ -42,6 +77,8 @@ export async function captureLead(db: Db, input: LeadIntake): Promise<Lead> {
       locale: input.locale,
       source: input.source,
       campaignId,
+      consentTextVersion: input.consent.textVersion,
+      consentAcceptedAt: new Date(),
     })
     .returning();
   await auditEntry(db, { subjectType: 'lead', actor: `sitio:${input.source}`, action: 'lead.captured', subjectId: lead!.id });
@@ -207,6 +244,8 @@ export async function createManualLead(db: Db, input: LeadManual, ownerId: strin
       locale: input.locale,
       source: input.source,
       sourceReference: input.sourceReference ?? null,
+      // Lo registra el owner a mano: no hay aviso que enviar.
+      notifiedAt: new Date(),
     })
     .returning();
   await auditEntry(db, { subjectType: 'lead', actor: ownerId, action: 'lead.created_manual', subjectId: lead!.id, detail: { source: input.source } });

@@ -151,6 +151,9 @@ function toLeadDto(lead: Lead): LeadDto {
     proposedReason: lead.proposedReason,
     decisionNote: lead.decisionNote,
     revisitAt: lead.revisitAt?.toISOString() ?? null,
+    notifiedAt: lead.notifiedAt?.toISOString() ?? null,
+    notifyAttempts: lead.notifyAttempts,
+    notifyLastError: lead.notifyLastError,
   };
 }
 

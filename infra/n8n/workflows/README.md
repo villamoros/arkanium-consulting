@@ -80,3 +80,24 @@ Recorre confirmar, reprogramar, cancelar, la agenda y el caso de error, y muestr
 ## Exportar para el servidor
 
 En n8n: menú del workflow → **Download**. Guarda el archivo en esta carpeta, reemplazando el anterior, y revisa que no contenga valores de credenciales antes de versionarlo.
+
+## Avisos de leads (`leads-avisos.json`)
+
+Cada dos minutos (y también a mano, con el nodo **Ejecutar a mano**) lee de la API los leads que aún no avisaron, envía el correo con Resend, avisa a Slack y marca cada lead como avisado. Si el correo falla, registra el intento en la API. Después de 10 intentos el lead queda **atascado** para revisión manual.
+
+Endpoints que usa (secreto en la cabecera `X-Arkanium-Secret`):
+
+- `GET /internal/leads/pending-notification`
+- `POST /internal/leads/:id/notified`
+- `POST /internal/leads/:id/notify-failed`
+
+### Configurar en un entorno nuevo
+
+1. **Credenciales en n8n** (Credentials → New):
+   - `Arkanium webhook secret` (Header Auth, cabecera `X-Arkanium-Secret`). Ya existe en el entorno local.
+   - Resend (Header Auth): cabecera `Authorization`, valor `Bearer <clave de Resend>`.
+2. **Abrir el flujo y elegir la credencial de Resend en el nodo "Enviar correo".** El JSON del repositorio no trae el identificador de la credencial (`PENDIENTE`): cada entorno lo asigna al elegirla en la interfaz.
+3. **Variables en `infra/.env`** (no se versionan): `LEAD_EMAIL_FROM`, `LEAD_EMAIL_TO` y `SLACK_WEBHOOK_URL`. Luego reiniciar n8n con `docker compose -f infra/docker-compose.dev.yml --env-file infra/.env up -d n8n`.
+4. **Publicar** el flujo si no está activo.
+
+Los leads se marcan como avisados aunque Slack falle, porque el correo ya salió y reenviarlo duplicaría el aviso.
