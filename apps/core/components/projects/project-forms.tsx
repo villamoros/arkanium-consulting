@@ -1,5 +1,6 @@
 "use client";
 
+import { Notice } from "@/components/ui/notice";
 import { useActionState, useState, type ReactNode } from "react";
 import {
   addMilestoneAction,
@@ -10,15 +11,6 @@ import {
   type ProjectActionState,
 } from "@/app/(protected)/proyectos/actions";
 import { PHASE_LABEL, FAMILY_LABEL } from "@/lib/labels";
-
-function Notice({ state }: { state: ProjectActionState }) {
-  if (!state) return null;
-  return (
-    <p role="status" className={state.ok ? "notice-ok" : "notice-bad"}>
-      {state.message}
-    </p>
-  );
-}
 
 function Disclosure({ label, children }: { label: string; children: () => ReactNode }) {
   const [open, setOpen] = useState(false);

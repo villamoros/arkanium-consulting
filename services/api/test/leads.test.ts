@@ -14,6 +14,7 @@ const intake = {
   context: 'Nuestro ERP responde lento.',
   locale: 'es',
   source: 'website',
+  consent: { accepted: true, textVersion: "2026-10" },
 };
 
 let db: Db;

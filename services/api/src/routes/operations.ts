@@ -20,6 +20,24 @@ import {
   deliverableApprovalSchema,
   deliverableContentSchema,
   deliverableCreateSchema,
+  articleCreateSchema,
+  articleUpdateSchema,
+  billingEmailSchema,
+  campaignBriefSchema,
+  pieceCreateSchema,
+  pieceUpdateSchema,
+  channelCreateSchema,
+  campaignCreateSchema,
+  campaignUpdateSchema,
+  creditNoteSchema,
+  emergencyPauseSchema,
+  landingCreateSchema,
+  landingUpdateSchema,
+  personaContactSchema,
+  personaConvertSchema,
+  personaCreateSchema,
+  personaUpdateSchema,
+  emergencyResumeSchema,
   invoiceDraftSchema,
   meetingConfirmSchema,
   meetingRequestSchema,
@@ -30,13 +48,78 @@ import {
   organizationSuspendSchema,
   projectArchiveSchema,
   projectCreateSchema,
+  proposalCreateSchema,
+  proposalDecisionSchema,
+  proposalVersionSchema,
   projectUpdateSchema,
 } from '@arkanium/contracts';
 import { loadCaller, requireClientAccess, requireOwnerCaller, findOrganization, sendServiceError, type Caller } from '../access.js';
 import type { IdentityGateway } from '../auth/clerk.js';
 import type { BillingGateway } from '../billing/stripe.js';
-import { createDraft, clientInvoiceView, findInvoice, issueInvoice, listInvoices, voidInvoice } from '../billing/service.js';
+import {
+  createCreditNote,
+  createDraft,
+  clientInvoiceView,
+  discardDraft,
+  findInvoice,
+  issueInvoice,
+  listAllInvoices,
+  listInvoices,
+  sendReminder,
+  updateBillingEmail,
+  updateDraft,
+  voidInvoice,
+} from '../billing/service.js';
 import type { CalendarGateway } from '../calendar/n8n.js';
+import { AGENT_DEPARTMENTS, type AgentDepartmentId } from '../agents/catalog.js';
+import {
+  approveBrief,
+  approvePiece,
+  campaignBriefOf,
+  createPiece,
+  discardPiece,
+  findCampaignRow,
+  requestBriefReview,
+  saveBrief,
+  sendPieceToReview,
+  updatePiece,
+} from '../marketing/briefs.js';
+import {
+  addContact,
+  convertPersona,
+  createArticle,
+  createCampaign,
+  getArticle,
+  createLanding,
+  createPersona,
+  deletePersona,
+  createChannel,
+  deleteChannel,
+  discardArticle,
+  listArticles,
+  listCampaigns,
+  listContacts,
+  listPersonas,
+  listUnassignedLandings,
+  publishArticle,
+  sendArticleToReview,
+  updateArticle,
+  updateCampaign,
+  updateLanding,
+  updatePersona,
+} from '../marketing/service.js';
+import {
+  emergencyOverview,
+  internalEmergencyStatus,
+  pauseAgent,
+  pauseAll,
+  pauseDepartment,
+  resumeAgent,
+  resumeAll,
+  resumeDepartment,
+} from '../emergency/service.js';
+import { clientSummary, suspensionReason } from '../organizations/summary.js';
+import { acceptProposal, addVersion, createProposal, listProposals, markSent, proposalDetail, rejectProposal, sendToApproval } from '../proposals/service.js';
 import type { Db } from '../db/client.js';
 import { deliverables } from '../db/schema.js';
 import { listDecisions } from '../decisions/service.js';
@@ -66,9 +149,12 @@ import {
   markReminded,
   ownerMeetingView,
   proposeMeetingTime,
-  publishMinutes,
+  createMinutes,
+  deleteMinutes,
+  minutesHistory,
   rejectMeeting,
   requestMeeting,
+  updateMinutes,
   rescheduleMeeting,
   retryCalendar,
   createManualMeeting,
@@ -77,8 +163,9 @@ import {
   updateMeeting,
 } from '../meetings/service.js';
 import { addSuppression, listSuppressions } from '../suppressions/service.js';
-import { duplicatesOf, leadHistory, LeadError, respondToProposal } from '../leads/service.js';
+import { duplicatesOf, leadHistory, LeadError, markNotified, markNotifyFailed, pendingNotifications, respondToProposal } from '../leads/service.js';
 import { addMilestone, archiveProject, createProject, findProject, listAllProjects, listMilestones, listProjects, updateMilestone, updateProject } from '../projects/service.js';
+import { approvalQueue } from '../approvals/queue.js';
 
 export interface OperationDeps {
   db: Db;
@@ -138,8 +225,33 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     guarded(deps, async (caller, request, reply) => {
       requireOwnerCaller(caller, internalOrgId);
       const organization = await findOrganization(db, request.params.id);
-      const members = organization.clerkOrgId ? await listMembers(identity, organization) : [];
-      return { organization: { id: organization.id, name: organization.name, status: organization.status, billingEmail: organization.billingEmail }, members };
+      // Si Clerk no reconoce la organización (por ejemplo, una de prueba), la ficha se muestra igual, sin personas.
+      let members: Awaited<ReturnType<typeof listMembers>> = [];
+      let membersUnavailable = false;
+      if (organization.clerkOrgId) {
+        try {
+          members = await listMembers(identity, organization);
+        } catch {
+          membersUnavailable = true;
+        }
+      }
+      let invitations: Awaited<ReturnType<typeof identity.listInvitations>> = [];
+      let invitationsUnavailable = false;
+      if (organization.clerkOrgId) {
+        try {
+          invitations = await identity.listInvitations(organization.clerkOrgId);
+        } catch {
+          invitationsUnavailable = true;
+        }
+      }
+      const suspendedReason = organization.status === 'suspended' ? await suspensionReason(db, organization.id) : null;
+      return {
+        organization: { id: organization.id, name: organization.name, status: organization.status, billingEmail: organization.billingEmail, suspendedReason },
+        members,
+        membersUnavailable,
+        invitations,
+        invitationsUnavailable,
+      };
     }),
   );
 
@@ -250,7 +362,7 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     guarded(deps, async (caller) => {
       requireOwnerCaller(caller, internalOrgId);
       const rows = await listAllProjects(db);
-      return { projects: rows.map((row) => ({ ...projectDto(row), organizationName: row.organizationName })) };
+      return { projects: rows.map((row) => ({ ...projectDto(row), organizationId: row.organizationId, organizationName: row.organizationName })) };
     }),
   );
 
@@ -520,7 +632,12 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     '/client-organizations',
     guarded(deps, async (caller) => {
       requireOwnerCaller(caller, internalOrgId);
-      return { organizations: await listClientOrganizations(db) };
+      // Cada cliente trae su resumen: personas (para buscar), invitaciones pendientes y estado de Clerk.
+      const clients = await listClientOrganizations(db);
+      const organizationsWithSummary = await Promise.all(
+        clients.map(async ({ clerkOrgId, ...client }) => ({ ...client, ...(await clientSummary(identity, { id: client.id, clerkOrgId })) })),
+      );
+      return { organizations: organizationsWithSummary };
     }),
   );
 
@@ -556,6 +673,113 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
       const body = parseBody(meetingDeleteSchema, request, reply);
       if (!body) return;
       return deleteMeeting(db, calendar, request.params.id, body, caller.userId);
+    }),
+  );
+
+  // ───────────── Aprobaciones (Core): lo que espera tu decisión, leído de los estados de cada módulo ─────────────
+
+  app.get(
+    '/approvals',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { approvals: await approvalQueue(db) };
+    }),
+  );
+
+  // Core: todas las facturas (cobrado, por cobrar y borradores).
+  app.get(
+    '/invoices',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { invoices: await listAllInvoices(db) };
+    }),
+  );
+
+  // ───────────── Propuestas (Core): versiones, aprobación, envío y decisión del cliente ─────────────
+
+  // Core: todas las propuestas con su versión vigente.
+  app.get(
+    '/proposals',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { proposals: await listProposals(db) };
+    }),
+  );
+
+  // Core: crear una propuesta (borrador, versión 1) para un cliente o un lead calificado.
+  app.post(
+    '/proposals',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalCreateSchema, request, reply);
+      if (!body) return;
+      const { proposal, version } = await createProposal(db, body, caller.userId);
+      return reply.code(201).send({ id: proposal.id, status: proposal.status, currentVersion: version.version });
+    }),
+  );
+
+  // Core: detalle de una propuesta con su historial de versiones.
+  app.get<{ Params: { id: string } }>(
+    '/proposals/:id',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return proposalDetail(db, request.params.id);
+    }),
+  );
+
+  // Core: nueva versión (solo en borrador).
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/versions',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalVersionSchema, request, reply);
+      if (!body) return;
+      const { proposal } = await addVersion(db, request.params.id, body, caller.userId);
+      return { id: proposal.id, status: proposal.status, currentVersion: proposal.currentVersion };
+    }),
+  );
+
+  // Core: enviar a aprobación (requiere precio confirmado).
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/approval',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const proposal = await sendToApproval(db, request.params.id, caller.userId);
+      return { id: proposal.id, status: proposal.status };
+    }),
+  );
+
+  // Core: el owner aprueba el envío y lo registra como enviado (no envía correos).
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/sent',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const proposal = await markSent(db, request.params.id, caller.userId);
+      return { id: proposal.id, status: proposal.status };
+    }),
+  );
+
+  // Core: registrar la aceptación con la referencia de la firma adjunta.
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/accept',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalDecisionSchema, request, reply);
+      if (!body) return;
+      const proposal = await acceptProposal(db, request.params.id, body, caller.userId);
+      return { id: proposal.id, status: proposal.status };
+    }),
+  );
+
+  // Core: registrar el rechazo con su motivo.
+  app.post<{ Params: { id: string } }>(
+    '/proposals/:id/reject',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(proposalDecisionSchema, request, reply);
+      if (!body) return;
+      const proposal = await rejectProposal(db, request.params.id, body, caller.userId);
+      return { id: proposal.id, status: proposal.status };
     }),
   );
 
@@ -620,6 +844,46 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
 
   // ───────────── Rutas internas para n8n (recordatorios). Usan el secreto del webhook, no una sesión. ─────────────
 
+  // Leads que todavía no avisaron por correo y Slack. n8n los lee en cada pasada y marca los que avisó.
+  app.get('/internal/leads/pending-notification', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    const pending = await pendingNotifications(db);
+    return {
+      leads: pending.map((lead) => ({
+        id: lead.id,
+        name: lead.name,
+        email: lead.email,
+        company: lead.company,
+        priority: lead.priorityChoice,
+        context: lead.context,
+        locale: lead.locale,
+        source: lead.source,
+        sourceReference: lead.sourceReference,
+        receivedAt: lead.receivedAt.toISOString(),
+        consentTextVersion: lead.consentTextVersion,
+        consentAcceptedAt: lead.consentAcceptedAt?.toISOString() ?? null,
+        notifyAttempts: lead.notifyAttempts,
+      })),
+    };
+  });
+
+  app.post<{ Params: { id: string } }>('/internal/leads/:id/notified', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    try {
+      await markNotified(db, request.params.id);
+      return reply.code(204).send();
+    } catch (error) {
+      if (error instanceof ServiceError) return sendServiceError(reply, error);
+      throw error;
+    }
+  });
+
+  app.post<{ Params: { id: string }; Body: { error?: string } }>('/internal/leads/:id/notify-failed', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    await markNotifyFailed(db, request.params.id, String(request.body?.error ?? 'error desconocido'));
+    return reply.code(204).send();
+  });
+
   app.get<{ Querystring: { hours?: string } }>('/internal/meetings/due-reminders', async (request, reply) => {
     if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
     const hours = Math.min(Math.max(Number(request.query.hours ?? 24) || 24, 1), 168);
@@ -637,13 +901,44 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     }
   });
 
+  // Core: crear el acta de una reunión que ya empezó. Queda visible para el cliente.
   app.post<{ Params: { id: string } }>(
     '/meetings/:id/minutes',
     guarded(deps, async (caller, request, reply) => {
       requireOwnerCaller(caller, internalOrgId);
       const body = parseBody(minutesPublishSchema, request, reply);
       if (!body) return;
-      return clientMeetingView(await publishMinutes(db, request.params.id, body.text, caller.userId));
+      return clientMeetingView(await createMinutes(db, request.params.id, body.text, caller.userId));
+    }),
+  );
+
+  // Core: editar el acta existente. Lo anterior queda en la bitácora.
+  app.put<{ Params: { id: string } }>(
+    '/meetings/:id/minutes',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(minutesPublishSchema, request, reply);
+      if (!body) return;
+      return clientMeetingView(await updateMinutes(db, request.params.id, body.text, caller.userId));
+    }),
+  );
+
+  // Core: eliminar el acta. Deja de verla el cliente; el texto queda en la bitácora.
+  app.delete<{ Params: { id: string } }>(
+    '/meetings/:id/minutes',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await deleteMinutes(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  // Core: historial del acta (creación, ediciones y eliminación).
+  app.get<{ Params: { id: string } }>(
+    '/meetings/:id/minutes/history',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { history: await minutesHistory(db, request.params.id) };
     }),
   );
 
@@ -679,6 +974,420 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
     }),
   );
 
+  // Core: corregir un borrador (concepto, proyecto, plazo y líneas). Una factura emitida no se edita.
+  app.put<{ Params: { id: string } }>(
+    '/invoices/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(invoiceDraftSchema, request, reply);
+      if (!body) return;
+      return clientInvoiceView(await updateDraft(db, request.params.id, body, caller.userId), false);
+    }),
+  );
+
+  // Core: descartar un borrador (borrado lógico). No llega a Stripe porque nunca se emitió.
+  app.delete<{ Params: { id: string } }>(
+    '/invoices/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await discardDraft(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  // Core: reenviar una factura emitida y sin pagar (recordatorio).
+  app.post<{ Params: { id: string } }>(
+    '/invoices/:id/reminder',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      if (!billing) throw new ServiceError(503, 'billing_unavailable', 'La facturación no está configurada.');
+      return clientInvoiceView(await sendReminder(db, billing, request.params.id, caller.userId), false);
+    }),
+  );
+
+  // Core: nota de crédito sobre una factura pagada; el monto vuelve al cliente desde Stripe.
+  app.post<{ Params: { id: string } }>(
+    '/invoices/:id/credit-notes',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      if (!billing) throw new ServiceError(503, 'billing_unavailable', 'La facturación no está configurada.');
+      const body = parseBody(creditNoteSchema, request, reply);
+      if (!body) return;
+      const note = await createCreditNote(db, billing, request.params.id, body, caller.userId);
+      return reply.code(201).send({ id: note.id, amountCents: note.amountCents, reason: note.reason });
+    }),
+  );
+
+  // Core: correo de facturación del cliente. Es el destino de cada factura que Stripe envía.
+  app.patch<{ Params: { id: string } }>(
+    '/organizations/:id/billing-email',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(billingEmailSchema, request, reply);
+      if (!body) return;
+      const organization = await updateBillingEmail(db, billing, request.params.id, body.billingEmail, caller.userId);
+      return { billingEmail: organization.billingEmail };
+    }),
+  );
+
+  // ───────────── Mercadeo (Core): campañas, landing pages, buyer personas e Insights ─────────────
+
+  app.get(
+    '/campaigns',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { campaigns: await listCampaigns(db), landings: await listUnassignedLandings(db) };
+    }),
+  );
+
+  app.post(
+    '/campaigns',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(campaignCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createCampaign(db, body, caller.userId));
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/campaigns/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(campaignUpdateSchema, request, reply);
+      if (!body) return;
+      return updateCampaign(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  // Brief de campaña: instrucciones para el agente. Se revisa y se aprueba antes de producir piezas.
+  app.put<{ Params: { id: string } }>(
+    '/campaigns/:id/brief',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(campaignBriefSchema, request, reply);
+      if (!body) return;
+      await saveBrief(db, request.params.id, body, caller.userId);
+      return campaignBriefOf(db, await findCampaignRow(db, request.params.id));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/brief/review',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await requestBriefReview(db, request.params.id, caller.userId);
+      return campaignBriefOf(db, await findCampaignRow(db, request.params.id));
+    }),
+  );
+
+  // Se llama desde Aprobaciones, con tu decisión.
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/brief/approve',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await approveBrief(db, request.params.id, caller.userId);
+      return campaignBriefOf(db, await findCampaignRow(db, request.params.id));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/pieces',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(pieceCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createPiece(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/channels',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(channelCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createChannel(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/campaign-channels/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await deleteChannel(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/campaign-pieces/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(pieceUpdateSchema, request, reply);
+      if (!body) return;
+      return updatePiece(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaign-pieces/:id/review',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return sendPieceToReview(db, request.params.id, caller.userId);
+    }),
+  );
+
+  // Se llama desde Aprobaciones, con tu decisión. Publicarla lo hace el agente después.
+  app.post<{ Params: { id: string } }>(
+    '/campaign-pieces/:id/approve',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return approvePiece(db, request.params.id, caller.userId);
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/campaign-pieces/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await discardPiece(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  app.post(
+    '/landing-pages',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(landingCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createLanding(db, body, caller.userId));
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/landing-pages/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(landingUpdateSchema, request, reply);
+      if (!body) return;
+      return updateLanding(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.get(
+    '/buyer-personas',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return listPersonas(db, new Date());
+    }),
+  );
+
+  app.post(
+    '/buyer-personas',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createPersona(db, body, caller.userId));
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/buyer-personas/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaUpdateSchema, request, reply);
+      if (!body) return;
+      return updatePersona(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/buyer-personas/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await deletePersona(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  app.get<{ Params: { id: string } }>(
+    '/buyer-personas/:id/contacts',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { contacts: await listContacts(db, request.params.id) };
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/buyer-personas/:id/contacts',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaContactSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await addContact(db, request.params.id, body, caller.userId, new Date()));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/buyer-personas/:id/convert',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(personaConvertSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await convertPersona(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  app.get(
+    '/articles',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return { articles: await listArticles(db) };
+    }),
+  );
+
+  app.post(
+    '/articles',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(articleCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createArticle(db, body, caller.userId));
+    }),
+  );
+
+  // Core: un artículo completo, con el contenido de cada idioma, para el editor.
+  app.get<{ Params: { id: string } }>(
+    '/articles/:id',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return getArticle(db, request.params.id);
+    }),
+  );
+
+  app.patch<{ Params: { id: string } }>(
+    '/articles/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(articleUpdateSchema, request, reply);
+      if (!body) return;
+      return updateArticle(db, request.params.id, body, caller.userId);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/articles/:id/review',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return sendArticleToReview(db, request.params.id, caller.userId);
+    }),
+  );
+
+  // Se llama desde Aprobaciones, con tu decisión. Nada sale al sitio antes.
+  app.post<{ Params: { id: string } }>(
+    '/articles/:id/publish',
+    guarded(deps, async (caller, request) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return publishArticle(db, request.params.id, caller.userId);
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/articles/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await discardArticle(db, request.params.id, caller.userId);
+      return reply.code(204).send();
+    }),
+  );
+
+  // ───────────── Pausas de emergencia (ARK-ARCH-003, sección 4) ─────────────
+
+  app.get(
+    '/emergency',
+    guarded(deps, async (caller) => {
+      requireOwnerCaller(caller, internalOrgId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post(
+    '/emergency/pause-all',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(emergencyPauseSchema, request, reply);
+      if (!body) return;
+      await pauseAll(db, body.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post(
+    '/emergency/resume-all',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const parsed = emergencyResumeSchema.safeParse(request.body ?? {});
+      if (!parsed.success) return reply.code(400).send({ error: 'invalid', message: 'El motivo es demasiado largo.' });
+      await resumeAll(db, parsed.data.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { department: string } }>(
+    '/emergency/departments/:department/pause',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const department = departmentOf(request.params.department);
+      const body = parseBody(emergencyPauseSchema, request, reply);
+      if (!body) return;
+      await pauseDepartment(db, department, body.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { department: string } }>(
+    '/emergency/departments/:department/resume',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const department = departmentOf(request.params.department);
+      const parsed = emergencyResumeSchema.safeParse(request.body ?? {});
+      if (!parsed.success) return reply.code(400).send({ error: 'invalid', message: 'El motivo es demasiado largo.' });
+      await resumeDepartment(db, department, parsed.data.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/agents/:id/pause',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(emergencyPauseSchema, request, reply);
+      if (!body) return;
+      await pauseAgent(db, request.params.id, body.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/agents/:id/resume',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const parsed = emergencyResumeSchema.safeParse(request.body ?? {});
+      if (!parsed.success) return reply.code(400).send({ error: 'invalid', message: 'El motivo es demasiado largo.' });
+      await resumeAgent(db, request.params.id, parsed.data.reason, caller.userId);
+      return emergencyOverview(db);
+    }),
+  );
+
+  // Estado para los agentes y para Control. Usa el secreto interno, no una sesión.
+  app.get('/internal/emergency', async (request, reply) => {
+    if (!isInternalCall(request, deps.internalSecret)) return reply.code(401).send({ error: 'unauthorized' });
+    return internalEmergencyStatus(db);
+  });
+
   // Factura del cliente. El enlace de pago solo lo ve un administrador de la organización.
   app.get<{ Params: { id: string } }>(
     '/invoices/:id',
@@ -689,6 +1398,13 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
       return clientInvoiceView(invoice, role === 'org:admin' || role === 'owner');
     }),
   );
+}
+
+/** Departamento de la ruta. Si no existe en el organigrama, es un 404 y no un error del servidor. */
+function departmentOf(value: string): AgentDepartmentId {
+  const found = AGENT_DEPARTMENTS.find((department) => department.id === value);
+  if (!found) throw new ServiceError(404, 'not_found', 'Departamento no encontrado.');
+  return found.id;
 }
 
 function projectDto(project: Awaited<ReturnType<typeof findProject>>) {

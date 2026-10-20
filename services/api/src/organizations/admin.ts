@@ -12,6 +12,7 @@ import type { Db } from '../db/client.js';
 import { organizations } from '../db/schema.js';
 import { ServiceError } from '../errors.js';
 import type { Organization } from '../access.js';
+import { forgetSummary } from './summary.js';
 
 export async function setOrganizationStatus(
   db: Db,
@@ -56,6 +57,7 @@ export async function changeMemberRole(
   }
 
   await identity.updateMemberRole({ orgId: organization.clerkOrgId, userId: input.userId, role: input.role });
+  forgetSummary(organization.id);
   await audit(db, {
     actor: input.actor,
     action: 'member.role_changed',
@@ -83,5 +85,6 @@ export async function removeMemberGuarded(
   }
 
   await identity.removeMember({ orgId: organization.clerkOrgId, userId: input.userId });
+  forgetSummary(organization.id);
   await audit(db, { actor: input.actor, action: 'member.removed', subjectType: 'organization', subjectId: organization.id, detail: { userId: input.userId } });
 }

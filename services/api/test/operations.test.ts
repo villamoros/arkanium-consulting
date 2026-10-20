@@ -56,6 +56,16 @@ function fakeBilling() {
     async voidInvoice(id) {
       calls.push({ op: 'voidInvoice', input: id });
     },
+    async updateCustomerEmail(customerId, email) {
+      calls.push({ op: 'updateCustomerEmail', input: { customerId, email } });
+    },
+    async sendInvoice(id) {
+      calls.push({ op: 'sendInvoice', input: id });
+    },
+    async createCreditNote(input) {
+      calls.push({ op: 'createCreditNote', input });
+      return { id: `cn_${calls.length}` };
+    },
   };
   return gateway;
 }
@@ -321,7 +331,7 @@ describe('F-10 y A-06 facturas', () => {
     const response = await call('POST', `/organizations/${clientOrgId}/invoices`, 'token-owner', {
       projectId,
       concept: 'Anticipo 50% del diagnóstico',
-      amountCents,
+      lines: [{ description: 'Anticipo 50% del diagnóstico', quantity: 1, unitAmountCents: amountCents }],
       dueDays: 15,
     });
     return response.json() as { id: string; number: string; status: string };

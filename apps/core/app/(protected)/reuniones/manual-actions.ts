@@ -1,19 +1,15 @@
 "use server";
 
+import { messageOf, isUuid } from "@/lib/action-helpers";
+
 import { revalidatePath } from "next/cache";
-import { ApiError, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { bogotaToIso } from "@/lib/time";
 import type { MeetingActionState } from "./actions";
 
 type CalendarSync = { status: "sincronizada"; htmlLink: string; meetLink: string | null } | { status: "pendiente"; reason: string } | { status: "no_configurada" };
 
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function messageOf(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  return "No pudimos completar la acción. Intenta de nuevo.";
-}
 
 /** Correos separados por comas, espacios o saltos de línea. Devuelve null si alguno no es válido. */
 function parseAttendees(raw: string): string[] | null {
@@ -37,7 +33,7 @@ export async function createManualMeetingAction(_previous: MeetingActionState, f
   const kind = String(formData.get("kind") ?? "");
   const target = String(formData.get("target") ?? "");
   if (kind !== "cliente" && kind !== "lead") return { ok: false, message: "Elige si la reunión es con un cliente o con un lead." };
-  if (!uuid.test(target)) return { ok: false, message: "Elige el cliente o el lead." };
+  if (!isUuid(target)) return { ok: false, message: "Elige el cliente o el lead." };
 
   const topic = String(formData.get("topic") ?? "").trim();
   if (!topic) return { ok: false, message: "Escribe el tema de la reunión." };
@@ -70,7 +66,7 @@ export async function createManualMeetingAction(_previous: MeetingActionState, f
 // Corregir a mano: solo se envían los campos que se llenaron.
 export async function updateMeetingAction(_previous: MeetingActionState, formData: FormData): Promise<MeetingActionState> {
   const meetingId = String(formData.get("meetingId") ?? "");
-  if (!uuid.test(meetingId)) return { ok: false, message: "Reunión no válida." };
+  if (!isUuid(meetingId)) return { ok: false, message: "Reunión no válida." };
 
   const body: Record<string, unknown> = {};
   const topic = String(formData.get("topic") ?? "").trim();
@@ -106,7 +102,7 @@ export async function updateMeetingAction(_previous: MeetingActionState, formDat
 // Eliminar: borrado lógico. Si el calendario no puede quitar el evento, no se elimina salvo que se marque «forzar».
 export async function deleteMeetingAction(_previous: MeetingActionState, formData: FormData): Promise<MeetingActionState> {
   const meetingId = String(formData.get("meetingId") ?? "");
-  if (!uuid.test(meetingId)) return { ok: false, message: "Reunión no válida." };
+  if (!isUuid(meetingId)) return { ok: false, message: "Reunión no válida." };
   const reason = String(formData.get("reason") ?? "").trim();
   if (!reason) return { ok: false, message: "Escribe el motivo para eliminarla." };
 

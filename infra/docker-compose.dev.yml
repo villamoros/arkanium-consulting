@@ -41,6 +41,12 @@ services:
       TZ: America/Bogota
       N8N_DIAGNOSTICS_ENABLED: "false"
       N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      # Avisos de leads: la API corre en el equipo (puerto 3000) y los secretos vienen de infra/.env.
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      ARKANIUM_API_URL: http://host.docker.internal:3000
+      LEAD_EMAIL_FROM: ${LEAD_EMAIL_FROM}
+      LEAD_EMAIL_TO: ${LEAD_EMAIL_TO}
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL}
     ports:
       - "5678:5678"
     volumes:

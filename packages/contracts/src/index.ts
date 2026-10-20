@@ -5,3 +5,4 @@
 export { healthResponseSchema, type HealthResponse } from './health.js';
 export * from './leads.js';
 export * from './operations.js';
+export * from './marketing.js';

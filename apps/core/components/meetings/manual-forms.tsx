@@ -1,19 +1,11 @@
 "use client";
 
+import { Notice } from "@/components/ui/notice";
 import { useActionState, useState, type ReactNode } from "react";
 import { createManualMeetingAction, deleteMeetingAction, updateMeetingAction } from "@/app/(protected)/reuniones/manual-actions";
 import type { MeetingActionState } from "@/app/(protected)/reuniones/actions";
 
 const DURATIONS = [30, 60, 90, 120];
-
-function Notice({ state }: { state: MeetingActionState }) {
-  if (!state) return null;
-  return (
-    <p role="status" className={state.ok ? "notice-ok" : "notice-bad"}>
-      {state.message}
-    </p>
-  );
-}
 
 function Disclosure({ label, children }: { label: string; children: () => ReactNode }) {
   const [open, setOpen] = useState(false);

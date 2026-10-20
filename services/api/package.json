@@ -12,7 +12,9 @@
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "smoke:calendar": "tsx --env-file-if-exists=.env.local scripts/smoke-calendar.ts"
+    "smoke:calendar": "tsx --env-file-if-exists=.env.local scripts/smoke-calendar.ts",
+    "quality": "pnpm typecheck && pnpm test",
+    "quality:full": "pnpm quality"
   },
   "dependencies": {
     "@arkanium/contracts": "workspace:*",

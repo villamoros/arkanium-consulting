@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
+import { requestNow } from "@/lib/request-time";
 import type { Lead } from "@arkanium/contracts";
 import { ApiError, apiFetch } from "@/lib/api";
 import { FAMILY_LABEL, LEAD_EVENT_LABEL, LEAD_STATUS_LABEL, MEETING_STATUS_LABEL, PRIORITY_LABEL, SOURCE_LABEL, formatDate } from "@/lib/labels";
@@ -47,9 +47,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
     apiFetch<{ suppressions: Array<{ email: string }> }>("/suppressions").catch(() => ({ suppressions: [] as Array<{ email: string }> })),
   ]);
 
-  // Depende de cuándo se atiende la petición: connection() lo marca como dinámico.
-  await connection();
-  const now = Date.now();
+  const now = (await requestNow()).getTime();
 
   const suppressed = suppressionList.suppressions.some((s) => s.email === lead.email.toLowerCase());
   const active = lead.status !== "convertido" && lead.status !== "descartado";
@@ -77,6 +75,14 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
         <p role="alert" className="notice-bad" style={{ marginBottom: 16 }}>
           Este correo está en la lista de supresión. No se le puede enviar ninguna invitación ni contacto de Arkanium.
         </p>
+      ) : null}
+
+      {lead.notifiedAt === null && lead.notifyAttempts >= 10 ? (
+        <p className="notice-bad" style={{ marginBottom: 16 }} role="status">
+          Aviso atascado: {lead.notifyAttempts} intentos sin éxito. Último error: {lead.notifyLastError ?? "desconocido"}. Revisa el correo y Slack a mano.
+        </p>
+      ) : lead.notifiedAt === null ? (
+        <p className="sub" style={{ marginBottom: 16 }}>Aviso por correo y Slack pendiente.</p>
       ) : null}
 
       {lead.status === "pospuesto" && lead.revisitAt ? (

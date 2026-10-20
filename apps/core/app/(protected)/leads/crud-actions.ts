@@ -1,17 +1,12 @@
 "use server";
 
+import { messageOf, isUuid } from "@/lib/action-helpers";
+
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { leadDeleteSchema, leadManualSchema, leadUpdateSchema, type Lead } from "@arkanium/contracts";
-import { ApiError, apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import type { ActionState } from "./actions";
-
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function messageOf(error: unknown): string {
-  if (error instanceof ApiError) return error.message;
-  return "No pudimos completar la acción. Intenta de nuevo.";
-}
 
 /** Texto de un campo; vacío se trata como ausente. */
 function field(formData: FormData, key: string): string | undefined {
@@ -48,7 +43,7 @@ export async function createManualLeadAction(_previous: ActionState, formData: F
 // Edición de datos. Un lead convertido no se edita aquí: la API lo rechaza con un mensaje claro.
 export async function updateLeadAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
   const leadId = String(formData.get("leadId") ?? "");
-  if (!uuid.test(leadId)) return { ok: false, message: "Lead no válido." };
+  if (!isUuid(leadId)) return { ok: false, message: "Lead no válido." };
 
   // Solo se envían los campos que llegaron en el formulario: un lead convertido tiene menos campos editables.
   const nullable = ["company", "context", "sourceReference"];
@@ -75,7 +70,7 @@ export async function updateLeadAction(_previous: ActionState, formData: FormDat
 // Eliminación suave. Exige motivo; el registro se conserva y la lista deja de mostrarlo.
 export async function deleteLeadAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
   const leadId = String(formData.get("leadId") ?? "");
-  if (!uuid.test(leadId)) return { ok: false, message: "Lead no válido." };
+  if (!isUuid(leadId)) return { ok: false, message: "Lead no válido." };
 
   const parsed = leadDeleteSchema.safeParse({ reason: field(formData, "reason") });
   if (!parsed.success) return { ok: false, message: "Escribe el motivo para eliminar el lead." };

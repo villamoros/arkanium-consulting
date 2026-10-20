@@ -24,6 +24,7 @@ const app = buildApp({
 
 if (!config.databaseUrl) app.log.warn('DATABASE_URL no está definida: las rutas de leads no están disponibles.');
 if (!config.stripeSecretKey) app.log.warn('STRIPE_SECRET_KEY no está definida: emitir facturas no está disponible.');
+if (config.stripeSecretKey && !config.stripeWebhookSecret) app.log.warn('STRIPE_WEBHOOK_SECRET no está definida: los pagos no se reflejarán solos. Ver services/api/README.md (Stripe CLI).');
 if (!config.n8nWebhookBaseUrl || !config.n8nWebhookSecret) app.log.warn('N8N_WEBHOOK_BASE_URL o N8N_WEBHOOK_SECRET no están definidas: las reuniones se confirman sin tocar el calendario.');
 
 try {
