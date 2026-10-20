@@ -3,14 +3,14 @@
  *
  * Reglas:
  *  - Una campaña no se activa sin brief aprobado.
- *  - El agente solo produce piezas con el brief aprobado, y solo para las redes del brief.
+ *  - El agente solo produce piezas con el brief aprobado, y solo para las redes del brief o para el newsletter si la campaña tiene ese canal.
  *  - Cada pieza se aprueba por separado antes de publicarse. Publicar y pausar lo hace el agente desde Control.
  *  - Editar un brief o una pieza ya aprobados los devuelve a borrador: la aprobación anterior ya no aplica.
  */
 import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
 import { audit } from '../audit.js';
 import type { Db } from '../db/client.js';
-import { buyerPersonas, campaignPersonas, campaignPieces, campaigns } from '../db/schema.js';
+import { buyerPersonas, campaignChannels, campaignPersonas, campaignPieces, campaigns } from '../db/schema.js';
 import { ServiceError } from '../errors.js';
 import type { CampaignBrief, PieceCreate, PieceUpdate } from '@arkanium/contracts';
 
@@ -143,7 +143,15 @@ export async function approveBrief(db: Db, campaignId: string, actor: string) {
 export async function createPiece(db: Db, campaignId: string, input: PieceCreate, actor: string) {
   const campaign = await findCampaignRow(db, campaignId);
   if (campaign.briefStatus !== 'aprobado') throw new ServiceError(409, 'invalid_state', 'Aprueba el brief antes de crear piezas.');
-  if (!campaign.networks.includes(input.network)) {
+  if (input.network === 'newsletter') {
+    // El newsletter sale por canal, no por red social: debe existir un canal newsletter en la campaña.
+    const [channel] = await db
+      .select({ id: campaignChannels.id })
+      .from(campaignChannels)
+      .where(and(eq(campaignChannels.campaignId, campaignId), eq(campaignChannels.kind, 'newsletter'), isNull(campaignChannels.deletedAt)))
+      .limit(1);
+    if (!channel) throw new ServiceError(409, 'invalid_state', 'Agrega un canal de newsletter a la campaña antes de crear piezas.');
+  } else if (!campaign.networks.includes(input.network)) {
     throw new ServiceError(409, 'invalid_state', `La campaña no incluye la red ${input.network}.`);
   }
   const [piece] = await db

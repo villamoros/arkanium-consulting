@@ -5,7 +5,7 @@
  *
  * SQL estándar: el mismo esquema funciona en PostgreSQL local y en Supabase.
  */
-import { boolean, customType, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import { boolean, customType, date, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 /** Binario en PostgreSQL. Pensado para entregables pequeños en esta fase; ver deliverables. */
 const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
@@ -562,4 +562,31 @@ export const campaignPieces = pgTable(
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
   },
   (t) => [index('campaign_pieces_campaign_idx').on(t.campaignId)],
+);
+
+/** Tipo de canal donde se publica o se entrega el contenido de una campaña. */
+export const channelKind = pgEnum('channel_kind', ['red_social', 'newsletter', 'landing', 'anuncio_pagado']);
+
+/**
+ * Canal de una campaña: red social, newsletter, landing o anuncio pagado.
+ * Las redes del brief siguen en campaigns.networks; los canales nuevos (newsletter y los demás) viven aquí.
+ */
+export const campaignChannels = pgTable(
+  'campaign_channels',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    campaignId: uuid('campaign_id')
+      .notNull()
+      .references(() => campaigns.id),
+    kind: channelKind('kind').notNull(),
+    /** Plataforma o proveedor: la red, el proveedor del newsletter o el sitio de la landing. */
+    platform: text('platform').notNull(),
+    budgetCents: integer('budget_cents'),
+    startsOn: date('starts_on', { mode: 'string' }),
+    endsOn: date('ends_on', { mode: 'string' }),
+    createdBy: text('created_by').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  },
+  (t) => [index('campaign_channels_campaign_idx').on(t.campaignId)],
 );

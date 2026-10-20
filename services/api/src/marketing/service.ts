@@ -10,11 +10,11 @@
 import { and, asc, desc, eq, gte, isNull, sql } from 'drizzle-orm';
 import { audit } from '../audit.js';
 import type { Db } from '../db/client.js';
-import { articles, buyerPersonas, campaignPersonas, campaignPieces, campaigns, landingPages, leads, personaContacts } from '../db/schema.js';
+import { articles, buyerPersonas, campaignChannels, campaignPersonas, campaignPieces, campaigns, landingPages, leads, personaContacts } from '../db/schema.js';
 import { pieceDto } from './briefs.js';
 import { ServiceError } from '../errors.js';
 import { createManualLead } from '../leads/service.js';
-import { DAILY_CONTACT_CAP, type ArticleCreate, type CampaignCreate, type LeadManual, type PersonaCreate } from '@arkanium/contracts';
+import { DAILY_CONTACT_CAP, type ArticleCreate, type CampaignCreate, type ChannelCreate, type LeadManual, type PersonaCreate } from '@arkanium/contracts';
 
 const BOGOTA_OFFSET_MS = 5 * 60 * 60 * 1000;
 
@@ -44,6 +44,11 @@ export async function listCampaigns(db: Db) {
     .where(sql`${leads.campaignId} is not null`)
     .groupBy(leads.campaignId);
   const personaRows = await db.select().from(campaignPersonas);
+  const channelRows = await db
+    .select()
+    .from(campaignChannels)
+    .where(isNull(campaignChannels.deletedAt))
+    .orderBy(asc(campaignChannels.createdAt));
   const pieceRows = await db
     .select()
     .from(campaignPieces)
@@ -67,7 +72,12 @@ export async function listCampaigns(db: Db) {
     createdAt: campaign.createdAt.toISOString(),
     leads: leadCounts.find((count) => count.campaignId === campaign.id)?.total ?? 0,
     landings: landings.filter((landing) => landing.campaignId === campaign.id).map(landingDto),
+    channels: channelRows.filter((channel) => channel.campaignId === campaign.id).map(channelDto),
   }));
+}
+
+function channelDto(channel: typeof campaignChannels.$inferSelect) {
+  return { id: channel.id, kind: channel.kind, platform: channel.platform, budgetCents: channel.budgetCents, startsOn: channel.startsOn, endsOn: channel.endsOn };
 }
 
 function landingDto(landing: typeof landingPages.$inferSelect) {
@@ -108,6 +118,42 @@ export async function updateCampaign(
   const [updated] = await db.update(campaigns).set(values).where(eq(campaigns.id, id)).returning();
   await audit(db, { actor, action: 'campaign.updated', subjectType: 'campaign', subjectId: id, detail: { from: current.status, to: updated!.status } });
   return updated!;
+}
+
+/** Canal nuevo de una campaña (newsletter, landing, anuncio pagado o red social fuera del brief). Una campaña cerrada no recibe canales. */
+export async function createChannel(db: Db, campaignId: string, input: ChannelCreate, actor: string) {
+  const campaign = await findCampaign(db, campaignId);
+  if (campaign.status === 'cerrada') throw new ServiceError(409, 'invalid_state', 'Una campaña cerrada no recibe canales nuevos.');
+  const [channel] = await db
+    .insert(campaignChannels)
+    .values({
+      campaignId,
+      kind: input.kind,
+      platform: input.platform,
+      budgetCents: input.budgetCents ?? null,
+      startsOn: input.startsOn ?? null,
+      endsOn: input.endsOn ?? null,
+      createdBy: actor,
+    })
+    .returning();
+  await audit(db, { actor, action: 'channel.created', subjectType: 'campaign', subjectId: campaignId, detail: { kind: input.kind, platform: input.platform } });
+  return channelDto(channel!);
+}
+
+/** Quita un canal (borrado lógico). Un newsletter con piezas vivas no se quita: primero se descartan sus piezas. */
+export async function deleteChannel(db: Db, channelId: string, actor: string): Promise<void> {
+  const [channel] = await db.select().from(campaignChannels).where(and(eq(campaignChannels.id, channelId), isNull(campaignChannels.deletedAt)));
+  if (!channel) throw new ServiceError(404, 'not_found', 'Canal no encontrado.');
+  if (channel.kind === 'newsletter') {
+    const [live] = await db
+      .select({ id: campaignPieces.id })
+      .from(campaignPieces)
+      .where(and(eq(campaignPieces.campaignId, channel.campaignId), eq(campaignPieces.network, 'newsletter'), isNull(campaignPieces.deletedAt)))
+      .limit(1);
+    if (live) throw new ServiceError(409, 'invalid_state', 'Hay piezas de newsletter en esta campaña. Descártalas antes de quitar el canal.');
+  }
+  await db.update(campaignChannels).set({ deletedAt: new Date() }).where(eq(campaignChannels.id, channelId));
+  await audit(db, { actor, action: 'channel.removed', subjectType: 'campaign', subjectId: channel.campaignId, detail: { kind: channel.kind, platform: channel.platform } });
 }
 
 async function findCampaign(db: Db, id: string) {

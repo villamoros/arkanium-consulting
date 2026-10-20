@@ -7,7 +7,7 @@ import { marketingAction, type MarketingActionState } from "@/app/(protected)/me
 export type MktField = {
   name: string;
   label: string;
-  kind?: "text" | "textarea" | "email" | "url" | "select" | "checkboxes";
+  kind?: "text" | "textarea" | "email" | "url" | "date" | "select" | "checkboxes";
   options?: Array<{ value: string; label: string }>;
   required?: boolean;
   placeholder?: string;
@@ -76,7 +76,7 @@ export function MktForm({
             </span>
           ) : (
             <input
-              type={field.kind === "email" ? "email" : field.kind === "url" ? "url" : "text"}
+              type={field.kind === "email" ? "email" : field.kind === "url" ? "url" : field.kind === "date" ? "date" : "text"}
               name={field.name}
               required={field.required}
               maxLength={field.maxLength}

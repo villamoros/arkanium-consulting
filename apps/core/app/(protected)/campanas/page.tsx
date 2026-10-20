@@ -29,7 +29,18 @@ type Campaign = {
   pieces: Piece[];
   leads: number;
   landings: Landing[];
+  channels: Channel[];
 };
+
+type ChannelKind = "red_social" | "newsletter" | "landing" | "anuncio_pagado";
+type Channel = { id: string; kind: ChannelKind; platform: string; budgetCents: number | null; startsOn: string | null; endsOn: string | null };
+
+const CHANNEL_LABEL: Record<ChannelKind, string> = { red_social: "Red social", newsletter: "Newsletter", landing: "Landing", anuncio_pagado: "Anuncio pagado" };
+/** Se agregan aquí; las redes salen del brief y las landings de su propia sección. */
+const CHANNEL_KIND_OPTIONS = [
+  { value: "newsletter", label: "Newsletter" },
+  { value: "anuncio_pagado", label: "Anuncio pagado" },
+];
 
 const NETWORKS = [
   { value: "linkedin", label: "LinkedIn" },
@@ -54,7 +65,11 @@ const BRIEF_BADGE: Record<Campaign["briefStatus"], string> = { borrador: "b-idle
 const BRIEF_LABEL: Record<Campaign["briefStatus"], string> = { borrador: "Brief en borrador", en_revision: "Brief en revisión", aprobado: "Brief aprobado" };
 const PIECE_BADGE: Record<Piece["status"], string> = { borrador: "b-idle", en_revision: "b-pospuesto", aprobada: "b-convertido", publicada: "b-convertido", pausada: "b-descartado" };
 const PIECE_LABEL: Record<Piece["status"], string> = { borrador: "Borrador", en_revision: "En revisión", aprobada: "Aprobada", publicada: "Publicada", pausada: "Pausada" };
-const networkLabel = (value: string) => NETWORKS.find((network) => network.value === value)?.label ?? value;
+/** Redes del brief y, para las piezas, el newsletter cuando la campaña tiene ese canal. */
+const PIECE_NETWORKS = [...NETWORKS, { value: "newsletter", label: "Newsletter" }];
+const networkLabel = (value: string) => PIECE_NETWORKS.find((network) => network.value === value)?.label ?? value;
+const moneyUsd = (cents: number | null) => (cents === null ? "Sin presupuesto" : `USD ${(cents / 100).toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+const datesOf = (channel: Channel) => (channel.startsOn || channel.endsOn ? `${channel.startsOn ?? "…"} → ${channel.endsOn ?? "…"}` : "Sin fechas");
 
 const STATUS_LABEL: Record<Campaign["status"], string> = { borrador: "Borrador", activa: "Activa", pausada: "Pausada", cerrada: "Cerrada" };
 const STATUS_BADGE: Record<Campaign["status"], string> = { borrador: "b-idle", activa: "b-convertido", pausada: "b-pospuesto", cerrada: "b-descartado" };
@@ -251,6 +266,50 @@ export default async function CampaignsPage({ searchParams }: { searchParams: Pr
               </div>
 
               <div className="section">
+                <h3>Canales</h3>
+                <p className="sub" style={{ margin: "0 0 8px" }}>
+                  Las redes del brief son canales de red social. Aquí agregas el newsletter y los anuncios pagados. Las landings van en su propia sección.
+                </p>
+                {selected.channels.length === 0 ? (
+                  <p className="muted" style={{ margin: "0 0 8px" }}>Todavía no hay canales adicionales.</p>
+                ) : (
+                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 8px" }}>
+                    {selected.channels.map((channel) => (
+                      <li key={channel.id} style={{ borderTop: "1px solid var(--line)", padding: "8px 0", display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", justifyContent: "space-between" }}>
+                        <span>
+                          <b>{CHANNEL_LABEL[channel.kind]}</b> · {channel.platform}
+                          <div className="sub">
+                            {moneyUsd(channel.budgetCents)} · {datesOf(channel)}
+                          </div>
+                        </span>
+                        <ConfirmAction
+                          label="Quitar"
+                          title="¿Quitar este canal?"
+                          body="El canal deja de contar en la campaña. No se puede quitar un newsletter con piezas vivas."
+                          confirmLabel="Quitar canal"
+                          action={marketingAction}
+                          fields={{ op: "channel-delete", id: channel.id }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <MktForm
+                  op="channel-create"
+                  id={selected.id}
+                  label="Agregar canal"
+                  submit="Agregar canal"
+                  fields={[
+                    { name: "kind", label: "Tipo", kind: "select", options: CHANNEL_KIND_OPTIONS, required: true },
+                    { name: "platform", label: "Proveedor o plataforma", required: true, maxLength: 60, placeholder: "Resend, Substack, Meta Ads…" },
+                    { name: "budget", label: "Presupuesto (USD, opcional)", placeholder: "0.00" },
+                    { name: "startsOn", label: "Inicio (opcional)", kind: "date" },
+                    { name: "endsOn", label: "Fin (opcional)", kind: "date" },
+                  ]}
+                />
+              </div>
+
+              <div className="section">
                 <h3>Piezas por red</h3>
                 {selected.briefStatus !== "aprobado" ? (
                   <p className="muted" style={{ margin: "0 0 8px" }}>Aprueba el brief para crear piezas.</p>
@@ -261,7 +320,12 @@ export default async function CampaignsPage({ searchParams }: { searchParams: Pr
                     label="Nueva pieza"
                     submit="Crear pieza"
                     fields={[
-                      { name: "network", label: "Red", kind: "select", options: NETWORKS.filter((network) => selected.networks.includes(network.value)) },
+                      {
+                        name: "network",
+                        label: "Red o canal",
+                        kind: "select",
+                        options: PIECE_NETWORKS.filter((network) => selected.networks.includes(network.value) || (network.value === "newsletter" && selected.channels.some((channel) => channel.kind === "newsletter"))),
+                      },
                       { name: "format", label: "Formato", kind: "select", options: FORMATS, defaultValue: "imagen" },
                       { name: "copy", label: "Texto del anuncio", kind: "textarea", required: true, maxLength: 1500 },
                       { name: "assetUrl", label: "Material (enlace, opcional)", kind: "url", maxLength: 500 },

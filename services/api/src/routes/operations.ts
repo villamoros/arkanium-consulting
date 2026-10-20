@@ -26,6 +26,7 @@ import {
   campaignBriefSchema,
   pieceCreateSchema,
   pieceUpdateSchema,
+  channelCreateSchema,
   campaignCreateSchema,
   campaignUpdateSchema,
   creditNoteSchema,
@@ -92,6 +93,8 @@ import {
   createLanding,
   createPersona,
   deletePersona,
+  createChannel,
+  deleteChannel,
   discardArticle,
   listArticles,
   listCampaigns,
@@ -1095,6 +1098,25 @@ export function registerOperationRoutes(app: FastifyInstance, deps: OperationDep
       const body = parseBody(pieceCreateSchema, request, reply);
       if (!body) return;
       return reply.code(201).send(await createPiece(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  app.post<{ Params: { id: string } }>(
+    '/campaigns/:id/channels',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      const body = parseBody(channelCreateSchema, request, reply);
+      if (!body) return;
+      return reply.code(201).send(await createChannel(db, request.params.id, body, caller.userId));
+    }),
+  );
+
+  app.delete<{ Params: { id: string } }>(
+    '/campaign-channels/:id',
+    guarded(deps, async (caller, request, reply) => {
+      requireOwnerCaller(caller, internalOrgId);
+      await deleteChannel(db, request.params.id, caller.userId);
+      return reply.code(204).send();
     }),
   );
 

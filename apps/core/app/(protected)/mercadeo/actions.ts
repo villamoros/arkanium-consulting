@@ -141,6 +141,27 @@ export async function marketingAction(_previous: MarketingActionState, formData:
       path = `/campaigns/${id}/brief/review`;
       message = "Brief enviado a revisión. Lo apruebas en Aprobaciones.";
       break;
+    case "channel-create": {
+      const budget = text(formData, "budget").replace(",", ".");
+      const budgetCents = budget ? Math.round(Number(budget) * 100) : null;
+      path = `/campaigns/${id}/channels`;
+      body = {
+        kind: text(formData, "kind"),
+        platform: text(formData, "platform"),
+        budgetCents: budgetCents !== null && Number.isFinite(budgetCents) ? budgetCents : null,
+        startsOn: optional(text(formData, "startsOn")) ?? null,
+        endsOn: optional(text(formData, "endsOn")) ?? null,
+      };
+      message = "Canal agregado a la campaña.";
+      revalidate = ["/campanas"];
+      break;
+    }
+    case "channel-delete":
+      method = "DELETE";
+      path = `/campaign-channels/${id}`;
+      message = "Canal quitado de la campaña.";
+      revalidate = ["/campanas"];
+      break;
     case "piece-create":
       path = `/campaigns/${id}/pieces`;
       body = {

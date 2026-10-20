@@ -6,6 +6,7 @@ import {
   articles,
   auditLog,
   buyerPersonas,
+  campaignChannels,
   campaigns,
   contacts,
   decisions,
@@ -52,6 +53,7 @@ beforeEach(async () => {
   await db.delete(projects);
   await db.delete(contacts);
   await db.delete(leads);
+  await db.delete(campaignChannels);
   await db.delete(campaigns);
   await db.delete(buyerPersonas);
   await db.delete(organizations);

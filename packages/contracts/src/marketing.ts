@@ -119,8 +119,29 @@ export const campaignBriefSchema = z.object({
 });
 export type CampaignBrief = z.infer<typeof campaignBriefSchema>;
 
+/** Tipos de canal de una campaña. Las redes del brief son canales de tipo red social. */
+export const channelKindValues = ['red_social', 'newsletter', 'landing', 'anuncio_pagado'] as const;
+
+/** Canal nuevo de una campaña. Las fechas son AAAA-MM-DD y el fin no puede ser antes del inicio. */
+export const channelCreateSchema = z
+  .object({
+    kind: z.enum(channelKindValues),
+    platform: z.string().trim().min(1).max(60),
+    budgetCents: z.number().int().min(0).max(100_000_000).nullable().optional(),
+    startsOn: z.iso.date().nullable().optional(),
+    endsOn: z.iso.date().nullable().optional(),
+  })
+  .refine((value) => !value.startsOn || !value.endsOn || value.endsOn >= value.startsOn, {
+    message: 'La fecha de fin no puede ser anterior a la de inicio.',
+    path: ['endsOn'],
+  });
+export type ChannelCreate = z.infer<typeof channelCreateSchema>;
+
+/** Redes del brief más el newsletter, que sale por canal y no por red social. */
+export const pieceNetworkValues = [...adNetworkValues, 'newsletter'] as const;
+
 export const pieceCreateSchema = z.object({
-  network: z.enum(adNetworkValues),
+  network: z.enum(pieceNetworkValues),
   format: z.enum(pieceFormatValues),
   copy: z.string().trim().min(1).max(1500),
   assetUrl: z.url().max(500).optional(),

@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { buildApp } from '../src/app.js';
 import type { Db } from '../src/db/client.js';
-import { auditLog, campaigns, contacts, decisions, invoiceCreditNotes, invoiceLines, invoices, landingPages, leads, meetings, organizations, personaContacts, projects, proposalVersions, proposals, buyerPersonas } from '../src/db/schema.js';
+import { auditLog, campaignChannels, campaigns, contacts, decisions, invoiceCreditNotes, invoiceLines, invoices, landingPages, leads, meetings, organizations, personaContacts, projects, proposalVersions, proposals, buyerPersonas } from '../src/db/schema.js';
 import { createTestDb } from './support/db.js';
 import { CLIENT, INTERNAL, fakeIdentity } from './support/identity.js';
 
@@ -33,6 +33,7 @@ beforeEach(async () => {
   await db.delete(projects);
   await db.delete(contacts);
   await db.delete(leads);
+  await db.delete(campaignChannels);
   await db.delete(campaigns);
   await db.delete(buyerPersonas);
   await db.delete(organizations);
